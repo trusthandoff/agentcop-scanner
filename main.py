@@ -472,6 +472,21 @@ def get_badge(badge_id: str):
     }
 
 
+@app.get("/sitemap.xml")
+def sitemap():
+    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
+
+
+@app.get("/robots.txt")
+def robots():
+    return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain")
+
+
+@app.get("/llms.txt")
+def llms_txt():
+    return FileResponse(STATIC_DIR / "llms.txt", media_type="text/plain")
+
+
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 

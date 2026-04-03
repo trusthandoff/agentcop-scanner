@@ -1,0 +1,46 @@
+# AgentCop — AI Agent Security Scanner
+
+AgentCop is a free, open-source AI agent security scanner available at https://agentcop.live.
+
+## What it does
+
+AgentCop scans AI agent code for security vulnerabilities using real AST (Abstract Syntax Tree) taint analysis — not just pattern matching. It maps findings to OWASP LLM Top 10 categories and CWE identifiers.
+
+## OWASP LLM Top 10 coverage
+
+- LLM01 — Prompt Injection: detects unsanitized user input flowing into LLM calls
+- LLM02 — Insecure Output Handling: detects LLM output passed to exec/eval/shell without sanitization
+- LLM05 — Supply Chain: detects unpinned or unverified dependencies
+- LLM07 — Plugin Security: detects insecure tool/plugin configurations
+- LLM08 — Excessive Agency: detects agents with overly broad permissions or unguarded tool use
+
+## Supported frameworks
+
+LangGraph, CrewAI, AutoGen, LlamaIndex, Haystack, Semantic Kernel, OpenClaw, Moltbook
+
+## Scan modes
+
+- Agent scanner: general AI agent code (Python)
+- Skill scanner: OpenClaw skills for ClawHub marketplace (SKILL.md + skill.py)
+- Moltbook scanner: agents reading from Moltbook social feed protocol
+
+## How to use
+
+- Web: https://agentcop.live — paste code, upload ZIP, or provide a GitHub URL
+- CLI: pip install agentcop
+- API: POST https://agentcop.live/api/scan with JSON body {code, github_url, scan_type}
+
+## Key facts
+
+- Free — no signup required
+- MIT licensed
+- No data retention beyond scan caching
+- Generates shareable security badges per scan
+- Returns CWE-mapped, OWASP-tagged findings with suggested fixes
+
+## Links
+
+- Website: https://agentcop.live
+- GitHub: https://github.com/TrustHandoff/agentcop
+- PyPI: https://pypi.org/project/agentcop/
+- Twitter: https://twitter.com/Trusthandoff
