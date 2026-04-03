@@ -337,7 +337,7 @@ def _build_result(raw: dict, scan_id: str, scan_type: str = "agent") -> dict:
     score = raw["score"]
     framework = raw["framework"]
 
-    if scan_type == "skill" and any(f.get("severity") == "critical" for f in findings):
+    if scan_type in ("skill", "moltbook") and any(f.get("severity") == "critical" for f in findings):
         score = min(score, 30)
 
     verdict, fix_map = _ai_enhance(findings, score, framework, scan_type=scan_type)
@@ -388,6 +388,7 @@ def health():
 @app.post("/api/scan")
 def scan(req: ScanRequest):
     scan_type = req.scan_type or "agent"
+    print(f"[DEBUG] /api/scan received scan_type={scan_type!r}")
 
     if not req.code.strip() and not req.github_url.strip():
         raise HTTPException(400, "Provide 'code' or 'github_url'")
@@ -467,9 +468,16 @@ def get_scan(scan_id: str):
     return json.loads(row[0])
 
 
+_NO_CACHE_HEADERS = {
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
+}
+
+
 @app.get("/scan/{scan_id}")
 def scan_page(scan_id: str):
-    return FileResponse(STATIC_DIR / "index.html")
+    return FileResponse(STATIC_DIR / "index.html", headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/api/badge/{badge_id}")
@@ -547,4 +555,4 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 @app.get("/{full_path:path}")
 def catch_all(full_path: str):
-    return FileResponse(STATIC_DIR / "index.html")
+    return FileResponse(STATIC_DIR / "index.html", headers=_NO_CACHE_HEADERS)
