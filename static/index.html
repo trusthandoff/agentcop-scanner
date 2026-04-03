@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgentCop — AI Security Scanner</title>
+  <title>AgentCop — AI Agent Security Scanner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -28,6 +28,7 @@
               700: '#0d1526',
               600: '#111827',
               500: '#1f2937',
+              400: '#374151',
             }
           },
           fontFamily: {
@@ -78,7 +79,7 @@
     .glow-border { box-shadow: 0 0 0 1px rgba(16,184,145,0.3), 0 0 20px rgba(16,184,145,0.1); }
     .glow-border:hover { box-shadow: 0 0 0 1px rgba(16,184,145,0.6), 0 0 30px rgba(16,184,145,0.2); }
 
-    /* Scan line animation */
+    /* Scan line animation (hero mockup) */
     .scan-container { position: relative; overflow: hidden; }
     .scan-line {
       position: absolute;
@@ -141,15 +142,13 @@
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* Threat badge pulse */
-    .threat-pulse {
-      animation: threatPulse 1.5s ease-in-out infinite;
-    }
+    .threat-pulse { animation: threatPulse 1.5s ease-in-out infinite; }
     @keyframes threatPulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
       50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
     }
 
-    /* Code highlight */
+    /* Code block (landing page and scanner) */
     .code-block {
       background: #0a0f1e;
       border: 1px solid rgba(16,184,145,0.2);
@@ -161,29 +160,24 @@
 
     /* Sentinel Robot animations */
     .sentinel-ring-1 {
-      transform-box: fill-box;
-      transform-origin: center;
+      transform-box: fill-box; transform-origin: center;
       animation: sentinelRing 2.2s ease-out infinite;
     }
     .sentinel-ring-2 {
-      transform-box: fill-box;
-      transform-origin: center;
+      transform-box: fill-box; transform-origin: center;
       animation: sentinelRing 2.2s ease-out infinite 0.75s;
     }
     @keyframes sentinelRing {
       0%   { transform: scale(0.7); opacity: 0.7; }
       100% { transform: scale(2.4); opacity: 0; }
     }
-    .sentinel-eye-pulse {
-      animation: sentinelEye 2.8s ease-in-out infinite;
-    }
+    .sentinel-eye-pulse { animation: sentinelEye 2.8s ease-in-out infinite; }
     @keyframes sentinelEye {
       0%, 100% { opacity: 0.55; }
       50%       { opacity: 1; }
     }
     .sentinel-orb {
-      transform-box: fill-box;
-      transform-origin: center;
+      transform-box: fill-box; transform-origin: center;
       animation: sentinelOrb 1.9s ease-in-out infinite;
     }
     @keyframes sentinelOrb {
@@ -192,34 +186,90 @@
     }
 
     /* Siren light animations */
-    .siren-flash {
-      animation: sirenFlash 0.72s ease-in-out infinite;
-    }
+    .siren-flash { animation: sirenFlash 0.72s ease-in-out infinite; }
     @keyframes sirenFlash {
       0%, 100% { fill-opacity: 0.06; }
       50%       { fill-opacity: 0.94; }
     }
-    .siren-glow {
-      animation: sirenGlow 0.72s ease-in-out infinite;
-    }
+    .siren-glow { animation: sirenGlow 0.72s ease-in-out infinite; }
     @keyframes sirenGlow {
       0%, 100% { fill-opacity: 0.02; }
       50%       { fill-opacity: 0.32; }
     }
     .siren-ring-1 {
-      transform-box: fill-box;
-      transform-origin: center;
+      transform-box: fill-box; transform-origin: center;
       animation: sirenRing 0.72s ease-out infinite;
     }
     .siren-ring-2 {
-      transform-box: fill-box;
-      transform-origin: center;
+      transform-box: fill-box; transform-origin: center;
       animation: sirenRing 0.72s ease-out infinite 0.36s;
     }
     @keyframes sirenRing {
       0%   { transform: scale(0.7); opacity: 0.8; }
       100% { transform: scale(2.9); opacity: 0; }
     }
+
+    /* ── Scanner UI ──────────────────────────────────────────── */
+
+    /* Primary button */
+    .btn-primary {
+      background: linear-gradient(135deg, #10b891, #059675);
+      color: #fff; font-weight: 600;
+      padding: .65rem 1.5rem; border-radius: .5rem;
+      border: none; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn-primary:hover  { opacity: .9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    /* Scanner tabs */
+    .tab-btn { transition: all .15s; }
+    .tab-btn.active {
+      background: rgba(16,184,145,.15);
+      border-color: #10b891 !important; color: #10b891;
+    }
+
+    /* Score arc */
+    .score-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
+
+    /* Severity badges */
+    .badge-critical  { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+    .badge-warning   { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .badge-info      { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-protected { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.3); }
+
+    /* Finding cards */
+    .finding-card { transition: border-color .15s, background .15s; }
+    .finding-card:hover { border-color: rgba(16,184,145,.3) !important; background: rgba(16,184,145,.03); }
+
+    /* Code diff */
+    .diff-before { background: rgba(239,68,68,.08);  border-left: 3px solid #ef4444; }
+    .diff-after  { background: rgba(16,185,129,.08); border-left: 3px solid #10b981; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin .8s linear infinite; }
+
+    /* Loading scan line (scanner form, distinct from hero scanMove) */
+    @keyframes loading-scan { 0%{top:0} 100%{top:100%} }
+    .loading-scan-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(16,184,145,.6), transparent);
+      animation: loading-scan 2s linear infinite;
+    }
+
+    /* Pulse dot */
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+    textarea:focus, input:focus { outline: none; border-color: #10b891 !important; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0f1e; }
+    ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
   </style>
 </head>
 <body class="bg-dark-900 overflow-x-hidden">
@@ -228,7 +278,7 @@
   <!-- NAV -->
   <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-dark-900/80 border-b border-white/5">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2.5">
+      <a href="/" class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-cyber-500/20 border border-cyber-500/40 flex items-center justify-center">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -243,8 +293,8 @@
         <a href="#threats" class="text-sm text-gray-400 hover:text-white transition-colors">Threat Coverage</a>
       </div>
       <div class="flex items-center gap-3">
-        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="text-sm px-4 py-2 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-medium transition-colors">
-          Start Free Scan
+        <a href="#scanner" class="text-sm px-4 py-2 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-medium transition-colors">
+          Try the Scanner
         </a>
       </div>
     </div>
@@ -256,7 +306,6 @@
     <div class="absolute inset-0 pointer-events-none">
       <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-cyber-500/5 blur-[120px]"></div>
       <div class="absolute top-1/4 right-0 w-[400px] h-[400px] rounded-full bg-violet-500/5 blur-[100px]"></div>
-
     </div>
 
     <div class="relative max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
@@ -264,7 +313,7 @@
       <div class="space-y-8">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyber-500/30 bg-cyber-500/5 text-cyber-400 text-xs font-medium font-mono">
           <span class="w-1.5 h-1.5 rounded-full bg-cyber-400 animate-pulse"></span>
-          NOW IN BETA · 2,800+ VULNERABILITIES CAUGHT
+          NOW IN BETA · OWASP LLM TOP 10 COVERAGE
         </div>
         <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
           <span class="text-white">Security scanning</span><br/>
@@ -274,7 +323,7 @@
           AgentCop automatically audits your LLM-powered agents for prompt injection, data exfiltration, privilege escalation, and 50+ other attack vectors — before they reach production.
         </p>
         <div class="flex flex-wrap gap-4">
-          <a href="#pricing" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold text-sm transition-all hover:shadow-lg hover:shadow-cyber-500/25">
+          <a href="#scanner" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold text-sm transition-all hover:shadow-lg hover:shadow-cyber-500/25">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Scan Your Agents Free
           </a>
@@ -282,25 +331,22 @@
             See How It Works
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
+          <a href="https://github.com/shaymizuno/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
             ⭐ Star on GitHub
-          </a>
-          <a href="https://twitter.com/trusthandoff" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
-            Follow Sentinel 🚨 on X
           </a>
         </div>
         <div class="flex items-center gap-6 pt-2">
           <div class="flex items-center gap-2 text-xs text-gray-500">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            ✓ Open Source — MIT Licensed
+            Open Source — MIT Licensed
           </div>
           <div class="flex items-center gap-2 text-xs text-gray-500">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            ✓ No signup required
+            No signup required
           </div>
           <div class="flex items-center gap-2 text-xs text-gray-500">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            ✓ Powered by Sentinel 🚨
+            Powered by Sentinel 🚨
           </div>
         </div>
       </div>
@@ -316,7 +362,7 @@
               <div class="w-3 h-3 rounded-full bg-cyber-500/70"></div>
             </div>
             <div class="flex-1 text-center">
-              <span class="text-xs text-gray-500 font-mono">agentcop scan --target ./my-agent</span>
+              <span class="text-xs text-gray-500 font-mono">agentcop — AST analysis running</span>
             </div>
           </div>
           <!-- Scanner content -->
@@ -324,62 +370,52 @@
             <div class="scan-line"></div>
             <div class="flex items-center gap-3 text-cyber-400">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>AgentCop v2.4.1 — Security Scan Initiated</span>
+              <span>AgentCop — Security Scan Initiated</span>
             </div>
-            <div class="text-gray-500">Scanning <span class="text-cyber-300">./my-agent/</span> · 47 files · 12,840 lines</div>
+            <div class="text-gray-500">Taint analysis · call graph · rule engine</div>
             <div class="h-px bg-white/5 my-2"></div>
-
             <!-- Findings -->
             <div class="space-y-2 py-1">
               <div class="flex items-start gap-2 highlight-red px-2 py-1.5 rounded-r">
                 <span class="text-red-400 mt-0.5">✗</span>
                 <div>
                   <div class="text-red-300 font-medium">CRITICAL · Prompt Injection [CWE-20]</div>
-                  <div class="text-gray-500">agent.py:84 — user input passed unsanitized to system prompt</div>
+                  <div class="text-gray-500">agent.py:84 — user input → llm.invoke unsanitized</div>
                 </div>
               </div>
               <div class="flex items-start gap-2 highlight-red px-2 py-1.5 rounded-r">
                 <span class="text-orange-400 mt-0.5">⚠</span>
                 <div>
-                  <div class="text-orange-300 font-medium">HIGH · Insecure Tool Permissions [A01]</div>
-                  <div class="text-gray-500">tools.py:31 — file_write tool lacks path traversal guard</div>
+                  <div class="text-orange-300 font-medium">WARNING · Command Injection [CWE-78]</div>
+                  <div class="text-gray-500">tools.py:31 — taint → subprocess.run shell=True</div>
                 </div>
               </div>
               <div class="flex items-start gap-2 highlight-green px-2 py-1.5 rounded-r">
                 <span class="text-cyber-400 mt-0.5">✓</span>
                 <div>
-                  <div class="text-cyber-300 font-medium">PASS · Memory Isolation</div>
-                  <div class="text-gray-500">No cross-session memory leakage detected</div>
-                </div>
-              </div>
-              <div class="flex items-start gap-2 highlight-green px-2 py-1.5 rounded-r">
-                <span class="text-cyber-400 mt-0.5">✓</span>
-                <div>
-                  <div class="text-cyber-300 font-medium">PASS · Secret Exposure Check</div>
-                  <div class="text-gray-500">No API keys or credentials in prompts</div>
+                  <div class="text-cyber-300 font-medium">PROTECTED · Input Validation</div>
+                  <div class="text-gray-500">sanitize_input() guards detected</div>
                 </div>
               </div>
               <div class="flex items-start gap-2 bg-yellow-500/5 border-l-2 border-yellow-500 px-2 py-1.5 rounded-r">
                 <span class="text-yellow-400 mt-0.5">⚡</span>
                 <div>
-                  <div class="text-yellow-300 font-medium">MEDIUM · Excessive Tool Scope [A05]</div>
-                  <div class="text-gray-500">browser_tool has unrestricted URL access</div>
+                  <div class="text-yellow-300 font-medium">WARNING · Secret Exposure [LLM09]</div>
+                  <div class="text-gray-500">Hardcoded API key in llm_config</div>
                 </div>
               </div>
             </div>
-
             <div class="h-px bg-white/5"></div>
-            <!-- Summary bar -->
             <div class="flex items-center justify-between pt-1">
               <div class="flex gap-4">
-                <span class="text-red-400">2 Critical</span>
-                <span class="text-yellow-400">1 Medium</span>
-                <span class="text-cyber-400">2 Passed</span>
+                <span class="text-red-400">1 Critical</span>
+                <span class="text-yellow-400">2 Warning</span>
+                <span class="text-cyber-400">1 Protected</span>
               </div>
-              <span class="text-gray-500">Risk Score: <span class="text-red-400 font-semibold">78/100</span></span>
+              <span class="text-gray-500">Score: <span class="text-yellow-400 font-semibold">52/100</span></span>
             </div>
             <div class="w-full bg-dark-600 rounded-full h-1.5 overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400" style="width:78%"></div>
+              <div class="h-full rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400" style="width:52%"></div>
             </div>
           </div>
         </div>
@@ -390,82 +426,43 @@
           <span class="text-xs text-red-300 font-medium font-mono">THREAT DETECTED</span>
         </div>
         <div class="absolute -bottom-4 -left-4 flex items-center gap-2 bg-cyber-500/10 border border-cyber-500/30 rounded-full px-3 py-1.5">
-          <span class="text-xs text-cyber-300 font-mono">⚡ 3.2s scan time</span>
+          <span class="text-xs text-cyber-300 font-mono">⚡ Real AST analysis</span>
         </div>
 
-        <!-- Sentinel Robot — right side, IN FRONT of scanner, watching the code -->
+        <!-- Sentinel Robot -->
         <div class="absolute -right-40 top-1/2 -translate-y-[44%] z-20 pointer-events-none select-none hidden lg:block" style="opacity:0.82;">
           <svg width="192" height="230" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-
-            <!-- Siren mount bar -->
             <rect x="86" y="36" width="28" height="11" rx="3.5" fill="#0a0f1e" stroke="#ef4444" stroke-width="1.5"/>
-
-            <!-- Siren dome outer glow -->
             <ellipse cx="100" cy="20" rx="26" ry="16" fill="#ef4444" class="siren-glow"/>
-
-            <!-- Siren dome body -->
             <ellipse cx="100" cy="23" rx="20" ry="13" fill="#2a0404" stroke="#ef4444" stroke-width="2"/>
-
-            <!-- Siren light core -->
             <ellipse cx="100" cy="22" rx="13" ry="8.5" fill="#ef4444" class="siren-flash"/>
-
-            <!-- Siren lens highlight -->
             <ellipse cx="95" cy="19" rx="5" ry="3" fill="white" fill-opacity="0.28"/>
-
-            <!-- Siren pulse rings -->
             <circle cx="100" cy="22" r="18" fill="none" stroke="#ef4444" stroke-width="1.2" class="siren-ring-1"/>
             <circle cx="100" cy="22" r="18" fill="none" stroke="#ef4444" stroke-width="0.7" class="siren-ring-2"/>
-
-            <!-- Fluffy cheeks (dashed) — more visible -->
             <circle cx="19" cy="112" r="21" fill="#10b891" fill-opacity="0.14" stroke="#10b891" stroke-width="1.2" stroke-dasharray="3 2.5"/>
             <circle cx="181" cy="112" r="21" fill="#10b891" fill-opacity="0.14" stroke="#10b891" stroke-width="1.2" stroke-dasharray="3 2.5"/>
-
-            <!-- Head shell -->
             <rect x="30" y="47" width="140" height="112" rx="18" fill="#030c14" fill-opacity="0.94" stroke="#10b891" stroke-width="2"/>
-            <!-- Head inner bezel -->
             <rect x="38" y="55" width="124" height="96" rx="13" fill="none" stroke="#10b891" stroke-width="0.7" stroke-opacity="0.65"/>
-
-            <!-- V-brows (inner ends lower → menacing, watching left) -->
             <line x1="50" y1="67" x2="82" y2="77" stroke="#10b891" stroke-width="2.8" stroke-linecap="round"/>
             <line x1="118" y1="77" x2="150" y2="67" stroke="#10b891" stroke-width="2.8" stroke-linecap="round"/>
-
-            <!-- Left eye socket (hex-ish rounded rect) -->
             <rect x="48" y="82" width="44" height="26" rx="6" fill="#10b891" fill-opacity="0.22" stroke="#10b891" stroke-width="1.8"/>
             <rect x="50" y="84" width="40" height="22" rx="5" fill="#10b891" fill-opacity="0.28"/>
-            <!-- Left pupil shifted LEFT — watching the scanner input -->
             <circle cx="61" cy="95" r="6" fill="#ef4444" fill-opacity="1" class="sentinel-eye-pulse"/>
-            <!-- Left pupil inner glow dot -->
             <circle cx="61" cy="95" r="2.8" fill="#ffaaaa" fill-opacity="0.9" class="sentinel-eye-pulse"/>
-
-            <!-- Right eye socket (hex-ish rounded rect) -->
             <rect x="108" y="82" width="44" height="26" rx="6" fill="#10b891" fill-opacity="0.22" stroke="#10b891" stroke-width="1.8"/>
             <rect x="110" y="84" width="40" height="22" rx="5" fill="#10b891" fill-opacity="0.28"/>
-            <!-- Right pupil shifted LEFT — watching the scanner input -->
             <circle cx="121" cy="95" r="6" fill="#ef4444" fill-opacity="1" class="sentinel-eye-pulse"/>
-            <!-- Right pupil inner glow dot -->
             <circle cx="121" cy="95" r="2.8" fill="#ffaaaa" fill-opacity="0.9" class="sentinel-eye-pulse"/>
-
-            <!-- Smirk (flat left, curves up right — knowing look) -->
             <path d="M 62 126 L 92 129 Q 120 132 142 121" stroke="#10b891" stroke-width="2.2" stroke-linecap="round"/>
-
-            <!-- Neck -->
             <rect x="82" y="159" width="36" height="16" rx="4" fill="#030712" fill-opacity="0.88" stroke="#10b891" stroke-width="1.6"/>
             <line x1="89" y1="163" x2="111" y2="163" stroke="#10b891" stroke-width="0.9" stroke-opacity="0.6"/>
             <line x1="89" y1="168" x2="111" y2="168" stroke="#10b891" stroke-width="0.9" stroke-opacity="0.6"/>
-
-            <!-- Chest / body -->
             <rect x="36" y="175" width="128" height="64" rx="12" fill="#030712" fill-opacity="0.88" stroke="#10b891" stroke-width="1.9"/>
-
-            <!-- Chest side panels -->
             <rect x="44" y="183" width="28" height="14" rx="3" fill="none" stroke="#10b891" stroke-width="1" stroke-opacity="0.6"/>
             <rect x="128" y="183" width="28" height="14" rx="3" fill="none" stroke="#10b891" stroke-width="1" stroke-opacity="0.6"/>
-
-            <!-- Chest center orb (pulse) -->
             <circle cx="100" cy="204" r="13" fill="none" stroke="#10b891" stroke-width="1.5"/>
             <circle cx="100" cy="204" r="8" fill="#10b891" fill-opacity="0.2"/>
             <circle cx="100" cy="204" r="5" fill="#10b891" fill-opacity="0.7" class="sentinel-orb"/>
-
-            <!-- Shoulder stubs -->
             <line x1="36" y1="180" x2="20" y2="192" stroke="#10b891" stroke-width="1.8" stroke-linecap="round"/>
             <line x1="164" y1="180" x2="180" y2="192" stroke="#10b891" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
@@ -495,15 +492,15 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div class="text-center reveal">
           <div class="text-4xl font-extrabold gradient-text">9</div>
-          <div class="text-sm text-gray-500 mt-1">Adapters</div>
+          <div class="text-sm text-gray-500 mt-1">Frameworks</div>
         </div>
         <div class="text-center reveal">
-          <div class="text-4xl font-extrabold gradient-text">1,199</div>
-          <div class="text-sm text-gray-500 mt-1">Tests passing</div>
+          <div class="text-4xl font-extrabold gradient-text">50+</div>
+          <div class="text-sm text-gray-500 mt-1">Attack signatures</div>
         </div>
         <div class="text-center reveal">
-          <div class="text-4xl font-extrabold gradient-text">Ed25519</div>
-          <div class="text-sm text-gray-500 mt-1">Signing</div>
+          <div class="text-4xl font-extrabold gradient-text">AST</div>
+          <div class="text-sm text-gray-500 mt-1">Real taint analysis</div>
         </div>
         <div class="text-center reveal">
           <div class="text-4xl font-extrabold gradient-text">MIT</div>
@@ -547,11 +544,11 @@
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </div>
-          <h3 class="text-white font-semibold mb-2">Tool Permission Auditing</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Analyzes the scope of every tool registered to your agent and flags over-privileged permissions that violate least-privilege principles.</p>
+          <h3 class="text-white font-semibold mb-2">Taint Flow Analysis</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">AST-based data flow tracking follows tainted sources (user input, env vars, HTTP) through your code to dangerous sinks (eval, exec, subprocess).</p>
           <div class="mt-4 flex gap-2 flex-wrap">
-            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">A01:2021</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">OWASP LLM07</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">CWE-78</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">OWASP LLM02</span>
           </div>
         </div>
 
@@ -562,11 +559,11 @@
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
             </svg>
           </div>
-          <h3 class="text-white font-semibold mb-2">Runtime Behavior Monitoring</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Continuously monitors live agent traces for anomalous behavior patterns — unexpected tool calls, data exfiltration attempts, and privilege escalations.</p>
+          <h3 class="text-white font-semibold mb-2">Call Graph Analysis</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Detects recursive agent loops without depth limits, unbounded retry patterns, and missing termination conditions that can cause runaway costs.</p>
           <div class="mt-4 flex gap-2 flex-wrap">
-            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">Real-time</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">SIEM-ready</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">OWASP LLM04</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">Loop detection</span>
           </div>
         </div>
 
@@ -577,11 +574,12 @@
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
             </svg>
           </div>
-          <h3 class="text-white font-semibold mb-2">Supply Chain Verification</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Validates the integrity of third-party tools, plugins, and MCP servers your agents depend on — catching malicious or tampered packages.</p>
+          <h3 class="text-white font-semibold mb-2">Framework-Aware Rules</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Detects framework-specific misconfigurations: LangChain missing guardrails, AutoGen no termination, CrewAI unbounded delegation, and more.</p>
           <div class="mt-4 flex gap-2 flex-wrap">
-            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">SBOM</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">OWASP LLM05</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">LangChain</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">AutoGen</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">CrewAI</span>
           </div>
         </div>
 
@@ -589,15 +587,14 @@
         <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
           <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
             </svg>
           </div>
-          <h3 class="text-white font-semibold mb-2">Compliance Reporting</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Generates audit-ready reports aligned with OWASP LLM Top 10, NIST AI RMF, and EU AI Act frameworks for stakeholders and regulators.</p>
+          <h3 class="text-white font-semibold mb-2">AI-Generated Fix Diffs</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Sentinel generates targeted before/after code patches for every critical and warning finding — not generic advice, actual code fixes.</p>
           <div class="mt-4 flex gap-2 flex-wrap">
-            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">NIST</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">EU AI Act</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">SOC 2</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">Auto-fix</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">Code diffs</span>
           </div>
         </div>
 
@@ -608,11 +605,11 @@
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
             </svg>
           </div>
-          <h3 class="text-white font-semibold mb-2">CI/CD Gate Integration</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Blocks deployments when critical vulnerabilities are found. Native integrations for GitHub Actions, GitLab CI, Jenkins, and CircleCI.</p>
+          <h3 class="text-white font-semibold mb-2">GitHub &amp; ZIP Support</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Point at a public GitHub repo, drop a ZIP archive, or paste code directly. All Python files analyzed recursively with import graph tracking.</p>
           <div class="mt-4 flex gap-2 flex-wrap">
-            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">GitHub Actions</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">GitLab CI</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">GitHub repos</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">ZIP upload</span>
           </div>
         </div>
       </div>
@@ -643,12 +640,8 @@
             </div>
             <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">1</div>
           </div>
-          <h3 class="text-white font-semibold text-lg mb-2">Connect Your Agent</h3>
-          <p class="text-gray-400 text-sm">Point AgentCop at your repo, import via SDK, or paste your agent definition. Works with LangChain, CrewAI, AutoGen, and custom frameworks.</p>
-          <div class="mt-4 code-block p-3 text-left">
-            <div class="font-mono text-xs text-gray-500">$ pip install agentcop</div>
-            <div class="font-mono text-xs text-cyber-400">$ agentcop init</div>
-          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Paste, Upload, or Link</h3>
+          <p class="text-gray-400 text-sm">Paste Python code, drop a ZIP archive, or enter a public GitHub repo URL. No install or signup required.</p>
         </div>
 
         <!-- Step 2 -->
@@ -662,13 +655,8 @@
             </div>
             <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">2</div>
           </div>
-          <h3 class="text-white font-semibold text-lg mb-2">Run the Scan</h3>
-          <p class="text-gray-400 text-sm">Our engine performs static analysis, dynamic fuzzing, and policy checks against 50+ attack signatures in seconds — no test environment needed.</p>
-          <div class="mt-4 code-block p-3 text-left">
-            <div class="font-mono text-xs text-cyber-400">$ agentcop scan .</div>
-            <div class="font-mono text-xs text-gray-500">Scanning 47 files...</div>
-            <div class="font-mono text-xs text-red-400">⚠ 2 critical found</div>
-          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Real AST Analysis</h3>
+          <p class="text-gray-400 text-sm">The engine builds a call graph, runs taint flow analysis, and fires 50+ OWASP LLM Top 10 rules — all in seconds.</p>
         </div>
 
         <!-- Step 3 -->
@@ -681,12 +669,8 @@
             </div>
             <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">3</div>
           </div>
-          <h3 class="text-white font-semibold text-lg mb-2">Fix &amp; Ship Securely</h3>
-          <p class="text-gray-400 text-sm">Get prioritized, actionable remediation guidance with code-level diffs. Integrate the gate into CI/CD to prevent regressions automatically.</p>
-          <div class="mt-4 code-block p-3 text-left">
-            <div class="font-mono text-xs text-cyber-400">$ agentcop fix --apply</div>
-            <div class="font-mono text-xs text-gray-500">2 patches applied ✓</div>
-          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Fix with Sentinel</h3>
+          <p class="text-gray-400 text-sm">Get Sentinel's verdict, a security score, and before/after code patches generated by Claude for every critical finding.</p>
         </div>
       </div>
     </div>
@@ -794,40 +778,308 @@
       <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Open Source &amp; Free Forever</h2>
       <p class="text-gray-400 mb-10 text-lg">AgentCop is fully open source. No plans, no paywalls, no credit card required.</p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <div class="flex items-center gap-3 code-block px-5 py-3 font-mono text-sm text-cyber-400">
-          <span>pip install agentcop</span>
-          <button onclick="navigator.clipboard.writeText('pip install agentcop')" class="text-gray-500 hover:text-cyber-400 transition-colors" title="Copy">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
-        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold text-sm transition-all hover:shadow-lg hover:shadow-cyber-500/25">
+        <a href="#scanner" class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold transition-all hover:shadow-xl hover:shadow-cyber-500/25 text-base">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Try the Scanner Now
+        </a>
+        <a href="https://github.com/shaymizuno/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
           ⭐ Star on GitHub
         </a>
       </div>
     </div>
   </section>
 
-  <!-- CTA BANNER -->
-  <section id="scanner" class="py-20 bg-gradient-to-r from-dark-800 via-cyber-900/30 to-dark-800 border-y border-cyber-500/10">
-    <div class="max-w-4xl mx-auto px-6 text-center reveal">
-      <h2 class="text-4xl font-extrabold text-white mb-4 tracking-tight">Your agents are already deployed.<br/><span class="gradient-text">Are they secure?</span></h2>
-      <p class="text-gray-400 mb-8 text-lg">Run your first free scan in under 60 seconds. No signup required.</p>
-      <div class="flex flex-wrap items-center justify-center gap-4">
-        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold transition-all hover:shadow-xl hover:shadow-cyber-500/25 text-base">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Start Free Scan
-        </a>
-        <div class="code-block px-4 py-3 font-mono text-sm text-cyber-400">
-          pip install agentcop &amp;&amp; agentcop scan .
+  <!-- ─── SCANNER ──────────────────────────────────────────────────────────────── -->
+  <section id="scanner" class="py-20 bg-gradient-to-b from-dark-800/60 to-dark-900 border-t border-cyber-500/10">
+    <div class="max-w-3xl mx-auto px-6">
+
+      <div class="text-center mb-10 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyber-400 pulse-dot"></span>
+          LIVE SCANNER · OWASP LLM Top 10 · Real AST Analysis
         </div>
+        <h2 class="text-3xl font-extrabold text-white tracking-tight mb-2">Scan your agent now</h2>
+        <p class="text-gray-400">Paste code, upload a ZIP, or point at a GitHub repo. No signup required.</p>
+      </div>
+
+      <!-- Input Card -->
+      <div id="input-card" class="bg-dark-800 border border-dark-500/60 rounded-xl overflow-hidden glow-border">
+
+        <!-- Tab Bar -->
+        <div class="flex border-b border-white/5">
+          <button onclick="switchTab('code')" id="tab-code"
+            class="tab-btn active flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
+                   text-gray-400 hover:text-white transition-all">
+            &lt;/&gt; Code Snippet
+          </button>
+          <button onclick="switchTab('zip')" id="tab-zip"
+            class="tab-btn flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
+                   text-gray-400 hover:text-white transition-all border-l border-white/5">
+            📦 ZIP Upload
+          </button>
+          <button onclick="switchTab('github')" id="tab-github"
+            class="tab-btn flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
+                   text-gray-400 hover:text-white transition-all border-l border-white/5">
+            ★ GitHub URL
+          </button>
+        </div>
+
+        <!-- Code Tab -->
+        <div id="pane-code" class="p-4">
+          <div class="relative">
+            <div class="absolute top-2 right-2 flex gap-1.5 z-10">
+              <button onclick="loadExample('langchain')" class="text-xs font-mono text-gray-500 hover:text-cyber-400 bg-dark-700 rounded px-2 py-0.5 border border-white/5 transition-colors">LangChain</button>
+              <button onclick="loadExample('autogen')"   class="text-xs font-mono text-gray-500 hover:text-cyber-400 bg-dark-700 rounded px-2 py-0.5 border border-white/5 transition-colors">AutoGen</button>
+              <button onclick="loadExample('crewai')"   class="text-xs font-mono text-gray-500 hover:text-cyber-400 bg-dark-700 rounded px-2 py-0.5 border border-white/5 transition-colors">CrewAI</button>
+            </div>
+            <textarea id="code-input" rows="14"
+              placeholder="# Paste your Python agent code here...
+# Supports LangChain, LangGraph, CrewAI, AutoGen, LlamaIndex, and generic Python
+
+from langchain.chat_models import ChatOpenAI
+from langchain.agents import initialize_agent
+
+user_query = request.args.get('q')
+llm = ChatOpenAI(model='gpt-4')
+agent = initialize_agent(tools, llm, agent='zero-shot-react-description')
+result = agent.run(user_query)  # ← prompt injection risk"
+              class="w-full bg-dark-900 border border-white/5 rounded-lg p-3 text-sm font-mono
+                     text-gray-300 resize-none placeholder-gray-600"
+              style="min-height:240px;padding-top:2.4rem"></textarea>
+          </div>
+        </div>
+
+        <!-- ZIP Tab -->
+        <div id="pane-zip" class="p-4 hidden">
+          <div id="drop-zone"
+            class="border-2 border-dashed border-white/10 rounded-lg p-10 text-center cursor-pointer
+                   hover:border-cyber-500/50 transition-all"
+            onclick="document.getElementById('zip-input').click()"
+            ondragover="event.preventDefault();this.classList.add('border-cyber-500')"
+            ondragleave="this.classList.remove('border-cyber-500')"
+            ondrop="handleDrop(event)">
+            <div class="text-4xl mb-3">📦</div>
+            <p class="text-gray-400 text-sm mb-1">Drop your <span class="font-mono text-cyber-400">.zip</span> file here or click to browse</p>
+            <p class="text-gray-600 text-xs">Max 50 MB · All .py files analyzed recursively</p>
+            <input type="file" id="zip-input" accept=".zip" class="hidden" onchange="handleZipSelect(event)" />
+          </div>
+          <div id="zip-selected" class="hidden mt-3 flex items-center gap-2 bg-dark-700/60 rounded-lg px-3 py-2">
+            <span class="text-cyber-400 text-lg">✅</span>
+            <span id="zip-filename" class="text-sm text-gray-300 font-mono"></span>
+            <button onclick="clearZip()" class="ml-auto text-gray-500 hover:text-red-400 text-xs">✕ Remove</button>
+          </div>
+        </div>
+
+        <!-- GitHub Tab -->
+        <div id="pane-github" class="p-4 hidden">
+          <label class="block text-xs text-gray-500 font-mono mb-2">PUBLIC GITHUB REPOSITORY URL</label>
+          <input type="text" id="github-input"
+            placeholder="https://github.com/owner/repo"
+            class="w-full bg-dark-900 border border-white/5 rounded-lg px-3 py-2.5 text-sm font-mono
+                   text-gray-300 placeholder-gray-600 mb-3" />
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs text-gray-600">Try:</span>
+            <button onclick="document.getElementById('github-input').value='https://github.com/langchain-ai/langchain'"
+              class="text-xs font-mono text-gray-500 hover:text-cyber-400 transition-colors">langchain-ai/langchain</button>
+            <button onclick="document.getElementById('github-input').value='https://github.com/microsoft/autogen'"
+              class="text-xs font-mono text-gray-500 hover:text-cyber-400 transition-colors">microsoft/autogen</button>
+          </div>
+          <div class="mt-3 bg-dark-700/40 border border-white/5 rounded-lg px-3 py-2">
+            <p class="text-xs text-gray-500">ℹ Repository is cloned with <span class="font-mono">git clone --depth=1</span>. Only public repos supported. Large repos may take 20–30s.</p>
+          </div>
+        </div>
+
+        <!-- Scan Button -->
+        <div class="px-4 pb-4 flex items-center gap-3">
+          <button id="scan-btn" onclick="startScan()"
+            class="btn-primary flex-1 flex items-center justify-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            Run Security Scan
+          </button>
+          <span class="text-xs text-gray-600 font-mono">~5–30s</span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="hidden mt-6">
+        <div class="bg-dark-800 border border-white/5 rounded-xl p-6 text-center relative overflow-hidden">
+          <div class="loading-scan-line"></div>
+          <div class="w-10 h-10 border-2 border-cyber-500 border-t-transparent rounded-full spinner mx-auto mb-3"></div>
+          <p id="loading-msg" class="text-cyber-400 font-mono text-sm font-medium">Parsing AST...</p>
+          <p class="text-gray-600 text-xs mt-1">Running taint analysis, call graph, and rule engine</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-box" class="hidden mt-6">
+        <div class="bg-red-950/40 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+          <span class="text-red-400 text-lg mt-0.5">⚠</span>
+          <div>
+            <p class="text-red-300 font-medium text-sm mb-1">Scan Failed</p>
+            <p id="error-msg" class="text-red-400/80 text-xs font-mono"></p>
+          </div>
+          <button onclick="hideError()" class="ml-auto text-gray-500 hover:text-gray-300 text-sm">✕</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── RESULTS ──────────────────────────────────────────────────────────────── -->
+  <section id="results" class="hidden pb-24 px-6">
+    <div class="max-w-3xl mx-auto">
+
+      <!-- Score Header -->
+      <div id="result-header"
+        class="bg-dark-800 border border-white/5 rounded-xl p-6 mb-4 flex flex-col md:flex-row items-center gap-6">
+
+        <!-- Score Circle -->
+        <div class="relative flex-shrink-0">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="48" fill="none" stroke="#1f2937" stroke-width="8"/>
+            <circle id="score-arc" cx="55" cy="55" r="48" fill="none"
+                    stroke="#10b891" stroke-width="8" stroke-linecap="round"
+                    stroke-dasharray="301.6" stroke-dashoffset="301.6"
+                    transform="rotate(-90 55 55)" class="score-ring"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span id="score-num" class="text-3xl font-bold text-white font-mono">—</span>
+            <span class="text-xs text-gray-500">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Meta -->
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <span id="score-label" class="text-sm font-semibold px-2 py-0.5 rounded font-mono"></span>
+            <span id="fw-badge" class="text-xs font-mono bg-dark-700 border border-white/5 text-gray-400 px-2 py-0.5 rounded"></span>
+            <span id="files-badge" class="text-xs font-mono bg-dark-700 border border-white/5 text-gray-400 px-2 py-0.5 rounded"></span>
+            <span id="scan-id-badge" class="text-xs font-mono text-gray-600"></span>
+          </div>
+
+          <!-- Verdict -->
+          <blockquote id="verdict-text"
+            class="text-sm text-gray-300 italic border-l-2 border-cyber-500/60 pl-3 leading-relaxed"></blockquote>
+
+          <!-- Counts -->
+          <div id="finding-counts" class="flex flex-wrap gap-3 mt-3"></div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="filterFindings('all')" id="filter-all"
+          class="filter-btn text-xs font-mono px-3 py-1 rounded border border-white/10 text-gray-400 hover:text-white transition-all bg-dark-700">
+          All
+        </button>
+        <button onclick="filterFindings('critical')" id="filter-critical"
+          class="filter-btn text-xs font-mono px-3 py-1 rounded border border-white/10 text-red-400/70 hover:text-red-300 transition-all bg-dark-700">
+          Critical
+        </button>
+        <button onclick="filterFindings('warning')" id="filter-warning"
+          class="filter-btn text-xs font-mono px-3 py-1 rounded border border-white/10 text-yellow-400/70 hover:text-yellow-300 transition-all bg-dark-700">
+          Warning
+        </button>
+        <button onclick="filterFindings('info')" id="filter-info"
+          class="filter-btn text-xs font-mono px-3 py-1 rounded border border-white/10 text-blue-400/70 hover:text-blue-300 transition-all bg-dark-700">
+          Info
+        </button>
+        <button onclick="filterFindings('protected')" id="filter-protected"
+          class="filter-btn text-xs font-mono px-3 py-1 rounded border border-white/10 text-green-400/70 hover:text-green-300 transition-all bg-dark-700">
+          Protected
+        </button>
+        <span class="ml-auto text-xs text-gray-600 font-mono self-center" id="filter-count"></span>
+      </div>
+
+      <!-- Findings List -->
+      <div id="findings-list" class="space-y-3"></div>
+
+      <!-- Empty state -->
+      <div id="no-findings" class="hidden text-center py-12">
+        <div class="text-4xl mb-3">🛡️</div>
+        <p class="text-cyber-400 font-semibold">No findings in this category</p>
+        <p class="text-gray-600 text-sm mt-1">Try a different filter</p>
+      </div>
+
+      <!-- Re-scan -->
+      <div class="mt-8 text-center">
+        <button onclick="scrollToScanner()"
+          class="text-sm text-gray-500 hover:text-cyber-400 transition-colors underline underline-offset-4">
+          ← Scan another agent
+        </button>
       </div>
     </div>
   </section>
 
+  <!-- Finding Card Template -->
+  <template id="finding-tpl">
+    <div class="finding-card bg-dark-800 border border-white/5 rounded-xl overflow-hidden cursor-pointer"
+         data-severity="" data-id="">
+      <!-- Header (always visible) -->
+      <div class="card-header p-4 flex items-start gap-3" onclick="toggleCard(this.parentElement)">
+        <span class="badge text-xs font-mono font-semibold px-2 py-0.5 rounded flex-shrink-0 mt-0.5"></span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2">
+            <h3 class="card-title text-sm font-semibold text-white leading-tight"></h3>
+            <svg class="card-chevron flex-shrink-0 text-gray-600 transition-transform mt-0.5"
+                 width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-1">
+            <span class="owasp-badge text-xs font-mono text-gray-500"></span>
+            <span class="cwe-badge text-xs font-mono text-gray-600"></span>
+            <span class="file-badge text-xs font-mono text-gray-600"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Body (toggle) -->
+      <div class="card-body hidden border-t border-white/5">
+        <div class="p-4 space-y-4">
+          <!-- Vulnerable snippet -->
+          <div>
+            <p class="text-xs text-gray-500 font-mono mb-1.5">DETECTED AT</p>
+            <div class="code-block p-3">
+              <code class="snippet-code text-red-300/90 text-xs font-mono whitespace-pre-wrap"></code>
+            </div>
+          </div>
+          <!-- Explanation -->
+          <div>
+            <p class="text-xs text-gray-500 font-mono mb-1.5">EXPLANATION</p>
+            <p class="explanation-text text-sm text-gray-400 leading-relaxed"></p>
+          </div>
+          <!-- Diff (if available) -->
+          <div class="diff-section hidden">
+            <p class="text-xs text-gray-500 font-mono mb-1.5">SUGGESTED FIX</p>
+            <div class="rounded-lg overflow-hidden border border-white/5">
+              <div class="diff-before code-block p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                  <span class="text-xs text-red-400/60 font-mono">before</span>
+                </div>
+                <pre class="before-code text-red-300/80 text-xs whitespace-pre-wrap font-mono"></pre>
+              </div>
+              <div class="diff-after code-block p-3 border-t border-white/5">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                  <span class="text-xs text-green-400/60 font-mono">after</span>
+                </div>
+                <pre class="after-code text-green-300/80 text-xs whitespace-pre-wrap font-mono"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
   <!-- FOOTER -->
-  <footer class="py-16 bg-dark-900">
+  <footer class="py-16 bg-dark-900 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="grid md:grid-cols-4 gap-10 mb-12">
+      <div class="grid md:grid-cols-3 gap-10 mb-12">
         <div>
           <div class="flex items-center gap-2.5 mb-4">
             <div class="w-7 h-7 rounded-lg bg-cyber-500/20 border border-cyber-500/40 flex items-center justify-center">
@@ -843,16 +1095,15 @@
           <div class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Product</div>
           <ul class="space-y-2 text-sm text-gray-500">
             <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
-            <li><a href="https://github.com/trusthandoff/agentcop/blob/main/CHANGELOG.md" target="_blank" rel="noopener" class="hover:text-white transition-colors">Changelog</a></li>
-            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">Roadmap</a></li>
+            <li><a href="#scanner" class="hover:text-white transition-colors">Scanner</a></li>
+            <li><a href="#threats" class="hover:text-white transition-colors">Threat Coverage</a></li>
           </ul>
         </div>
         <div>
-          <div class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Developers</div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Open Source</div>
           <ul class="space-y-2 text-sm text-gray-500">
-            <li><a href="https://github.com/trusthandoff/agentcop/blob/main/docs/guides/quickstart.md" target="_blank" rel="noopener" class="hover:text-white transition-colors">Documentation</a></li>
-            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">API Reference</a></li>
-            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="https://github.com/shaymizuno/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener" class="hover:text-white transition-colors">OWASP LLM Top 10</a></li>
           </ul>
         </div>
       </div>
@@ -860,24 +1111,26 @@
         <div class="text-xs text-gray-600">© 2026 AgentCop. All rights reserved.</div>
         <div class="flex items-center gap-4">
           <span class="text-xs px-2 py-1 rounded bg-cyber-500/10 text-cyber-400 font-mono border border-cyber-500/20">MIT Licensed</span>
-          <span class="text-xs px-2 py-1 rounded bg-cyber-500/10 text-cyber-400 font-mono border border-cyber-500/20">OWASP Member</span>
+          <span class="text-xs px-2 py-1 rounded bg-cyber-500/10 text-cyber-400 font-mono border border-cyber-500/20">OWASP Aligned</span>
         </div>
       </div>
     </div>
   </footer>
 
   <script>
+    // ─── Landing page JS ──────────────────────────────────────────────────────────
+
     // Scroll reveal
     const revealEls = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
+    const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((e, i) => {
         if (e.isIntersecting) {
           setTimeout(() => e.target.classList.add('visible'), i * 80);
-          observer.unobserve(e.target);
+          revealObserver.unobserve(e.target);
         }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(el => observer.observe(el));
+    revealEls.forEach(el => revealObserver.observe(el));
 
     // Smooth scroll for nav links
     document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -900,6 +1153,371 @@
       });
     }, { threshold: 0.5 });
     bars.forEach(b => barObserver.observe(b));
+
+    // ─── Scanner State ────────────────────────────────────────────────────────────
+    let currentTab = 'code';
+    let selectedZip = null;
+    let currentFindings = [];
+    let currentFilter = 'all';
+
+    // ─── Tab Switching ────────────────────────────────────────────────────────────
+    function switchTab(tab) {
+      currentTab = tab;
+      ['code','zip','github'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+        document.getElementById(`pane-${t}`).classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    // ─── ZIP Handling ─────────────────────────────────────────────────────────────
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.remove('border-cyber-500');
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.zip')) selectZipFile(file);
+    }
+    function handleZipSelect(e) {
+      const file = e.target.files[0];
+      if (file) selectZipFile(file);
+    }
+    function selectZipFile(file) {
+      selectedZip = file;
+      document.getElementById('zip-filename').textContent = `${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
+      document.getElementById('drop-zone').classList.add('hidden');
+      document.getElementById('zip-selected').classList.remove('hidden');
+    }
+    function clearZip() {
+      selectedZip = null;
+      document.getElementById('zip-input').value = '';
+      document.getElementById('drop-zone').classList.remove('hidden');
+      document.getElementById('zip-selected').classList.add('hidden');
+    }
+
+    // ─── Example Code ─────────────────────────────────────────────────────────────
+    const EXAMPLES = {
+      langchain: `from langchain.chat_models import ChatOpenAI
+from langchain.agents import initialize_agent, Tool
+import os, requests
+
+# Bad: API key hardcoded
+OPENAI_API_KEY = "sk-proj-1234abcdEFGH5678ijklMNOP"
+
+llm = ChatOpenAI(model="gpt-4")  # No timeout configured
+
+def search_web(query):
+    # Bad: no URL allowlist
+    resp = requests.get(f"https://api.search.com?q={query}")
+    return resp.json()
+
+tools = [Tool(name="search", func=search_web, description="search")]
+agent = initialize_agent(tools, llm, agent="zero-shot-react-description")
+
+def handle_request(user_input):
+    # Bad: user input directly into agent
+    prompt = "Answer this: " + user_input
+    result = agent.run(prompt)
+    # Bad: executing agent output
+    exec(result)
+    return result`,
+
+      autogen: `import autogen
+
+assistant = autogen.AssistantAgent(
+    name="assistant",
+    llm_config={"config_list": [{"model": "gpt-4", "api_key": "sk-ant-api03-abc123xyz"}]},
+    # Bad: no is_termination_msg
+    # Bad: no max_consecutive_auto_reply
+)
+
+user_proxy = autogen.UserProxyAgent(
+    name="user_proxy",
+    human_input_mode="NEVER",  # Bad: no human oversight
+    code_execution_config={"work_dir": "/", "use_docker": False}
+)
+
+def run_agent(user_task):
+    memory = {"tasks": []}
+    user_data = input("Enter task: ")
+    # Bad: unvalidated data to memory
+    memory["tasks"].append(user_data)
+    user_proxy.initiate_chat(assistant, message=user_task)`,
+
+      crewai: `from crewai import Agent, Task, Crew
+import subprocess
+
+researcher = Agent(
+    role="Researcher",
+    goal="Research topics",
+    allow_delegation=True,  # Bad: no max_iter
+    verbose=True
+)
+
+def execute_research(query):
+    # Bad: taint source to command execution
+    user_query = input("Research topic: ")
+    system_prompt = f"Research: {user_query}"  # Bad: f-string injection
+
+    # Bad: running shell commands with user data
+    result = subprocess.run(["grep", "-r", user_query, "/data"], capture_output=True)
+
+    task = Task(description=system_prompt, agent=researcher)
+    crew = Crew(agents=[researcher], tasks=[task])
+    return crew.kickoff()`
+    };
+
+    function loadExample(name) {
+      document.getElementById('code-input').value = EXAMPLES[name] || '';
+      switchTab('code');
+    }
+
+    // ─── Scan ─────────────────────────────────────────────────────────────────────
+    async function startScan() {
+      hideError();
+      const btn = document.getElementById('scan-btn');
+      btn.disabled = true;
+      showLoading('Parsing AST and building call graph...');
+
+      try {
+        let result;
+
+        if (currentTab === 'zip') {
+          if (!selectedZip) { showError('Please select a .zip file first.'); return; }
+          setLoadingMsg('Analyzing ZIP archive...');
+          const form = new FormData();
+          form.append('file', selectedZip);
+          const res = await fetch('/api/scan/zip', { method: 'POST', body: form });
+          if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+          result = await res.json();
+
+        } else if (currentTab === 'github') {
+          const url = document.getElementById('github-input').value.trim();
+          if (!url) { showError('Enter a GitHub repository URL.'); return; }
+          setLoadingMsg(`Cloning ${url.replace('https://github.com/', '')}...`);
+          const res = await fetch('/api/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ github_url: url })
+          });
+          if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+          result = await res.json();
+
+        } else {
+          const code = document.getElementById('code-input').value.trim();
+          if (!code) { showError('Paste some Python code first.'); return; }
+          setLoadingMsg('Running taint analysis and rule engine...');
+          const res = await fetch('/api/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+          });
+          if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+          result = await res.json();
+        }
+
+        hideLoading();
+        renderResults(result);
+
+        if (result.scan_id) {
+          history.pushState({}, '', `/scan/${result.scan_id}`);
+        }
+
+      } catch (err) {
+        hideLoading();
+        showError(err.message || 'An unexpected error occurred.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ─── Loading helpers ──────────────────────────────────────────────────────────
+    function showLoading(msg) {
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('results').classList.add('hidden');
+      setLoadingMsg(msg);
+    }
+    function hideLoading() {
+      document.getElementById('loading').classList.add('hidden');
+    }
+    function setLoadingMsg(msg) {
+      document.getElementById('loading-msg').textContent = msg;
+    }
+    function showError(msg) {
+      document.getElementById('error-msg').textContent = msg;
+      document.getElementById('error-box').classList.remove('hidden');
+      document.getElementById('loading').classList.add('hidden');
+    }
+    function hideError() {
+      document.getElementById('error-box').classList.add('hidden');
+    }
+
+    // ─── Render Results ───────────────────────────────────────────────────────────
+    function renderResults(data) {
+      const violations = data.violations || [];
+      currentFindings = violations;
+
+      // Score
+      const score = data.score ?? 0;
+      document.getElementById('score-num').textContent = score;
+
+      // Arc animation
+      const arc = document.getElementById('score-arc');
+      const circumference = 301.6;
+      const offset = circumference - (score / 100) * circumference;
+      const color = score >= 75 ? '#10b891' : score >= 50 ? '#f59e0b' : '#ef4444';
+      arc.style.stroke = color;
+      setTimeout(() => { arc.style.strokeDashoffset = offset; }, 50);
+
+      // Score label
+      const labelEl = document.getElementById('score-label');
+      if (score >= 75) {
+        labelEl.textContent = 'ACCEPTABLE';
+        labelEl.className = 'text-sm font-semibold px-2 py-0.5 rounded font-mono text-cyber-400 bg-cyber-500/10';
+      } else if (score >= 50) {
+        labelEl.textContent = 'CONCERNING';
+        labelEl.className = 'text-sm font-semibold px-2 py-0.5 rounded font-mono text-yellow-400 bg-yellow-400/10';
+      } else {
+        labelEl.textContent = 'DANGEROUS';
+        labelEl.className = 'text-sm font-semibold px-2 py-0.5 rounded font-mono text-red-400 bg-red-400/10';
+      }
+
+      // Meta badges
+      document.getElementById('fw-badge').textContent    = `⚡ ${(data.framework || 'generic').toUpperCase()}`;
+      document.getElementById('files-badge').textContent = `📄 ${data.files_analyzed || 0} file${data.files_analyzed !== 1 ? 's' : ''}`;
+      if (data.scan_id) {
+        document.getElementById('scan-id-badge').textContent = `#${data.scan_id}`;
+      }
+
+      // Verdict (Sentinel's words)
+      document.getElementById('verdict-text').textContent = data.verdict || '';
+
+      // Counts
+      const counts = { critical: 0, warning: 0, info: 0, protected: 0 };
+      violations.forEach(v => { if (counts[v.severity] !== undefined) counts[v.severity]++; });
+      document.getElementById('finding-counts').innerHTML = [
+        counts.critical  ? `<span class="badge-critical  text-xs font-mono px-2 py-0.5 rounded">${counts.critical} critical</span>` : '',
+        counts.warning   ? `<span class="badge-warning   text-xs font-mono px-2 py-0.5 rounded">${counts.warning} warning</span>` : '',
+        counts.info      ? `<span class="badge-info      text-xs font-mono px-2 py-0.5 rounded">${counts.info} info</span>` : '',
+        counts.protected ? `<span class="badge-protected text-xs font-mono px-2 py-0.5 rounded">${counts.protected} protected</span>` : '',
+      ].filter(Boolean).join('');
+
+      // Render cards
+      renderFindingCards(violations);
+
+      // Show results section
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderFindingCards(violations) {
+      const list = document.getElementById('findings-list');
+      list.innerHTML = '';
+      const tpl = document.getElementById('finding-tpl');
+
+      violations.forEach((v, idx) => {
+        const card = tpl.content.cloneNode(true).querySelector('.finding-card');
+        card.dataset.severity = v.severity;
+        card.dataset.id = v.id;
+
+        // Severity badge
+        const badge = card.querySelector('.badge');
+        badge.textContent = (v.severity || 'info').toUpperCase();
+        badge.classList.add(`badge-${v.severity}`);
+
+        // Title
+        card.querySelector('.card-title').textContent = v.title;
+
+        // OWASP / CWE / file:line
+        card.querySelector('.owasp-badge').textContent = v.owasp || '';
+        card.querySelector('.cwe-badge').textContent   = (v.cwe && v.cwe !== 'N/A') ? v.cwe : '';
+        const fileLine = v.file ? `${v.file}${v.line ? ':' + v.line : ''}` : '';
+        card.querySelector('.file-badge').textContent  = fileLine;
+
+        // Body
+        card.querySelector('.snippet-code').textContent   = v.code_snippet || '(no snippet)';
+        card.querySelector('.explanation-text').textContent = v.explanation || '';
+
+        // Before/after diff
+        const diff = v.diff || {};
+        if (diff.after && diff.after.trim()) {
+          card.querySelector('.diff-section').classList.remove('hidden');
+          card.querySelector('.before-code').textContent = diff.before || v.code_snippet || '';
+          card.querySelector('.after-code').textContent  = diff.after;
+        }
+
+        // Auto-expand first critical
+        if (idx === 0 && v.severity === 'critical') {
+          card.querySelector('.card-body').classList.remove('hidden');
+          card.querySelector('.card-chevron').style.transform = 'rotate(180deg)';
+        }
+
+        list.appendChild(card);
+      });
+
+      applyFilter(currentFilter);
+    }
+
+    // ─── Card Toggle ──────────────────────────────────────────────────────────────
+    function toggleCard(card) {
+      const body    = card.querySelector('.card-body');
+      const chevron = card.querySelector('.card-chevron');
+      const isOpen  = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', isOpen);
+      chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+
+    // ─── Filtering ────────────────────────────────────────────────────────────────
+    function filterFindings(sev) {
+      currentFilter = sev;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.style.borderColor = '';
+        b.style.color = '';
+      });
+      const active = document.getElementById(`filter-${sev}`);
+      if (active) { active.style.borderColor = '#10b891'; active.style.color = '#10b891'; }
+      applyFilter(sev);
+    }
+
+    function applyFilter(sev) {
+      const cards = document.querySelectorAll('#findings-list .finding-card');
+      let visible = 0;
+      cards.forEach(c => {
+        const show = sev === 'all' || c.dataset.severity === sev;
+        c.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      document.getElementById('filter-count').textContent = `${visible} finding${visible !== 1 ? 's' : ''}`;
+      document.getElementById('no-findings').classList.toggle('hidden', visible > 0);
+    }
+
+    // ─── Scroll helpers ───────────────────────────────────────────────────────────
+    function scrollToScanner() {
+      history.pushState({}, '', '/');
+      document.getElementById('scanner').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── Load existing scan from URL ──────────────────────────────────────────────
+    async function loadScanFromUrl() {
+      const m = location.pathname.match(/^\/scan\/([A-Za-z0-9]+)$/);
+      if (!m) return;
+      const scanId = m[1];
+      showLoading(`Loading scan #${scanId}...`);
+      try {
+        const res = await fetch(`/api/scan/${scanId}`);
+        if (!res.ok) throw new Error('Scan not found');
+        const data = await res.json();
+        hideLoading();
+        renderResults(data);
+      } catch (err) {
+        hideLoading();
+        showError(`Could not load scan #${scanId}: ${err.message}`);
+      }
+    }
+
+    // ─── Init ─────────────────────────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      filterFindings('all');
+      loadScanFromUrl();
+    });
   </script>
 </body>
 </html>
