@@ -137,6 +137,11 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
+    /* Stats grid — 5 cols desktop, 3 cols tablet, 2 cols mobile */
+    .stats-grid { grid-template-columns: repeat(5, 1fr); }
+    @media (max-width: 767px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 480px) and (max-width: 767px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+
     /* Scroll reveal */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -247,6 +252,19 @@
     .diff-before { background: rgba(239,68,68,.08);  border-left: 3px solid #ef4444; }
     .diff-after  { background: rgba(16,185,129,.08); border-left: 3px solid #10b981; }
 
+    /* Badge verifier cards */
+    @keyframes badge-pulse-red {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+      50%       { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+    }
+    @keyframes badge-score-count { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+    .badge-secured   { border-color: rgba(16,184,145,0.5) !important; background: rgba(16,184,145,0.06); }
+    .badge-monitored { border-color: rgba(245,158,11,0.5) !important; background: rgba(245,158,11,0.06); }
+    .badge-at-risk   { border-color: rgba(239,68,68,0.5) !important; background: rgba(239,68,68,0.06); animation: badge-pulse-red 1.5s ease-in-out infinite; }
+    .badge-expired   { border-color: rgba(107,114,128,0.4) !important; background: rgba(107,114,128,0.05); }
+    .badge-tampered  { border-color: rgba(239,68,68,0.8) !important; background: rgba(239,68,68,0.12); animation: badge-pulse-red 0.8s ease-in-out infinite; }
+    .badge-score-num { animation: badge-score-count 0.5s ease-out forwards; }
+
     /* Spinner */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { animation: spin .8s linear infinite; }
@@ -333,6 +351,9 @@
           </a>
           <a href="https://github.com/shaymizuno/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
             ⭐ Star on GitHub
+          </a>
+          <a href="https://twitter.com/trusthandoff" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
+            Follow Sentinel 🚨 on X
           </a>
         </div>
         <div class="flex items-center gap-6 pt-2">
@@ -489,7 +510,7 @@
   <!-- STATS -->
   <section class="py-20 bg-dark-800/20">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div class="stats-grid grid gap-8">
         <div class="text-center reveal">
           <div class="text-4xl font-extrabold gradient-text">9</div>
           <div class="text-sm text-gray-500 mt-1">Frameworks</div>
@@ -505,6 +526,10 @@
         <div class="text-center reveal">
           <div class="text-4xl font-extrabold gradient-text">MIT</div>
           <div class="text-sm text-gray-500 mt-1">Licensed</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="text-4xl font-extrabold gradient-text">1,574</div>
+          <div class="text-sm text-gray-500 mt-1">Tests passing</div>
         </div>
       </div>
     </div>
@@ -778,6 +803,12 @@
       <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Open Source &amp; Free Forever</h2>
       <p class="text-gray-400 mb-10 text-lg">AgentCop is fully open source. No plans, no paywalls, no credit card required.</p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="flex items-center gap-3 code-block px-5 py-3 font-mono text-sm text-cyber-400">
+          <span>pip install agentcop</span>
+          <button onclick="navigator.clipboard.writeText('pip install agentcop')" class="text-gray-500 hover:text-cyber-400 transition-colors" title="Copy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
         <a href="#scanner" class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold transition-all hover:shadow-xl hover:shadow-cyber-500/25 text-base">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           Try the Scanner Now
@@ -806,22 +837,48 @@
       <div id="input-card" class="bg-dark-800 border border-dark-500/60 rounded-xl overflow-hidden glow-border">
 
         <!-- Tab Bar -->
-        <div class="flex border-b border-white/5">
-          <button onclick="switchTab('code')" id="tab-code"
-            class="tab-btn active flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
-                   text-gray-400 hover:text-white transition-all">
-            &lt;/&gt; Code Snippet
-          </button>
-          <button onclick="switchTab('zip')" id="tab-zip"
-            class="tab-btn flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
-                   text-gray-400 hover:text-white transition-all border-l border-white/5">
-            📦 ZIP Upload
-          </button>
-          <button onclick="switchTab('github')" id="tab-github"
-            class="tab-btn flex-1 py-3 text-sm font-mono font-medium border-b-2 border-transparent
-                   text-gray-400 hover:text-white transition-all border-l border-white/5">
-            ★ GitHub URL
-          </button>
+        <div class="border-b border-white/5">
+          <!-- Group labels -->
+          <div class="flex items-center gap-0 text-xs font-mono text-gray-600 px-3 pt-2 pb-1 select-none">
+            <span class="mr-2 text-gray-700 uppercase tracking-widest text-[10px]">Agent Scanner</span>
+            <span class="flex-1 border-b border-white/5 mx-2"></span>
+            <span class="mx-2 text-gray-700 uppercase tracking-widest text-[10px]">Skill</span>
+            <span class="flex-1 border-b border-white/5 mx-2"></span>
+            <span class="mx-2 text-gray-700 uppercase tracking-widest text-[10px]">Moltbook</span>
+            <span class="flex-1 border-b border-white/5 mx-2"></span>
+          </div>
+          <div class="flex">
+            <button onclick="switchTab('code')" id="tab-code"
+              class="tab-btn active flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all">
+              &lt;/&gt; Code
+            </button>
+            <button onclick="switchTab('zip')" id="tab-zip"
+              class="tab-btn flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all border-l border-white/5">
+              📦 ZIP
+            </button>
+            <button onclick="switchTab('github')" id="tab-github"
+              class="tab-btn flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all border-l border-white/5">
+              ★ GitHub
+            </button>
+            <button onclick="switchTab('skill')" id="tab-skill"
+              class="tab-btn flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all border-l border-white/5">
+              🔧 OpenClaw
+            </button>
+            <button onclick="switchTab('moltbook')" id="tab-moltbook"
+              class="tab-btn flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all border-l border-white/5">
+              📡 Moltbook
+            </button>
+            <button onclick="switchTab('badge')" id="tab-badge"
+              class="tab-btn flex-1 py-2.5 text-xs font-mono font-medium border-b-2 border-transparent
+                     text-gray-400 hover:text-white transition-all border-l border-white/5">
+              🔍 Verify
+            </button>
+          </div>
         </div>
 
         <!-- Code Tab -->
@@ -889,8 +946,104 @@ result = agent.run(user_query)  # ← prompt injection risk"
           </div>
         </div>
 
+        <!-- Skill Scanner Tab (Tab 4) -->
+        <div id="pane-skill" class="p-4 hidden">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-500 font-mono mb-2">SKILL.md — PERMISSIONS MANIFEST</label>
+              <textarea id="skill-md-input" rows="12"
+                placeholder="# MySkill
+
+## Permissions
+- file_write: /tmp/myskill/**
+- network: api.example.com
+- env_vars: MY_API_KEY (disclosed: used for auth only)
+
+## Description
+A skill that fetches data from example.com and writes results to /tmp."
+                class="w-full bg-dark-900 border border-white/5 rounded-lg p-3 text-xs font-mono
+                       text-gray-300 resize-none placeholder-gray-600"
+                style="min-height:220px"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 font-mono mb-2">skill.py — IMPLEMENTATION</label>
+              <textarea id="skill-code-input" rows="12"
+                placeholder="import os, requests
+
+API_KEY = os.environ.get('MY_API_KEY')
+
+def run(input_data):
+    # fetch from allowed domain
+    resp = requests.get(
+        'https://api.example.com/data',
+        headers={'Authorization': f'Bearer {API_KEY}'}
+    )
+    result = resp.json()
+    with open('/tmp/myskill/output.json', 'w') as f:
+        import json; json.dump(result, f)
+    return result"
+                class="w-full bg-dark-900 border border-white/5 rounded-lg p-3 text-xs font-mono
+                       text-gray-300 resize-none placeholder-gray-600"
+                style="min-height:220px"></textarea>
+            </div>
+          </div>
+          <p class="text-xs text-gray-600 mt-2 font-mono">OpenClaw skill pre-submission audit · checks permissions, data exfiltration, self-modification &amp; injection passthrough</p>
+        </div>
+
+        <!-- Moltbook Agent Tab (Tab 5) -->
+        <div id="pane-moltbook" class="hidden">
+          <div class="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2.5 flex items-center gap-2">
+            <span class="text-yellow-400 text-sm">⚠️</span>
+            <p class="text-xs text-yellow-300/80 font-mono">Moltbook agents read untrusted content from other agents. This is the #1 injection attack surface in 2026.</p>
+          </div>
+          <div class="p-4">
+            <textarea id="moltbook-code-input" rows="14"
+              placeholder="# Moltbook agent — reads feed posts from other agents
+import moltbook
+
+client = moltbook.Client(api_key=os.environ['MOLTBOOK_KEY'])
+
+@client.on('post_received')
+def handle_post(post):
+    # ⚠️ BAD: passing untrusted feed content directly to LLM
+    llm_response = openai.chat.completions.create(
+        model='gpt-4',
+        messages=[{'role': 'user', 'content': post['content']}]
+    )
+    # ⚠️ BAD: posting LLM output back to feed without sanitization
+    client.post(llm_response.choices[0].message.content)
+
+@client.on('mention_received')
+def handle_mention(mention):
+    # ⚠️ BAD: mention content not filtered
+    execute_skill(mention['text'])"
+              class="w-full bg-dark-900 border border-white/5 rounded-lg p-3 text-sm font-mono
+                     text-gray-300 resize-none placeholder-gray-600"
+              style="min-height:240px"></textarea>
+          </div>
+        </div>
+
+        <!-- Badge Verifier Tab (Tab 6) -->
+        <div id="pane-badge" class="p-6 hidden">
+          <label class="block text-xs text-gray-500 font-mono mb-3">BADGE ID OR AGENTCOP.LIVE/BADGE/... URL</label>
+          <div class="flex gap-2">
+            <input type="text" id="badge-id-input"
+              placeholder="Enter badge ID (e.g. A1B2C3D4) or full badge URL"
+              class="flex-1 bg-dark-900 border border-white/5 rounded-lg px-3 py-2.5 text-sm font-mono
+                     text-gray-300 placeholder-gray-600" />
+            <button onclick="verifyBadge()"
+              class="btn-primary px-5 flex items-center gap-2 whitespace-nowrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              Verify
+            </button>
+          </div>
+          <p class="text-xs text-gray-600 mt-3 font-mono">Instant badge lookup · no scan required · verify any agentcop-issued badge</p>
+        </div>
+
         <!-- Scan Button -->
-        <div class="px-4 pb-4 flex items-center gap-3">
+        <div id="scan-btn-row" class="px-4 pb-4 flex items-center gap-3">
           <button id="scan-btn" onclick="startScan()"
             class="btn-primary flex-1 flex items-center justify-center gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -925,6 +1078,21 @@ result = agent.run(user_query)  # ← prompt injection risk"
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ─── BADGE VERIFICATION RESULT ──────────────────────────────────────────── -->
+  <section id="badge-result" class="hidden py-12 px-6">
+    <div class="max-w-xl mx-auto">
+      <div id="badge-result-card" class="bg-dark-800 border border-white/5 rounded-xl p-8 text-center">
+        <!-- filled by JS -->
+      </div>
+      <div class="mt-4 text-center">
+        <button onclick="clearBadgeResult()"
+          class="text-sm text-gray-500 hover:text-cyber-400 transition-colors underline underline-offset-4">
+          ← Verify another badge
+        </button>
+      </div>
     </div>
   </section>
 
@@ -1002,6 +1170,53 @@ result = agent.run(user_query)  # ← prompt injection risk"
         <div class="text-4xl mb-3">🛡️</div>
         <p class="text-cyber-400 font-semibold">No findings in this category</p>
         <p class="text-gray-600 text-sm mt-1">Try a different filter</p>
+      </div>
+
+      <!-- ClawHub Badge Section (skill scans with score >= 80) -->
+      <div id="claw-hub-section" class="hidden mt-6 bg-cyber-500/5 border border-cyber-500/30 rounded-xl p-6 text-center">
+        <div class="text-3xl mb-2">🏆</div>
+        <h3 class="text-cyber-400 font-bold text-lg mb-1">✅ agentcop Verified Skill</h3>
+        <p class="text-gray-400 text-sm mb-4">This skill passed all security checks and is ready for ClawHub submission.</p>
+        <div id="claw-hub-badge-url" class="font-mono text-xs text-gray-500 bg-dark-900 border border-white/5 rounded px-3 py-2 mb-4 text-left"></div>
+        <button id="copy-badge-btn" onclick="copyBadgeMarkdown()"
+          class="btn-primary inline-flex items-center gap-2 text-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Get ClawHub Badge
+        </button>
+        <p class="text-xs text-gray-600 mt-3 font-mono">Copies badge markdown to clipboard · paste in your SKILL.md</p>
+      </div>
+
+      <!-- Moltbook Injection Reference Table (moltbook scans) -->
+      <div id="moltbook-table-section" class="hidden mt-6">
+        <div class="bg-dark-800 border border-yellow-500/20 rounded-xl overflow-hidden">
+          <div class="bg-yellow-500/10 px-4 py-3 border-b border-yellow-500/20 flex items-center gap-2">
+            <span class="text-yellow-400">📡</span>
+            <span class="text-yellow-300 font-semibold text-sm">Moltbook Injection Pattern Reference</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs font-mono">
+              <thead>
+                <tr class="border-b border-white/5">
+                  <th class="text-left px-4 py-2 text-gray-500 font-semibold">Pattern</th>
+                  <th class="text-left px-4 py-2 text-gray-500 font-semibold">Risk</th>
+                  <th class="text-left px-4 py-2 text-gray-500 font-semibold">Example</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr><td class="px-4 py-2 text-red-300">"ignore previous instructions"</td><td class="px-4 py-2"><span class="badge-critical px-1.5 py-0.5 rounded text-[10px]">CRITICAL</span></td><td class="px-4 py-2 text-gray-500">Classic prompt injection via post_received</td></tr>
+                <tr><td class="px-4 py-2 text-red-300">"system:" prefix</td><td class="px-4 py-2"><span class="badge-critical px-1.5 py-0.5 rounded text-[10px]">CRITICAL</span></td><td class="px-4 py-2 text-gray-500">System prompt override attempt</td></tr>
+                <tr><td class="px-4 py-2 text-red-300">"&lt;|im_start|&gt;system"</td><td class="px-4 py-2"><span class="badge-critical px-1.5 py-0.5 rounded text-[10px]">CRITICAL</span></td><td class="px-4 py-2 text-gray-500">ChatML token injection</td></tr>
+                <tr><td class="px-4 py-2 text-red-300">"[INST]" / "&lt;s&gt;"</td><td class="px-4 py-2"><span class="badge-critical px-1.5 py-0.5 rounded text-[10px]">CRITICAL</span></td><td class="px-4 py-2 text-gray-500">Llama/Mistral format injection</td></tr>
+                <tr><td class="px-4 py-2 text-yellow-300">Unsanitized mention_received</td><td class="px-4 py-2"><span class="badge-warning px-1.5 py-0.5 rounded text-[10px]">WARNING</span></td><td class="px-4 py-2 text-gray-500">Mention content triggers skill execution</td></tr>
+                <tr><td class="px-4 py-2 text-yellow-300">heartbeat / ping data → LLM</td><td class="px-4 py-2"><span class="badge-warning px-1.5 py-0.5 rounded text-[10px]">WARNING</span></td><td class="px-4 py-2 text-gray-500">Status messages can carry payloads</td></tr>
+                <tr><td class="px-4 py-2 text-yellow-300">Unverified skill execution</td><td class="px-4 py-2"><span class="badge-warning px-1.5 py-0.5 rounded text-[10px]">WARNING</span></td><td class="px-4 py-2 text-gray-500">No badge check before run()</td></tr>
+                <tr><td class="px-4 py-2 text-yellow-300">Output posted to feed raw</td><td class="px-4 py-2"><span class="badge-warning px-1.5 py-0.5 rounded text-[10px]">WARNING</span></td><td class="px-4 py-2 text-gray-500">Injection worm propagation vector</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- Re-scan -->
@@ -1161,12 +1376,18 @@ result = agent.run(user_query)  # ← prompt injection risk"
     let currentFilter = 'all';
 
     // ─── Tab Switching ────────────────────────────────────────────────────────────
+    const ALL_TABS = ['code','zip','github','skill','moltbook','badge'];
+
     function switchTab(tab) {
       currentTab = tab;
-      ['code','zip','github'].forEach(t => {
+      ALL_TABS.forEach(t => {
         document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
         document.getElementById(`pane-${t}`).classList.toggle('hidden', t !== tab);
       });
+      // Hide main scan button on badge tab (has its own Verify button)
+      document.getElementById('scan-btn-row').classList.toggle('hidden', tab === 'badge');
+      // Hide badge result when switching tabs
+      document.getElementById('badge-result').classList.add('hidden');
     }
 
     // ─── ZIP Handling ─────────────────────────────────────────────────────────────
@@ -1301,6 +1522,31 @@ def execute_research(query):
           if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
           result = await res.json();
 
+        } else if (currentTab === 'skill') {
+          const skillMd   = document.getElementById('skill-md-input').value.trim();
+          const skillCode = document.getElementById('skill-code-input').value.trim();
+          if (!skillCode && !skillMd) { showError('Enter SKILL.md content and/or skill.py code.'); return; }
+          setLoadingMsg('Auditing skill permissions and implementation...');
+          const res = await fetch('/api/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: skillCode || '# (no code provided)', skill_md: skillMd, scan_type: 'skill' })
+          });
+          if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+          result = await res.json();
+
+        } else if (currentTab === 'moltbook') {
+          const code = document.getElementById('moltbook-code-input').value.trim();
+          if (!code) { showError('Paste your Moltbook agent code first.'); return; }
+          setLoadingMsg('Scanning for feed injection vulnerabilities...');
+          const res = await fetch('/api/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, scan_type: 'moltbook' })
+          });
+          if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+          result = await res.json();
+
         } else {
           const code = document.getElementById('code-input').value.trim();
           if (!code) { showError('Paste some Python code first.'); return; }
@@ -1403,6 +1649,25 @@ def execute_research(query):
       // Render cards
       renderFindingCards(violations);
 
+      // Extra sections for scan_type
+      const clawHub = document.getElementById('claw-hub-section');
+      const moltbookTable = document.getElementById('moltbook-table-section');
+      clawHub.classList.add('hidden');
+      moltbookTable.classList.add('hidden');
+
+      if (data.scan_type === 'skill' && data.claw_hub_ready) {
+        clawHub.classList.remove('hidden');
+        const badgeId = data.scan_id;
+        const badgeUrl = `agentcop.live/badge/${badgeId}`;
+        const badgeMd = `[![agentcop verified](https://${badgeUrl}/shield.svg)](https://${badgeUrl})`;
+        document.getElementById('claw-hub-badge-url').textContent = badgeUrl;
+        document.getElementById('copy-badge-btn').dataset.md = badgeMd;
+      }
+
+      if (data.scan_type === 'moltbook') {
+        moltbookTable.classList.remove('hidden');
+      }
+
       // Show results section
       document.getElementById('results').classList.remove('hidden');
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1487,6 +1752,107 @@ def execute_research(query):
       });
       document.getElementById('filter-count').textContent = `${visible} finding${visible !== 1 ? 's' : ''}`;
       document.getElementById('no-findings').classList.toggle('hidden', visible > 0);
+    }
+
+    // ─── ClawHub Badge ────────────────────────────────────────────────────────────
+    function copyBadgeMarkdown() {
+      const btn = document.getElementById('copy-badge-btn');
+      const md  = btn.dataset.md || '';
+      navigator.clipboard.writeText(md).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    // ─── Badge Verifier ───────────────────────────────────────────────────────────
+    async function verifyBadge() {
+      const raw = document.getElementById('badge-id-input').value.trim();
+      if (!raw) { showError('Enter a badge ID or URL.'); return; }
+
+      // Accept full URL or bare ID
+      const m = raw.match(/badge\/([A-Za-z0-9]+)/i);
+      const badgeId = m ? m[1].toUpperCase() : raw.toUpperCase();
+
+      hideError();
+      document.getElementById('badge-result').classList.add('hidden');
+      showLoading(`Verifying badge ${badgeId}...`);
+
+      try {
+        const res = await fetch(`/api/badge/${badgeId}`);
+        hideLoading();
+
+        if (res.status === 404) {
+          renderBadgeResult({ status: 'NOT_FOUND', badge_id: badgeId });
+          return;
+        }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.detail || res.statusText); }
+        const data = await res.json();
+        renderBadgeResult(data);
+
+      } catch (err) {
+        hideLoading();
+        showError(err.message || 'Verification failed.');
+      }
+    }
+
+    function renderBadgeResult(data) {
+      const card = document.getElementById('badge-result-card');
+      const status = data.status;
+
+      const configs = {
+        SECURED:   { cls: 'badge-secured',   icon: '✅', label: 'SECURED',      color: '#10b891', msg: 'This agent/skill is verified and clean.' },
+        MONITORED: { cls: 'badge-monitored', icon: '⚠️', label: 'MONITORED',    color: '#f59e0b', msg: 'Active monitoring. Some warnings found.' },
+        AT_RISK:   { cls: 'badge-at-risk',   icon: '🔴', label: 'AT RISK',      color: '#ef4444', msg: 'Critical violations. Do not trust this agent.' },
+        EXPIRED:   { cls: 'badge-expired',   icon: '⏰', label: 'EXPIRED',      color: '#6b7280', msg: 'Badge expired. Request a new scan.' },
+        TAMPERED:  { cls: 'badge-tampered',  icon: '🚨', label: 'TAMPERED',     color: '#ef4444', msg: 'TAMPERED BADGE. Signature invalid. Do not trust.' },
+        REVOKED:   { cls: 'badge-at-risk',   icon: '🔴', label: 'REVOKED',      color: '#ef4444', msg: 'Badge revoked. Agent was flagged for critical violations.' },
+        NOT_FOUND: { cls: 'badge-expired',   icon: '❓', label: 'NOT FOUND',    color: '#6b7280', msg: 'No badge found with this ID.' },
+      };
+
+      const cfg = configs[status] || configs.NOT_FOUND;
+
+      // Clear old classes
+      ['badge-secured','badge-monitored','badge-at-risk','badge-expired','badge-tampered'].forEach(c => card.classList.remove(c));
+      card.classList.add(cfg.cls);
+
+      const scoreHtml = data.score != null
+        ? `<div class="text-5xl font-bold font-mono badge-score-num mt-2 mb-1" style="color:${cfg.color}">${data.score}<span class="text-xl text-gray-500">/100</span></div>`
+        : '';
+
+      const metaHtml = [
+        data.framework  ? `<span class="text-xs font-mono bg-dark-700 border border-white/5 text-gray-400 px-2 py-0.5 rounded">⚡ ${data.framework.toUpperCase()}</span>` : '',
+        data.scan_type  ? `<span class="text-xs font-mono bg-dark-700 border border-white/5 text-gray-400 px-2 py-0.5 rounded">${data.scan_type}</span>` : '',
+        data.violations_count != null ? `<span class="text-xs font-mono bg-dark-700 border border-white/5 text-gray-400 px-2 py-0.5 rounded">${data.violations_count} findings</span>` : '',
+      ].filter(Boolean).join('');
+
+      const shareText = encodeURIComponent(
+        `🔍 agentcop badge ${data.badge_id}: ${cfg.label} (${data.score ?? '?'}/100) — ${cfg.msg} agentcop.live/badge/${data.badge_id}`
+      );
+
+      card.innerHTML = `
+        <div class="text-4xl mb-2">${cfg.icon}</div>
+        <div class="text-lg font-bold font-mono mb-1" style="color:${cfg.color}">${cfg.label}</div>
+        ${scoreHtml}
+        <p class="text-gray-300 text-sm mb-4">${cfg.msg}</p>
+        ${metaHtml ? `<div class="flex flex-wrap justify-center gap-2 mb-4">${metaHtml}</div>` : ''}
+        ${data.verdict ? `<blockquote class="text-xs text-gray-500 italic border-l-2 border-gray-700 pl-3 text-left mb-4 leading-relaxed">${data.verdict}</blockquote>` : ''}
+        <div class="text-xs text-gray-600 font-mono mb-4">Badge ID: ${data.badge_id}</div>
+        <a href="https://twitter.com/intent/tweet?text=${shareText}" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-xs font-mono text-gray-400 hover:text-white border border-white/10 rounded px-3 py-1.5 transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on X
+        </a>
+      `;
+
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('badge-result').classList.remove('hidden');
+      document.getElementById('badge-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function clearBadgeResult() {
+      document.getElementById('badge-result').classList.add('hidden');
+      document.getElementById('scanner').scrollIntoView({ behavior: 'smooth' });
     }
 
     // ─── Scroll helpers ───────────────────────────────────────────────────────────
