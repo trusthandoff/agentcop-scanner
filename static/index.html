@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentCop — AI Security Scanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              50:  '#f0fdf9',
+              100: '#ccfbef',
+              200: '#99f5df',
+              300: '#5de8c8',
+              400: '#2dd4aa',
+              500: '#10b891',
+              600: '#059675',
+              700: '#047a5f',
+              800: '#06604d',
+              900: '#064f40',
+            },
+            dark: {
+              900: '#030712',
+              800: '#0a0f1e',
+              700: '#0d1526',
+              600: '#111827',
+              500: '#1f2937',
+            }
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'scan': 'scan 2.5s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            scan: {
+              '0%':   { transform: 'translateY(-100%)', opacity: '0' },
+              '10%':  { opacity: '1' },
+              '90%':  { opacity: '1' },
+              '100%': { transform: 'translateY(100%)', opacity: '0' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 5px #10b891, 0 0 10px #10b891' },
+              '100%': { boxShadow: '0 0 20px #10b891, 0 0 40px #10b89155' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background-color: #030712; color: #f9fafb; }
+
+    /* Grid background */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(16,184,145,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,184,145,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Glow effects */
+    .glow-cyan { text-shadow: 0 0 20px rgba(16,184,145,0.6); }
+    .glow-border { box-shadow: 0 0 0 1px rgba(16,184,145,0.3), 0 0 20px rgba(16,184,145,0.1); }
+    .glow-border:hover { box-shadow: 0 0 0 1px rgba(16,184,145,0.6), 0 0 30px rgba(16,184,145,0.2); }
+
+    /* Scan line animation */
+    .scan-container { position: relative; overflow: hidden; }
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #10b891, transparent);
+      animation: scanMove 3s ease-in-out infinite;
+    }
+    @keyframes scanMove {
+      0%   { top: 0%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* Terminal effect */
+    .terminal-text::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #10b891 0%, #5de8c8 50%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Card hover effect */
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      border: 1px solid rgba(16,184,145,0.15);
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16,184,145,0.4);
+      box-shadow: 0 20px 40px rgba(16,184,145,0.1);
+    }
+
+    /* Nav blur */
+    .nav-blur { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+
+    /* Progress bars */
+    .progress-fill { transition: width 1.5s ease-out; }
+
+    /* Noise overlay */
+    .noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Threat badge pulse */
+    .threat-pulse {
+      animation: threatPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes threatPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+
+    /* Code highlight */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid rgba(16,184,145,0.2);
+      border-radius: 8px;
+    }
+    .code-line-num { color: rgba(16,184,145,0.4); user-select: none; }
+    .highlight-red { background: rgba(239,68,68,0.15); border-left: 2px solid #ef4444; }
+    .highlight-green { background: rgba(16,184,145,0.1); border-left: 2px solid #10b891; }
+
+    /* Sentinel Robot animations */
+    .sentinel-ring-1 {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sentinelRing 2.2s ease-out infinite;
+    }
+    .sentinel-ring-2 {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sentinelRing 2.2s ease-out infinite 0.75s;
+    }
+    @keyframes sentinelRing {
+      0%   { transform: scale(0.7); opacity: 0.7; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    .sentinel-eye-pulse {
+      animation: sentinelEye 2.8s ease-in-out infinite;
+    }
+    @keyframes sentinelEye {
+      0%, 100% { opacity: 0.55; }
+      50%       { opacity: 1; }
+    }
+    .sentinel-orb {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sentinelOrb 1.9s ease-in-out infinite;
+    }
+    @keyframes sentinelOrb {
+      0%, 100% { transform: scale(1);    opacity: 0.5; }
+      50%       { transform: scale(1.45); opacity: 0.95; }
+    }
+
+    /* Siren light animations */
+    .siren-flash {
+      animation: sirenFlash 0.72s ease-in-out infinite;
+    }
+    @keyframes sirenFlash {
+      0%, 100% { fill-opacity: 0.06; }
+      50%       { fill-opacity: 0.94; }
+    }
+    .siren-glow {
+      animation: sirenGlow 0.72s ease-in-out infinite;
+    }
+    @keyframes sirenGlow {
+      0%, 100% { fill-opacity: 0.02; }
+      50%       { fill-opacity: 0.32; }
+    }
+    .siren-ring-1 {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sirenRing 0.72s ease-out infinite;
+    }
+    .siren-ring-2 {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sirenRing 0.72s ease-out infinite 0.36s;
+    }
+    @keyframes sirenRing {
+      0%   { transform: scale(0.7); opacity: 0.8; }
+      100% { transform: scale(2.9); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-dark-900 overflow-x-hidden">
+  <div class="noise"></div>
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-dark-900/80 border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-cyber-500/20 border border-cyber-500/40 flex items-center justify-center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="font-bold text-white text-lg tracking-tight">Agent<span class="text-cyber-400">Cop</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-sm text-gray-400 hover:text-white transition-colors">Features</a>
+        <a href="#how-it-works" class="text-sm text-gray-400 hover:text-white transition-colors">How It Works</a>
+        <a href="#threats" class="text-sm text-gray-400 hover:text-white transition-colors">Threat Coverage</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="text-sm px-4 py-2 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-medium transition-colors">
+          Start Free Scan
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="relative min-h-screen flex items-center grid-bg pt-20">
+    <!-- Radial glow -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-cyber-500/5 blur-[120px]"></div>
+      <div class="absolute top-1/4 right-0 w-[400px] h-[400px] rounded-full bg-violet-500/5 blur-[100px]"></div>
+
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
+      <!-- Left: Copy -->
+      <div class="space-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyber-500/30 bg-cyber-500/5 text-cyber-400 text-xs font-medium font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyber-400 animate-pulse"></span>
+          NOW IN BETA · 2,800+ VULNERABILITIES CAUGHT
+        </div>
+        <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
+          <span class="text-white">Security scanning</span><br/>
+          <span class="gradient-text">built for AI agents</span>
+        </h1>
+        <p class="text-lg text-gray-400 leading-relaxed max-w-xl">
+          AgentCop automatically audits your LLM-powered agents for prompt injection, data exfiltration, privilege escalation, and 50+ other attack vectors — before they reach production.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#pricing" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold text-sm transition-all hover:shadow-lg hover:shadow-cyber-500/25">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Scan Your Agents Free
+          </a>
+          <a href="#how-it-works" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
+            See How It Works
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
+            ⭐ Star on GitHub
+          </a>
+          <a href="https://twitter.com/trusthandoff" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all">
+            Follow Sentinel 🚨 on X
+          </a>
+        </div>
+        <div class="flex items-center gap-6 pt-2">
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ✓ Open Source — MIT Licensed
+          </div>
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ✓ No signup required
+          </div>
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ✓ Powered by Sentinel 🚨
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Animated Scanner UI -->
+      <div class="relative animate-float">
+        <div class="glow-border rounded-2xl bg-dark-800 overflow-hidden">
+          <!-- Window chrome -->
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-dark-700/50">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500/70"></div>
+              <div class="w-3 h-3 rounded-full bg-cyber-500/70"></div>
+            </div>
+            <div class="flex-1 text-center">
+              <span class="text-xs text-gray-500 font-mono">agentcop scan --target ./my-agent</span>
+            </div>
+          </div>
+          <!-- Scanner content -->
+          <div class="scan-container p-5 space-y-3 font-mono text-xs">
+            <div class="scan-line"></div>
+            <div class="flex items-center gap-3 text-cyber-400">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>AgentCop v2.4.1 — Security Scan Initiated</span>
+            </div>
+            <div class="text-gray-500">Scanning <span class="text-cyber-300">./my-agent/</span> · 47 files · 12,840 lines</div>
+            <div class="h-px bg-white/5 my-2"></div>
+
+            <!-- Findings -->
+            <div class="space-y-2 py-1">
+              <div class="flex items-start gap-2 highlight-red px-2 py-1.5 rounded-r">
+                <span class="text-red-400 mt-0.5">✗</span>
+                <div>
+                  <div class="text-red-300 font-medium">CRITICAL · Prompt Injection [CWE-20]</div>
+                  <div class="text-gray-500">agent.py:84 — user input passed unsanitized to system prompt</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2 highlight-red px-2 py-1.5 rounded-r">
+                <span class="text-orange-400 mt-0.5">⚠</span>
+                <div>
+                  <div class="text-orange-300 font-medium">HIGH · Insecure Tool Permissions [A01]</div>
+                  <div class="text-gray-500">tools.py:31 — file_write tool lacks path traversal guard</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2 highlight-green px-2 py-1.5 rounded-r">
+                <span class="text-cyber-400 mt-0.5">✓</span>
+                <div>
+                  <div class="text-cyber-300 font-medium">PASS · Memory Isolation</div>
+                  <div class="text-gray-500">No cross-session memory leakage detected</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2 highlight-green px-2 py-1.5 rounded-r">
+                <span class="text-cyber-400 mt-0.5">✓</span>
+                <div>
+                  <div class="text-cyber-300 font-medium">PASS · Secret Exposure Check</div>
+                  <div class="text-gray-500">No API keys or credentials in prompts</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2 bg-yellow-500/5 border-l-2 border-yellow-500 px-2 py-1.5 rounded-r">
+                <span class="text-yellow-400 mt-0.5">⚡</span>
+                <div>
+                  <div class="text-yellow-300 font-medium">MEDIUM · Excessive Tool Scope [A05]</div>
+                  <div class="text-gray-500">browser_tool has unrestricted URL access</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="h-px bg-white/5"></div>
+            <!-- Summary bar -->
+            <div class="flex items-center justify-between pt-1">
+              <div class="flex gap-4">
+                <span class="text-red-400">2 Critical</span>
+                <span class="text-yellow-400">1 Medium</span>
+                <span class="text-cyber-400">2 Passed</span>
+              </div>
+              <span class="text-gray-500">Risk Score: <span class="text-red-400 font-semibold">78/100</span></span>
+            </div>
+            <div class="w-full bg-dark-600 rounded-full h-1.5 overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400" style="width:78%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating badges -->
+        <div class="absolute -top-4 -right-4 flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-full px-3 py-1.5 threat-pulse">
+          <span class="w-2 h-2 rounded-full bg-red-500"></span>
+          <span class="text-xs text-red-300 font-medium font-mono">THREAT DETECTED</span>
+        </div>
+        <div class="absolute -bottom-4 -left-4 flex items-center gap-2 bg-cyber-500/10 border border-cyber-500/30 rounded-full px-3 py-1.5">
+          <span class="text-xs text-cyber-300 font-mono">⚡ 3.2s scan time</span>
+        </div>
+
+        <!-- Sentinel Robot — right side, IN FRONT of scanner, watching the code -->
+        <div class="absolute -right-40 top-1/2 -translate-y-[44%] z-20 pointer-events-none select-none hidden lg:block" style="opacity:0.82;">
+          <svg width="192" height="230" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+
+            <!-- Siren mount bar -->
+            <rect x="86" y="36" width="28" height="11" rx="3.5" fill="#0a0f1e" stroke="#ef4444" stroke-width="1.5"/>
+
+            <!-- Siren dome outer glow -->
+            <ellipse cx="100" cy="20" rx="26" ry="16" fill="#ef4444" class="siren-glow"/>
+
+            <!-- Siren dome body -->
+            <ellipse cx="100" cy="23" rx="20" ry="13" fill="#2a0404" stroke="#ef4444" stroke-width="2"/>
+
+            <!-- Siren light core -->
+            <ellipse cx="100" cy="22" rx="13" ry="8.5" fill="#ef4444" class="siren-flash"/>
+
+            <!-- Siren lens highlight -->
+            <ellipse cx="95" cy="19" rx="5" ry="3" fill="white" fill-opacity="0.28"/>
+
+            <!-- Siren pulse rings -->
+            <circle cx="100" cy="22" r="18" fill="none" stroke="#ef4444" stroke-width="1.2" class="siren-ring-1"/>
+            <circle cx="100" cy="22" r="18" fill="none" stroke="#ef4444" stroke-width="0.7" class="siren-ring-2"/>
+
+            <!-- Fluffy cheeks (dashed) — more visible -->
+            <circle cx="19" cy="112" r="21" fill="#10b891" fill-opacity="0.14" stroke="#10b891" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+            <circle cx="181" cy="112" r="21" fill="#10b891" fill-opacity="0.14" stroke="#10b891" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+
+            <!-- Head shell -->
+            <rect x="30" y="47" width="140" height="112" rx="18" fill="#030c14" fill-opacity="0.94" stroke="#10b891" stroke-width="2"/>
+            <!-- Head inner bezel -->
+            <rect x="38" y="55" width="124" height="96" rx="13" fill="none" stroke="#10b891" stroke-width="0.7" stroke-opacity="0.65"/>
+
+            <!-- V-brows (inner ends lower → menacing, watching left) -->
+            <line x1="50" y1="67" x2="82" y2="77" stroke="#10b891" stroke-width="2.8" stroke-linecap="round"/>
+            <line x1="118" y1="77" x2="150" y2="67" stroke="#10b891" stroke-width="2.8" stroke-linecap="round"/>
+
+            <!-- Left eye socket (hex-ish rounded rect) -->
+            <rect x="48" y="82" width="44" height="26" rx="6" fill="#10b891" fill-opacity="0.22" stroke="#10b891" stroke-width="1.8"/>
+            <rect x="50" y="84" width="40" height="22" rx="5" fill="#10b891" fill-opacity="0.28"/>
+            <!-- Left pupil shifted LEFT — watching the scanner input -->
+            <circle cx="61" cy="95" r="6" fill="#ef4444" fill-opacity="1" class="sentinel-eye-pulse"/>
+            <!-- Left pupil inner glow dot -->
+            <circle cx="61" cy="95" r="2.8" fill="#ffaaaa" fill-opacity="0.9" class="sentinel-eye-pulse"/>
+
+            <!-- Right eye socket (hex-ish rounded rect) -->
+            <rect x="108" y="82" width="44" height="26" rx="6" fill="#10b891" fill-opacity="0.22" stroke="#10b891" stroke-width="1.8"/>
+            <rect x="110" y="84" width="40" height="22" rx="5" fill="#10b891" fill-opacity="0.28"/>
+            <!-- Right pupil shifted LEFT — watching the scanner input -->
+            <circle cx="121" cy="95" r="6" fill="#ef4444" fill-opacity="1" class="sentinel-eye-pulse"/>
+            <!-- Right pupil inner glow dot -->
+            <circle cx="121" cy="95" r="2.8" fill="#ffaaaa" fill-opacity="0.9" class="sentinel-eye-pulse"/>
+
+            <!-- Smirk (flat left, curves up right — knowing look) -->
+            <path d="M 62 126 L 92 129 Q 120 132 142 121" stroke="#10b891" stroke-width="2.2" stroke-linecap="round"/>
+
+            <!-- Neck -->
+            <rect x="82" y="159" width="36" height="16" rx="4" fill="#030712" fill-opacity="0.88" stroke="#10b891" stroke-width="1.6"/>
+            <line x1="89" y1="163" x2="111" y2="163" stroke="#10b891" stroke-width="0.9" stroke-opacity="0.6"/>
+            <line x1="89" y1="168" x2="111" y2="168" stroke="#10b891" stroke-width="0.9" stroke-opacity="0.6"/>
+
+            <!-- Chest / body -->
+            <rect x="36" y="175" width="128" height="64" rx="12" fill="#030712" fill-opacity="0.88" stroke="#10b891" stroke-width="1.9"/>
+
+            <!-- Chest side panels -->
+            <rect x="44" y="183" width="28" height="14" rx="3" fill="none" stroke="#10b891" stroke-width="1" stroke-opacity="0.6"/>
+            <rect x="128" y="183" width="28" height="14" rx="3" fill="none" stroke="#10b891" stroke-width="1" stroke-opacity="0.6"/>
+
+            <!-- Chest center orb (pulse) -->
+            <circle cx="100" cy="204" r="13" fill="none" stroke="#10b891" stroke-width="1.5"/>
+            <circle cx="100" cy="204" r="8" fill="#10b891" fill-opacity="0.2"/>
+            <circle cx="100" cy="204" r="5" fill="#10b891" fill-opacity="0.7" class="sentinel-orb"/>
+
+            <!-- Shoulder stubs -->
+            <line x1="36" y1="180" x2="20" y2="192" stroke="#10b891" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="164" y1="180" x2="180" y2="192" stroke="#10b891" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS / SOCIAL PROOF -->
+  <section class="border-y border-white/5 bg-dark-800/30 py-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="text-center text-xs text-gray-600 uppercase tracking-widest font-medium mb-8">Works with your stack</p>
+      <div class="flex flex-wrap items-center justify-center gap-10 opacity-40">
+        <span class="text-xl font-bold text-gray-300 tracking-tight">LangGraph</span>
+        <span class="text-xl font-bold text-gray-300 tracking-tight">CrewAI</span>
+        <span class="text-xl font-bold text-gray-300 tracking-tight">AutoGen</span>
+        <span class="text-xl font-bold text-gray-300 tracking-tight">LlamaIndex</span>
+        <span class="text-xl font-bold text-gray-300 tracking-tight">Haystack</span>
+        <span class="text-xl font-bold text-gray-300 tracking-tight">Semantic&nbsp;Kernel</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="py-20 bg-dark-800/20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center reveal">
+          <div class="text-4xl font-extrabold gradient-text">9</div>
+          <div class="text-sm text-gray-500 mt-1">Adapters</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="text-4xl font-extrabold gradient-text">1,199</div>
+          <div class="text-sm text-gray-500 mt-1">Tests passing</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="text-4xl font-extrabold gradient-text">Ed25519</div>
+          <div class="text-sm text-gray-500 mt-1">Signing</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="text-4xl font-extrabold gradient-text">MIT</div>
+          <div class="text-sm text-gray-500 mt-1">Licensed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="py-24 grid-bg">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-4">
+          CAPABILITIES
+        </div>
+        <h2 class="text-4xl font-extrabold text-white tracking-tight">Everything you need to ship<br/><span class="gradient-text">secure AI agents</span></h2>
+        <p class="text-gray-400 mt-4 max-w-2xl mx-auto">From static code analysis to runtime behavioral monitoring, AgentCop gives your team complete visibility into agent security posture.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Feature 1 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Prompt Injection Detection</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Identifies unsanitized user inputs that could manipulate your agent's system prompt or override safety instructions.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 font-mono">CWE-20</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 font-mono">OWASP LLM01</span>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Tool Permission Auditing</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Analyzes the scope of every tool registered to your agent and flags over-privileged permissions that violate least-privilege principles.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">A01:2021</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 font-mono">OWASP LLM07</span>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Runtime Behavior Monitoring</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Continuously monitors live agent traces for anomalous behavior patterns — unexpected tool calls, data exfiltration attempts, and privilege escalations.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">Real-time</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyber-500/10 text-cyber-400 font-mono">SIEM-ready</span>
+          </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Supply Chain Verification</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Validates the integrity of third-party tools, plugins, and MCP servers your agents depend on — catching malicious or tampered packages.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">SBOM</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">OWASP LLM05</span>
+          </div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">Compliance Reporting</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Generates audit-ready reports aligned with OWASP LLM Top 10, NIST AI RMF, and EU AI Act frameworks for stakeholders and regulators.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">NIST</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">EU AI Act</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono">SOC 2</span>
+          </div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <h3 class="text-white font-semibold mb-2">CI/CD Gate Integration</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Blocks deployments when critical vulnerabilities are found. Native integrations for GitHub Actions, GitLab CI, Jenkins, and CircleCI.</p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">GitHub Actions</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 font-mono">GitLab CI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="py-24 bg-dark-800/20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-4">
+          HOW IT WORKS
+        </div>
+        <h2 class="text-4xl font-extrabold text-white tracking-tight">From code to confidence<br/><span class="gradient-text">in three steps</span></h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <!-- Connector line -->
+        <div class="hidden md:block absolute top-14 left-1/3 right-1/3 h-px bg-gradient-to-r from-cyber-500/30 via-cyber-500/60 to-cyber-500/30"></div>
+
+        <!-- Step 1 -->
+        <div class="text-center reveal">
+          <div class="relative inline-flex mb-6">
+            <div class="w-28 h-28 rounded-2xl bg-dark-700 border border-cyber-500/20 flex items-center justify-center">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">1</div>
+          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Connect Your Agent</h3>
+          <p class="text-gray-400 text-sm">Point AgentCop at your repo, import via SDK, or paste your agent definition. Works with LangChain, CrewAI, AutoGen, and custom frameworks.</p>
+          <div class="mt-4 code-block p-3 text-left">
+            <div class="font-mono text-xs text-gray-500">$ pip install agentcop</div>
+            <div class="font-mono text-xs text-cyber-400">$ agentcop init</div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center reveal">
+          <div class="relative inline-flex mb-6">
+            <div class="w-28 h-28 rounded-2xl bg-dark-700 border border-cyber-500/20 flex items-center justify-center">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+              </svg>
+            </div>
+            <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">2</div>
+          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Run the Scan</h3>
+          <p class="text-gray-400 text-sm">Our engine performs static analysis, dynamic fuzzing, and policy checks against 50+ attack signatures in seconds — no test environment needed.</p>
+          <div class="mt-4 code-block p-3 text-left">
+            <div class="font-mono text-xs text-cyber-400">$ agentcop scan .</div>
+            <div class="font-mono text-xs text-gray-500">Scanning 47 files...</div>
+            <div class="font-mono text-xs text-red-400">⚠ 2 critical found</div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center reveal">
+          <div class="relative inline-flex mb-6">
+            <div class="w-28 h-28 rounded-2xl bg-dark-700 border border-cyber-500/20 flex items-center justify-center">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-cyber-500 text-white text-xs font-bold flex items-center justify-center">3</div>
+          </div>
+          <h3 class="text-white font-semibold text-lg mb-2">Fix &amp; Ship Securely</h3>
+          <p class="text-gray-400 text-sm">Get prioritized, actionable remediation guidance with code-level diffs. Integrate the gate into CI/CD to prevent regressions automatically.</p>
+          <div class="mt-4 code-block p-3 text-left">
+            <div class="font-mono text-xs text-cyber-400">$ agentcop fix --apply</div>
+            <div class="font-mono text-xs text-gray-500">2 patches applied ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREAT COVERAGE -->
+  <section id="threats" class="py-24 grid-bg">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="reveal">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-4">
+            OWASP LLM TOP 10
+          </div>
+          <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Built around <span class="gradient-text">OWASP LLM Top 10</span></h2>
+          <p class="text-gray-400 mb-8">AgentCop is the only scanner purpose-built for agentic systems, covering all OWASP LLM Top 10 categories plus agent-specific risks not found in traditional SAST tools.</p>
+
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-24 text-xs text-gray-500 font-mono shrink-0">LLM01</div>
+              <div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-red-500 rounded-full progress-fill" style="width:95%"></div>
+              </div>
+              <div class="text-xs text-gray-400 shrink-0">Prompt Injection</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-24 text-xs text-gray-500 font-mono shrink-0">LLM02</div>
+              <div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-orange-500 rounded-full progress-fill" style="width:88%"></div>
+              </div>
+              <div class="text-xs text-gray-400 shrink-0">Insecure Output</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-24 text-xs text-gray-500 font-mono shrink-0">LLM05</div>
+              <div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-violet-500 rounded-full progress-fill" style="width:91%"></div>
+              </div>
+              <div class="text-xs text-gray-400 shrink-0">Supply Chain</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-24 text-xs text-gray-500 font-mono shrink-0">LLM07</div>
+              <div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-cyber-500 rounded-full progress-fill" style="width:97%"></div>
+              </div>
+              <div class="text-xs text-gray-400 shrink-0">Plugin Security</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-24 text-xs text-gray-500 font-mono shrink-0">LLM09</div>
+              <div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full progress-fill" style="width:84%"></div>
+              </div>
+              <div class="text-xs text-gray-400 shrink-0">Overreliance</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code diff preview -->
+        <div class="reveal code-block overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-dark-700/50">
+            <span class="text-xs text-gray-500 font-mono">agent.py — AgentCop fix suggestion</span>
+            <span class="text-xs text-cyber-400 font-mono bg-cyber-500/10 px-2 py-0.5 rounded">AUTO-FIX AVAILABLE</span>
+          </div>
+          <div class="p-4 font-mono text-xs space-y-0.5 overflow-x-auto">
+            <div class="text-gray-500 py-0.5 px-2">def handle_user_message(user_input: str):</div>
+            <div class="bg-red-500/10 border-l-2 border-red-500 px-2 py-0.5 text-red-300">
+              <span class="text-red-500 mr-1">-</span>system_prompt = BASE_PROMPT + user_input
+            </div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>sanitized = sanitize_input(user_input)
+            </div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>system_prompt = BASE_PROMPT
+            </div>
+            <div class="text-gray-500 py-0.5 px-2">&nbsp;</div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>messages = [
+            </div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>&nbsp;&nbsp;{"role": "system", "content": system_prompt},
+            </div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>&nbsp;&nbsp;{"role": "user", "content": sanitized},
+            </div>
+            <div class="bg-cyber-500/10 border-l-2 border-cyber-500 px-2 py-0.5 text-cyber-300">
+              <span class="text-cyber-500 mr-1">+</span>]
+            </div>
+            <div class="text-gray-500 py-0.5 px-2">&nbsp;</div>
+            <div class="text-gray-500 py-0.5 px-2">    response = client.chat(messages=messages)</div>
+            <div class="text-gray-500 py-0.5 px-2">    return response</div>
+          </div>
+          <div class="px-4 py-3 border-t border-white/5 bg-cyber-500/5 flex items-center gap-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span class="text-xs text-cyber-400">Separates system/user roles to prevent instruction override attacks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="py-24 grid-bg">
+    <div class="max-w-3xl mx-auto px-6 text-center reveal">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-6">
+        OPEN SOURCE
+      </div>
+      <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Open Source &amp; Free Forever</h2>
+      <p class="text-gray-400 mb-10 text-lg">AgentCop is fully open source. No plans, no paywalls, no credit card required.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="flex items-center gap-3 code-block px-5 py-3 font-mono text-sm text-cyber-400">
+          <span>pip install agentcop</span>
+          <button onclick="navigator.clipboard.writeText('pip install agentcop')" class="text-gray-500 hover:text-cyber-400 transition-colors" title="Copy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold text-sm transition-all hover:shadow-lg hover:shadow-cyber-500/25">
+          ⭐ Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section id="scanner" class="py-20 bg-gradient-to-r from-dark-800 via-cyber-900/30 to-dark-800 border-y border-cyber-500/10">
+    <div class="max-w-4xl mx-auto px-6 text-center reveal">
+      <h2 class="text-4xl font-extrabold text-white mb-4 tracking-tight">Your agents are already deployed.<br/><span class="gradient-text">Are they secure?</span></h2>
+      <p class="text-gray-400 mb-8 text-lg">Run your first free scan in under 60 seconds. No signup required.</p>
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-cyber-500 hover:bg-cyber-400 text-white font-semibold transition-all hover:shadow-xl hover:shadow-cyber-500/25 text-base">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Start Free Scan
+        </a>
+        <div class="code-block px-4 py-3 font-mono text-sm text-cyber-400">
+          pip install agentcop &amp;&amp; agentcop scan .
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-16 bg-dark-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-10 mb-12">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-7 h-7 rounded-lg bg-cyber-500/20 border border-cyber-500/40 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b891" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <span class="font-bold text-white tracking-tight">Agent<span class="text-cyber-400">Cop</span></span>
+          </div>
+          <p class="text-gray-500 text-sm leading-relaxed">Security scanning purpose-built for the age of AI agents.</p>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Product</div>
+          <ul class="space-y-2 text-sm text-gray-500">
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="https://github.com/trusthandoff/agentcop/blob/main/CHANGELOG.md" target="_blank" rel="noopener" class="hover:text-white transition-colors">Changelog</a></li>
+            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">Roadmap</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Developers</div>
+          <ul class="space-y-2 text-sm text-gray-500">
+            <li><a href="https://github.com/trusthandoff/agentcop/blob/main/docs/guides/quickstart.md" target="_blank" rel="noopener" class="hover:text-white transition-colors">Documentation</a></li>
+            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">API Reference</a></li>
+            <li><a href="https://github.com/trusthandoff/agentcop" target="_blank" rel="noopener" class="hover:text-white transition-colors">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="text-xs text-gray-600">© 2026 AgentCop. All rights reserved.</div>
+        <div class="flex items-center gap-4">
+          <span class="text-xs px-2 py-1 rounded bg-cyber-500/10 text-cyber-400 font-mono border border-cyber-500/20">MIT Licensed</span>
+          <span class="text-xs px-2 py-1 rounded bg-cyber-500/10 text-cyber-400 font-mono border border-cyber-500/20">OWASP Member</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => observer.observe(el));
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    // Animate progress bars on scroll
+    const bars = document.querySelectorAll('.progress-fill');
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const w = e.target.style.width;
+          e.target.style.width = '0';
+          requestAnimationFrame(() => { e.target.style.width = w; });
+          barObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    bars.forEach(b => barObserver.observe(b));
+  </script>
+</body>
+</html>
