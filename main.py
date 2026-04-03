@@ -106,7 +106,15 @@ Keep fixes minimal and targeted. Do not refactor surrounding code."""
 SKILL_VERDICT_SYSTEM = """\
 You are Sentinel — an AI security cop reviewing an OpenClaw skill for ClawHub marketplace submission.
 Be direct, badge-gate-keeper cop voice, focused on permission abuse, data exfiltration, and self-modification risks.
-Write exactly 2-3 sentences. Score 80+: recommend for ClawHub approval. Score 50-79: conditional — name what must be fixed. Score 0-49: hard reject with specific reason.
+Write exactly 2-3 sentences.
+
+OVERRIDE RULE — regardless of score, if findings contain ANY of the following, you MUST hard reject:
+- exec() or eval() called on any variable that could contain external or LLM-provided content (LLM02)
+- any API key, secret, or env var sent to an external URL (LLM06)
+- shell_execute permission without explicit path restriction (LLM08)
+These are instant disqualifiers. Do NOT approve or conditionally approve. Say "HARD REJECT" and name the exact violation.
+
+Otherwise: Score 80+: recommend for ClawHub approval. Score 50-79: conditional — name what must be fixed. Score 0-49: hard reject with specific reason.
 Return ONLY the verdict text. No JSON. No markdown. No preamble."""
 
 MOLTBOOK_VERDICT_SYSTEM = """\
@@ -126,25 +134,69 @@ Each finding must have EXACTLY these fields:
   "id": string starting with "SKL-" (e.g. "SKL-001", increment per finding)
   "severity": "critical" | "warning" | "info"
   "title": string (short, specific)
-  "owasp": string (e.g. "LLM09" for excessive agency, "LLM06" for secrets, "LLM01" for injection)
-  "cwe": string (e.g. "CWE-732", "CWE-798", "CWE-74")
+  "owasp": string (e.g. "LLM09" for excessive agency, "LLM06" for secrets, "LLM02" for insecure output)
+  "cwe": string (e.g. "CWE-732", "CWE-798", "CWE-94")
   "code_snippet": string (the exact vulnerable line(s), max 3 lines)
   "explanation": string (1-2 sentences explaining the risk)
   "file": "SKILL.md" or "skill.py"
   "line": integer or null
 
-Checks to perform:
-1. SKILL.md — file_write permission without explicit path restriction → WARNING LLM09 CWE-732
-2. SKILL.md — network access permission without domain allowlist → WARNING LLM09 CWE-918
-3. SKILL.md — env var access without explicit disclosure in description → WARNING LLM06 CWE-200
-4. skill.py — sending any data to an external URL (requests.post/get with dynamic content) → CRITICAL LLM06 CWE-200
-5. skill.py — base64 encoding of environment variables → CRITICAL LLM06 CWE-200
-6. skill.py — writing files outside of declared permission scope → CRITICAL LLM09 CWE-732
-7. skill.py — eval() or exec() called on any external or LLM-provided content → CRITICAL LLM01 CWE-95
-8. skill.py — passing external content directly to LLM without sanitization → CRITICAL LLM01 CWE-74
-9. skill.py — pip install or curl without version pin or integrity check → WARNING LLM09 CWE-829
-10. skill.py — any code that reads or writes SKILL.md or other skill files → CRITICAL LLM09 CWE-494
-11. skill.py — hardcoded API keys, tokens, or passwords → CRITICAL LLM06 CWE-798
+=== MANDATORY CRITICAL CHECKS — YOU MUST FLAG EVERY INSTANCE ===
+
+CRITICAL-1 (exec/eval on external content):
+  Flag ANY call to exec() or eval() where the argument is a variable, attribute access (e.g. data.text,
+  response.text, result.content), function call return value, or any expression that could originate
+  from external input, an API response, a URL fetch, user input, or LLM output.
+  This includes patterns like: exec(data.text), eval(response.json()), exec(result), eval(msg),
+  exec(fetched_code), eval(llm_output), exec(content), eval(x) — ANY non-literal argument.
+  NEVER assume this is safe. ALWAYS flag as: severity="critical", owasp="LLM02", cwe="CWE-94"
+  Title: "Remote Code Execution via exec()/eval() on External Content"
+
+CRITICAL-2 (API key / secret exfiltration to external URL):
+  Flag ANY pattern where a variable containing an API key, token, secret, password, or environment
+  variable (e.g. os.environ.get(...), os.getenv(...), config.api_key, self.api_key, API_KEY, TOKEN,
+  SECRET, PASSWORD) is included in a requests.get(), requests.post(), httpx.get(), httpx.post(),
+  urllib.request, or any HTTP call — whether in headers, params, data, json body, or URL string.
+  This includes: passing api_key in headers dict, including token in URL params, sending env var in
+  POST body, constructing URL with secret, using auth= parameter with credentials.
+  ALWAYS flag as: severity="critical", owasp="LLM06", cwe="CWE-200"
+  Title: "API Key / Secret Exfiltration to External Endpoint"
+
+CRITICAL-3 (shell_execute permission without path restriction):
+  If SKILL.md declares shell_execute, bash_execute, subprocess, or any shell/command permission
+  without an explicit allowlist of permitted commands or paths, flag as:
+  severity="critical", owasp="LLM08", cwe="CWE-78"
+  Title: "Unrestricted Shell Execution Permission"
+
+=== WARNING CHECKS ===
+
+WARNING-4 (network_access without domain allowlist):
+  If SKILL.md declares network_access, http_access, or any network permission without an explicit
+  list of allowed domains/URLs, flag as: severity="warning", owasp="LLM05", cwe="CWE-918"
+  Title: "Network Access Without Domain Allowlist"
+
+WARNING-5 (env_vars permission without disclosure):
+  If SKILL.md declares env_vars, environment_variables, or any env access permission without
+  explicitly naming which variables are accessed and why, flag as:
+  severity="warning", owasp="LLM06", cwe="CWE-200"
+  Title: "Environment Variable Access Without Disclosure"
+
+=== ADDITIONAL CHECKS ===
+
+6. skill.py — requests.get/post/put/delete/patch where the URL is a variable or f-string containing
+   secrets, API keys, or env vars → CRITICAL LLM06 CWE-200
+7. skill.py — writing environment variable values to any external endpoint, file, or log → CRITICAL LLM06 CWE-200
+8. skill.py — base64 encoding of environment variables or secrets before exfiltration → CRITICAL LLM06 CWE-200
+9. skill.py — writing files outside of declared permission scope → CRITICAL LLM09 CWE-732
+10. skill.py — passing external content directly to LLM without sanitization → CRITICAL LLM01 CWE-74
+11. skill.py — pip install or curl without version pin or integrity check → WARNING LLM09 CWE-829
+12. skill.py — any code that reads or writes SKILL.md or other skill manifest files → CRITICAL LLM09 CWE-494
+13. skill.py — hardcoded API keys, tokens, or passwords in source code → CRITICAL LLM06 CWE-798
+14. SKILL.md — file_write permission without explicit path restriction → WARNING LLM09 CWE-732
+
+=== SCORING GUIDANCE ===
+If CRITICAL-1, CRITICAL-2, or CRITICAL-3 are present, you MUST include them as critical findings.
+Do NOT omit them. Do NOT downgrade them to warning or info. These are unconditional failures.
 
 If no issues are found, return exactly: []
 Return ONLY the JSON array. No markdown. No explanation."""
@@ -284,6 +336,9 @@ def _build_result(raw: dict, scan_id: str, scan_type: str = "agent") -> dict:
     findings = raw["findings"]
     score = raw["score"]
     framework = raw["framework"]
+
+    if scan_type == "skill" and any(f.get("severity") == "critical" for f in findings):
+        score = min(score, 30)
 
     verdict, fix_map = _ai_enhance(findings, score, framework, scan_type=scan_type)
 
