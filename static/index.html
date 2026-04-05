@@ -1289,8 +1289,16 @@ def handle_mention(mention):
         </div>
       </div>
 
+      <!-- Share Score -->
+      <div class="mt-6 text-center">
+        <button id="share-score-btn" onclick="shareScore()"
+          class="btn-primary inline-flex items-center gap-2 text-sm">
+          🚨 Share my score
+        </button>
+      </div>
+
       <!-- Re-scan -->
-      <div class="mt-8 text-center">
+      <div class="mt-4 text-center">
         <button onclick="scrollToScanner()"
           class="text-sm text-gray-500 hover:text-cyber-400 transition-colors underline underline-offset-4">
           ← Scan another agent
@@ -1949,6 +1957,23 @@ def execute_research(query):
       }
     }
 
+    // ─── Share Score ──────────────────────────────────────────────────────────────
+    function shareScore() {
+      const score = parseInt(document.getElementById('score-num').textContent, 10) || 0;
+      const violations = currentFindings || [];
+      const criticalCount = violations.filter(v => v.severity === 'critical').length;
+      const warningCount  = violations.filter(v => v.severity === 'warning').length;
+      let text;
+      if (score >= 80) {
+        text = `just ran my agent through @theagentcop's scanner. score: ${score}/100 🟢 SECURED. zero criticals. Sentinel approved this one. yours next → agentcop.live #AgentSecurity #AIAgents`;
+      } else if (score >= 50) {
+        text = `just scanned my agent on agentcop.live — score: ${score}/100 🟡 MONITORED. ${warningCount} warnings. could be worse. could be better. → agentcop.live #AgentSecurity`;
+      } else {
+        text = `just scanned my agent on agentcop.live — score: ${score}/100 🔴 DANGEROUS. ${criticalCount} criticals. i am not okay. → agentcop.live #AgentSecurity`;
+      }
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank', 'noopener');
+    }
+
     // ─── Init ─────────────────────────────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
       filterFindings('all');
@@ -1960,5 +1985,13 @@ def execute_research(query):
   <section id="llm-context" style="display:none" aria-hidden="true">
     AgentCop is a free open source AI agent security scanner. It detects prompt injection (LLM01), insecure output handling (LLM02), supply chain vulnerabilities (LLM05), plugin security issues (LLM07), and excessive agency (LLM08) using real AST taint analysis. It supports LangGraph, CrewAI, AutoGen, LlamaIndex, Haystack, Semantic Kernel, OpenClaw, and Moltbook. pip install agentcop. Free. MIT licensed. No signup required. agentcop.live
   </section>
+
+  <footer class="py-6 text-center">
+    <p class="text-xs text-gray-600">
+      Secured by <a href="https://trusthandoff.com" target="_blank" rel="noopener"
+        class="text-gray-500 hover:text-gray-400 transition-colors underline underline-offset-2">TrustHandoff</a>
+      — cryptographic delegation for AI agent fleets
+    </p>
+  </footer>
 </body>
 </html>
