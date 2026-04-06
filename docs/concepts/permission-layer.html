@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permission Layer — AgentCop Docs</title>
+  <meta name="description" content="Declarative, version-controlled rules that define exactly what your agent is allowed to do — and enforce it at runtime.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/permission-layer.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Permission Layer","description":"Declarative, version-controlled rules that define exactly what your agent is allowed to do — and enforce it at runtime.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item active">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Permission Layer</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Permission Layer</h1>
+        <p class="doc-lead">Declarative, version-controlled rules that define exactly what your agent is allowed to do — and enforce it at runtime.</p>
+
+        <h2 id="least-privilege">Principle of Least Privilege for AI Agents</h2>
+        <p>Agents should have the minimum permissions needed to accomplish their task — nothing more. This is the principle of least privilege applied to AI systems.</p>
+        <p>The analogy to IAM roles is direct: you wouldn't give a Lambda function admin permissions to process a payment. You wouldn't give your customer support agent shell access to process a refund. The Permission Layer is the mechanism that enforces this boundary.</p>
+        <p>Over-permissioned agents don't just create security risk — they create liability. If your agent can write to the production database, send emails, and execute shell commands, then any prompt injection attack has the blast radius of all three.</p>
+
+        <h2 id="permission-types">Permission Types</h2>
+        <ul>
+          <li><strong>Tool permissions</strong> — which tools the agent may call</li>
+          <li><strong>Data permissions</strong> — which data stores it may read from or write to</li>
+          <li><strong>Network permissions</strong> — which external endpoints it may reach</li>
+          <li><strong>Compute permissions</strong> — maximum tokens, tool calls, and runtime per execution</li>
+        </ul>
+
+        <h2 id="defining-permissions">Defining Permissions</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import PermissionLayer
+
+permissions = PermissionLayer(
+    agent_id="invoice-processor",
+
+    tools=["read_invoice", "write_invoice_status", "send_confirmation_email"],
+
+    data={
+        "read": ["invoices/*", "customers/*/email"],
+        "write": ["invoices/*/status"],
+        "deny": ["customers/*/payment_method", "users/*"]
+    },
+
+    network={
+        "allow": ["api.company.com", "mail.company.com"],
+        "deny": ["*"]  # Block all other outbound
+    },
+
+    compute={
+        "max_tokens_per_run": 10000,
+        "max_tool_calls_per_run": 20,
+        "max_runtime_seconds": 30
+    }
+)</code></pre>
+        </div>
+
+        <h2 id="owasp-llm08">OWASP LLM08 — Excessive Agency</h2>
+        <p>The Permission Layer is the direct implementation of OWASP LLM08 compliance. LLM08 identifies excessive agency — agents with more permissions than their task requires — as a top-10 vulnerability class for LLM-based systems.</p>
+        <p>The risk is straightforward: an agent with write access to your database and the ability to send emails can, if manipulated, exfiltrate data or conduct phishing attacks at scale. Constraining permissions through a declarative layer removes that capability entirely, regardless of what the agent is convinced to do.</p>
+
+        <div class="owasp-refs">
+          <span class="owasp-pill">LLM08</span>
+        </div>
+
+        <h2 id="permission-inheritance">Permission Inheritance</h2>
+        <p>Define a base set of denied operations that applies to all agents in your system, then extend per-agent with specific allowances.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Base permissions for all agents
+base = PermissionLayer.base(
+    deny=["shell_execute", "delete_*", "sudo_*"]
+)
+
+# Agent-specific extends base
+invoice_agent = base.extend(
+    allow=["read_invoice", "write_invoice_status"]
+)</code></pre>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/concepts/execution-gate.html" class="pager-prev">← Execution Gate</a>
+          <a href="/docs/concepts/sandbox.html" class="pager-next">Sandbox →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#least-privilege" class="right-nav-link">Least Privilege</a></li>
+        <li><a href="#permission-types" class="right-nav-link">Permission Types</a></li>
+        <li><a href="#defining-permissions" class="right-nav-link">Defining Permissions</a></li>
+        <li><a href="#owasp-llm08" class="right-nav-link">OWASP LLM08</a></li>
+        <li><a href="#permission-inheritance" class="right-nav-link">Permission Inheritance</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

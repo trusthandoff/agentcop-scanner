@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandbox API — AgentCop Docs</title>
+  <meta name="description" content="Create and manage isolated execution environments for agent runs.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/sandbox.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Sandbox API","description":"Create and manage isolated execution environments for agent runs.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item active">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>Sandbox API</h1>
+        <p class="doc-lead">Create and manage isolated execution environments for agent runs.</p>
+
+        <p>The Sandbox API provisions short-lived, container-based environments where agent code runs in strict isolation. Each sandbox enforces filesystem, network, and resource boundaries defined at creation time. Sandboxes are destroyed automatically after a configurable timeout or immediately when you call the delete endpoint.</p>
+
+        <h2 id="post-sandbox-create">POST /api/sandbox/create</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/sandbox/create</code>
+          </div>
+          <p>Provision a new sandbox instance. The sandbox is ready to accept code execution requests once its <code>status</code> is <code>"ready"</code>. On Free plans, up to 3 concurrent sandboxes are allowed.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "agent_id": "data-processor",
+  "mode": "container",
+  "config": {
+    "image": "agentcop/agent-sandbox:latest",
+    "filesystem": {
+      "read_only": ["/workspace/data"],
+      "read_write": ["/workspace/output"],
+      "blocked": ["/etc", "/root"]
+    },
+    "network": {
+      "allow": ["api.company.com"],
+      "block_outbound": true
+    },
+    "resources": {
+      "cpu": "0.5",
+      "memory": "512m",
+      "timeout": 30
+    }
+  }
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Agent this sandbox is being created for</td></tr>
+              <tr><td><code>mode</code></td><td>string</td><td><code>container</code> (default) or <code>wasm</code> for lightweight WebAssembly sandboxes</td></tr>
+              <tr><td><code>config.image</code></td><td>string</td><td>Container image to use. Must be an approved image.</td></tr>
+              <tr><td><code>config.filesystem.read_only</code></td><td>string[]</td><td>Paths mounted read-only inside the sandbox</td></tr>
+              <tr><td><code>config.filesystem.read_write</code></td><td>string[]</td><td>Paths mounted read-write</td></tr>
+              <tr><td><code>config.filesystem.blocked</code></td><td>string[]</td><td>Paths that are inaccessible</td></tr>
+              <tr><td><code>config.resources.cpu</code></td><td>string</td><td>CPU shares (e.g., <code>"0.5"</code> for half a core)</td></tr>
+              <tr><td><code>config.resources.memory</code></td><td>string</td><td>Memory limit (e.g., <code>"512m"</code>)</td></tr>
+              <tr><td><code>config.resources.timeout</code></td><td>integer</td><td>Auto-destroy after this many seconds (max: 3600)</td></tr>
+            </tbody>
+          </table>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "sandbox_id": "sbx_abc123",
+  "status": "ready",
+  "mode": "container",
+  "created_at": "2026-04-06T14:23:11Z",
+  "expires_at": "2026-04-06T14:53:11Z"
+}</code></pre>
+        </div>
+
+        <h2 id="get-sandbox">GET /api/sandbox/{sandbox_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/sandbox/{sandbox_id}</code>
+          </div>
+          <p>Get the current status of a sandbox. Possible status values: <code>provisioning</code>, <code>ready</code>, <code>running</code>, <code>destroyed</code>, <code>error</code>.</p>
+          <p>Poll this endpoint after creation if you need to wait for the sandbox to be ready before submitting a run, though in practice <code>container</code> mode sandboxes are usually ready within 1–2 seconds.</p>
+        </div>
+
+        <h2 id="delete-sandbox">DELETE /api/sandbox/{sandbox_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(239,68,68,0.15);color:#ef4444;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">DELETE</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/sandbox/{sandbox_id}</code>
+          </div>
+          <p>Immediately destroy a sandbox and release all associated resources. Any in-progress run is terminated. The sandbox record is retained for billing and audit purposes but transitions to <code>status: "destroyed"</code>.</p>
+          <p>Sandboxes are also destroyed automatically when their configured <code>timeout</code> elapses.</p>
+          <p>Returns <code>204 No Content</code> on success.</p>
+        </div>
+
+        <h2 id="post-sandbox-run">POST /api/sandbox/{sandbox_id}/run</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/sandbox/{sandbox_id}/run</code>
+          </div>
+          <p>Execute agent code inside the specified sandbox. The run is synchronous up to the request timeout (default: 30 seconds). For longer-running agents, use <code>async: true</code> to receive a run ID and poll for completion.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "code": "result = agent.run('analyze sales data')",
+  "timeout": 30
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>code</code></td><td>string</td><td>Python code to execute inside the sandbox</td></tr>
+              <tr><td><code>timeout</code></td><td>integer</td><td>Per-run timeout in seconds (overrides sandbox default, max: 600)</td></tr>
+              <tr><td><code>async</code></td><td>boolean</td><td>If true, return immediately with a run ID instead of waiting</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>Billing note:</strong> Sandbox resources are billed per-minute of execution. Always destroy sandboxes when done, or set appropriate <code>timeout</code> values to avoid unexpected charges.
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/api-reference/permissions.html" class="prev-link">← Permissions API</a>
+          <a href="/docs/api-reference/approvals.html" class="next-link">Approvals API →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#post-sandbox-create">POST /api/sandbox/create</a></li>
+        <li><a href="#get-sandbox">GET /api/sandbox/{sandbox_id}</a></li>
+        <li><a href="#delete-sandbox">DELETE /api/sandbox/{sandbox_id}</a></li>
+        <li><a href="#post-sandbox-run">POST /api/sandbox/{sandbox_id}/run</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

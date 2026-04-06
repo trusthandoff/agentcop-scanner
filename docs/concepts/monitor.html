@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runtime Monitor — AgentCop Docs</title>
+  <meta name="description" content="The Runtime Monitor watches your agent's behavior during execution, detecting anomalies that static analysis cannot see.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/monitor.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Runtime Monitor","description":"The Runtime Monitor watches your agent's behavior during execution, detecting anomalies that static analysis cannot see.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item active">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Runtime Monitor</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Runtime Monitor</h1>
+        <p class="doc-lead">The Runtime Monitor watches your agent's behavior during execution, detecting anomalies that static analysis cannot see.</p>
+
+        <h2 id="why-runtime-monitoring">Why Runtime Monitoring?</h2>
+        <p>Static analysis sees your code. It cannot see what an attacker injects into your prompts at runtime.</p>
+        <p>A prompt injection attack looks like normal code — until it runs. The code path is legitimate; the payload is adversarial. The scanner has no way to distinguish between a benign and a malicious input at scan time.</p>
+        <p>The Runtime Monitor watches execution patterns as they happen: which tools are called, in what sequence, against which endpoints, with what data volumes. Deviations from established baseline behavior are surfaced as anomalies.</p>
+
+        <h2 id="what-the-monitor-tracks">What the Monitor Tracks</h2>
+        <ul>
+          <li><strong>Tool call inventory</strong> — which tools are called, in what sequence, and how often</li>
+          <li><strong>Data exfiltration signals</strong> — large outbound payloads, unexpected external endpoints</li>
+          <li><strong>Prompt injection indicators</strong> — sudden behavior changes, off-topic tool usage mid-run</li>
+          <li><strong>Resource abuse</strong> — excessive API calls, loop patterns, latency spikes that suggest runaway execution</li>
+        </ul>
+
+        <h2 id="behavioral-baseline">Behavioral Baseline</h2>
+        <p>The monitor learns what "normal" looks like for your specific agent and flags deviations in real time.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># The monitor learns your agent's normal behavior
+# and flags deviations
+
+from agentcop import RuntimeMonitor
+
+monitor = RuntimeMonitor(
+    agent_id="customer-support-bot",
+    baseline_window=7,      # days of normal behavior to learn from
+    sensitivity="medium",   # low / medium / high
+    alert_on=["exfiltration", "injection", "resource_abuse"]
+)
+
+# Wrap your agent
+monitored_agent = monitor.wrap(agent)
+result = monitored_agent.run(user_input)</code></pre>
+        </div>
+
+        <h2 id="anomaly-types">Anomaly Types</h2>
+
+        <div class="doc-table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Anomaly</th>
+                <th>Indicator</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Data exfiltration</td>
+                <td>Large POST to unknown endpoint</td>
+                <td><span class="severity-pill severity-critical">CRITICAL</span></td>
+              </tr>
+              <tr>
+                <td>Prompt injection</td>
+                <td>Sudden tool-call sequence change</td>
+                <td><span class="severity-pill severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td>Resource abuse</td>
+                <td>&gt;10x normal API call rate</td>
+                <td><span class="severity-pill severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Off-topic execution</td>
+                <td>Tool calls outside declared scope</td>
+                <td><span class="severity-pill severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Credential harvesting</td>
+                <td>Access to secret stores mid-run</td>
+                <td><span class="severity-pill severity-critical">CRITICAL</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="integration-with-gate">Integration with the Gate</h2>
+        <p>The monitor does not act alone. When it detects an anomaly, it signals the Execution Gate, which can pause or block the ongoing execution before harm is done.</p>
+        <p>The loop is: <strong>Detect → Signal → Block</strong>. This is what closes the security gap between observing a problem and stopping it.</p>
+        <ul>
+          <li>Monitor detects behavioral anomaly</li>
+          <li>Monitor signals the Execution Gate with anomaly type and confidence score</li>
+          <li>Gate evaluates against policy: pause run, block tool call, or escalate to human approval</li>
+        </ul>
+
+        <div class="owasp-refs">
+          <span class="owasp-pill">LLM01</span>
+          <span class="owasp-pill">LLM02</span>
+          <span class="owasp-pill">LLM08</span>
+        </div>
+
+        <div class="callout callout-sentinel">
+          <div class="callout-icon">AC</div>
+          <p class="callout-text">static analysis is a background check. the monitor is the cop on the beat. both are required.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/concepts/scanner.html" class="pager-prev">← Scanner Engine</a>
+          <a href="/docs/concepts/execution-gate.html" class="pager-next">Execution Gate →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#why-runtime-monitoring" class="right-nav-link">Why Runtime Monitoring?</a></li>
+        <li><a href="#what-the-monitor-tracks" class="right-nav-link">What the Monitor Tracks</a></li>
+        <li><a href="#behavioral-baseline" class="right-nav-link">Behavioral Baseline</a></li>
+        <li><a href="#anomaly-types" class="right-nav-link">Anomaly Types</a></li>
+        <li><a href="#integration-with-gate" class="right-nav-link">Integration with the Gate</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

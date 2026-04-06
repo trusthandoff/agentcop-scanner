@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Concepts — AgentCop Docs</title>
+  <meta name="description" content="AgentCop's three-layer security model: static analysis before deploy, behavioral monitoring at runtime, and execution gating before every tool call.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Core Concepts","description":"AgentCop's three-layer security model: static analysis before deploy, behavioral monitoring at runtime, and execution gating before every tool call.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item active">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Concepts</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Core Concepts</h1>
+        <p class="doc-lead">AgentCop's security model spans three layers: static analysis before deploy, behavioral monitoring at runtime, and execution gating before every tool call.</p>
+
+        <h2 id="three-layer-architecture">Three-Layer Architecture</h2>
+        <p>No single security control is sufficient against adversarial agents. AgentCop stacks three independent layers — so that an attacker who defeats one still faces two more.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">┌─────────────────────────────────────────────────┐
+│  Layer 1: Scanner (Pre-Deploy)                  │
+│  AST analysis · OWASP LLM Top 10 · Trust Score  │
+├─────────────────────────────────────────────────┤
+│  Layer 2: Monitor (Runtime)                     │
+│  Behavioral analysis · Anomaly detection        │
+├─────────────────────────────────────────────────┤
+│  Layer 3: Gate (Execution)                      │
+│  Permission layer · Approval boundaries         │
+└─────────────────────────────────────────────────┘</code></pre>
+        </div>
+
+        <h2 id="concept-pages">Concept Pages</h2>
+        <p>Each layer of the security model has a dedicated concept page. Start with the Scanner Engine and work down.</p>
+
+        <div class="card-grid">
+          <a href="/docs/concepts/scanner.html" class="concept-card">
+            <div class="concept-card-label">Layer 1</div>
+            <h3 class="concept-card-title">Scanner Engine</h3>
+            <p class="concept-card-desc">AST-based static analysis that maps your agent code to the OWASP LLM Top 10.</p>
+          </a>
+          <a href="/docs/concepts/monitor.html" class="concept-card">
+            <div class="concept-card-label">Layer 2</div>
+            <h3 class="concept-card-title">Runtime Monitor</h3>
+            <p class="concept-card-desc">Behavioral analysis that watches what your agent does, not just what it says.</p>
+          </a>
+          <a href="/docs/concepts/execution-gate.html" class="concept-card">
+            <div class="concept-card-label">Layer 3</div>
+            <h3 class="concept-card-title">Execution Gate</h3>
+            <p class="concept-card-desc">The enforcement layer that blocks unauthorized tool calls before they run.</p>
+          </a>
+          <a href="/docs/concepts/permission-layer.html" class="concept-card">
+            <div class="concept-card-label">Layer 3</div>
+            <h3 class="concept-card-title">Permission Layer</h3>
+            <p class="concept-card-desc">Declarative rules that define what your agent is and isn't allowed to do.</p>
+          </a>
+          <a href="/docs/concepts/sandbox.html" class="concept-card">
+            <div class="concept-card-label">Layer 3</div>
+            <h3 class="concept-card-title">Sandbox</h3>
+            <p class="concept-card-desc">Isolated execution environment that limits blast radius of agent actions.</p>
+          </a>
+          <a href="/docs/concepts/approval-boundaries.html" class="concept-card">
+            <div class="concept-card-label">Layer 3</div>
+            <h3 class="concept-card-title">Approval Boundaries</h3>
+            <p class="concept-card-desc">Human-in-the-loop checkpoints for high-risk operations.</p>
+          </a>
+          <a href="/docs/concepts/badge-system.html" class="concept-card">
+            <div class="concept-card-label">Signal</div>
+            <h3 class="concept-card-title">Badge System</h3>
+            <p class="concept-card-desc">Embeddable trust scores that signal your agent's security posture.</p>
+          </a>
+        </div>
+
+        <h2 id="why-three-layers">Why Three Layers?</h2>
+        <p>Each layer catches a different class of threat. None of them is complete on its own.</p>
+        <ul>
+          <li><strong>Layer 1 (Scanner)</strong> catches insecure code patterns at write-time — before the agent ships. It finds hardcoded secrets, injection-prone prompt templates, and dangerous function calls. But it cannot see what inputs arrive at runtime.</li>
+          <li><strong>Layer 2 (Monitor)</strong> watches behavior during execution. A prompt injection attack looks like normal code until it runs. The monitor detects behavioral anomalies — unusual tool sequences, unexpected outbound data, sudden scope changes — that static analysis is blind to.</li>
+          <li><strong>Layer 3 (Gate)</strong> enforces permissions at the moment of action. Even if an attacker bypasses Layers 1 and 2, the Gate prevents unauthorized tool calls from completing. It is the last mechanical barrier before consequences occur.</li>
+        </ul>
+        <p>An attacker who successfully injects a malicious prompt still faces the Gate's permission rules and the Sandbox's isolation. Compromise at one layer does not cascade automatically — which is what defense in depth means in practice.</p>
+
+        <div class="callout callout-sentinel">
+          <div class="callout-icon">AC</div>
+          <p class="callout-text">defense in depth isn't paranoia. it's the only thing that works against adversarial prompts.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/getting-started/first-scan.html" class="pager-prev">← Your First Scan</a>
+          <a href="/docs/concepts/scanner.html" class="pager-next">Scanner Engine →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#three-layer-architecture" class="right-nav-link">Three-Layer Architecture</a></li>
+        <li><a href="#concept-pages" class="right-nav-link">Concept Pages</a></li>
+        <li><a href="#why-three-layers" class="right-nav-link">Why Three Layers?</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Securing AutoGen Agents — AgentCop Docs</title>
+  <meta name="description" content="Secure Microsoft AutoGen multi-agent conversations with AgentCop scanning and execution controls.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/guides/autogen.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Securing AutoGen Agents","description":"Secure Microsoft AutoGen multi-agent conversations with AgentCop scanning and execution controls.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item nav-item-active">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>AutoGen</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Securing AutoGen Agents</h1>
+        <p class="doc-lead">Secure Microsoft AutoGen multi-agent conversations with AgentCop scanning and execution controls.</p>
+
+        <h2 id="autogen-risks">AutoGen-specific risks</h2>
+        <p>AutoGen's design philosophy is to automate code generation and execution between agents. This makes it uniquely powerful — and uniquely dangerous if not secured.</p>
+        <ul>
+          <li><strong>Code execution by default</strong> — AutoGen's <code>AssistantAgent</code> generates and executes code as a core feature, not a side effect. Every LLM response that contains code is a potential execution vector.</li>
+          <li><strong>Conversation injection</strong> — messages from one agent can inject instructions into another. Multi-agent conversations create a chain of trust; compromise any link and you own the rest.</li>
+          <li><strong>Uncontrolled human proxy</strong> — <code>UserProxyAgent</code>'s code execution runs directly in your host environment. The default configuration executes arbitrary code produced by the LLM without containerization or approval.</li>
+        </ul>
+
+        <h2 id="scanning">Scanning AutoGen code</h2>
+        <p>The AgentCop scanner detects hardcoded API keys, uncontrolled execution directories, missing docker isolation, and disabled human oversight in AutoGen configurations.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">import httpx
+
+result = httpx.post("https://api.agentcop.live/api/scan", json={
+    "code": open("autogen_workflow.py").read(),
+    "description": "AutoGen two-agent coding workflow"
+}).json()</code></pre>
+        </div>
+
+        <h2 id="dangerous-default">The dangerous default</h2>
+        <p>This is AgentBob's AutoGen setup. The hardcoded API key will be flagged immediately. The <code>work_dir="/"</code> combined with <code>human_input_mode="NEVER"</code> means the LLM can run any code in the root of your filesystem, unattended.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">import autogen
+
+# AgentBob's AutoGen setup — code execution enabled by default
+config_list = [{"model": "gpt-4", "api_key": "sk-abc123"}]  # LLM06: hardcoded key
+
+assistant = autogen.AssistantAgent(
+    name="assistant",
+    llm_config={"config_list": config_list},
+)
+
+# UserProxyAgent with code execution enabled — runs ANY code the LLM suggests
+user_proxy = autogen.UserProxyAgent(
+    name="user_proxy",
+    code_execution_config={"work_dir": "/"},  # LLM08: runs in root directory
+    human_input_mode="NEVER",  # No human approval
+)
+
+user_proxy.initiate_chat(assistant, message=user_input)  # Prompt injection vector</code></pre>
+        </div>
+
+        <h2 id="safe-pattern">Safe AutoGen pattern</h2>
+        <p>Three changes make this configuration safe: API key from environment, Docker isolation for code execution, and human approval required before any agent action.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">import autogen
+import os
+
+config_list = [{"model": "gpt-4", "api_key": os.getenv("OPENAI_API_KEY")}]  # Safe
+
+assistant = autogen.AssistantAgent(
+    name="assistant",
+    llm_config={"config_list": config_list},
+    system_message="You are a helpful assistant. Only suggest safe, reversible actions.",
+)
+
+user_proxy = autogen.UserProxyAgent(
+    name="user_proxy",
+    code_execution_config={
+        "work_dir": "/workspace/sandbox",   # Scoped directory
+        "use_docker": True,                  # Containerized execution
+        "timeout": 30,                       # Bounded runtime
+    },
+    human_input_mode="ALWAYS",              # Require human approval
+    max_consecutive_auto_reply=3,           # Prevent runaway loops
+)</code></pre>
+        </div>
+
+        <h2 id="checklist">Checklist</h2>
+        <ul class="checklist">
+          <li><strong>API keys from environment, never hardcoded</strong></li>
+          <li><strong>use_docker=True for code execution</strong></li>
+          <li><strong>work_dir scoped to a sandboxed directory</strong></li>
+          <li><strong>human_input_mode="ALWAYS" for production</strong></li>
+          <li><strong>max_consecutive_auto_reply bounded</strong></li>
+        </ul>
+
+        <div class="doc-pagination">
+          <a href="/docs/guides/crewai.html" class="pagination-prev">← CrewAI</a>
+          <a href="/docs/guides/openclaw.html" class="pagination-next">OpenClaw →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#autogen-risks" class="right-nav-link">AutoGen-specific risks</a></li>
+        <li><a href="#scanning" class="right-nav-link">Scanning AutoGen code</a></li>
+        <li><a href="#dangerous-default" class="right-nav-link">The dangerous default</a></li>
+        <li><a href="#safe-pattern" class="right-nav-link">Safe pattern</a></li>
+        <li><a href="#checklist" class="right-nav-link">Checklist</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

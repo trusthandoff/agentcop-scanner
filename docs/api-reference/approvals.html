@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approvals API — AgentCop Docs</title>
+  <meta name="description" content="Human-in-the-loop approval workflows — list, approve, and deny pending agent actions.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/approvals.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Approvals API","description":"Human-in-the-loop approval workflows — list, approve, and deny pending agent actions.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item active">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>Approvals API</h1>
+        <p class="doc-lead">Human-in-the-loop approval workflows — list, approve, and deny pending agent actions.</p>
+
+        <p>When the Gate API returns a <code>require_approval</code> decision, the agent is paused and an approval request is created. The Approvals API lets your team review the pending action, inspect its parameters, and approve or deny it. Once a decision is made, the agent resumes or aborts accordingly.</p>
+
+        <h2 id="get-approvals">GET /api/approvals</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/approvals</code>
+          </div>
+          <p>List approval requests. Defaults to returning only <code>pending</code> items. Use the <code>?status=</code> query parameter to filter by status: <code>pending</code>, <code>approved</code>, <code>denied</code>, <code>expired</code>. Supports <code>?agent_id=</code>, <code>?page=</code>, and <code>?limit=</code>.</p>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "approvals": [
+    {
+      "approval_id": "apr_abc123",
+      "agent_id": "customer-support-bot",
+      "action": "send_customer_email",
+      "parameters": {
+        "to": "customer@example.com",
+        "subject": "Your refund"
+      },
+      "risk_level": "MEDIUM",
+      "status": "pending",
+      "requested_at": "2026-04-06T14:23:11Z",
+      "expires_at": "2026-04-06T14:28:11Z"
+    }
+  ],
+  "total": 3,
+  "page": 1
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>approval_id</code></td><td>string</td><td>Unique identifier for this approval request</td></tr>
+              <tr><td><code>action</code></td><td>string</td><td>The tool or action awaiting approval</td></tr>
+              <tr><td><code>parameters</code></td><td>object</td><td>Tool call parameters for review</td></tr>
+              <tr><td><code>risk_level</code></td><td>string</td><td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td></tr>
+              <tr><td><code>expires_at</code></td><td>string (ISO 8601)</td><td>If no decision is made by this time, the action is blocked</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="get-approval">GET /api/approvals/{approval_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/approvals/{approval_id}</code>
+          </div>
+          <p>Retrieve a specific approval request by its ID. The agent runtime polls this endpoint after receiving a <code>require_approval</code> gate decision, waiting for <code>status</code> to transition from <code>pending</code> to <code>approved</code> or <code>denied</code>.</p>
+          <p>Response schema is the same as a single item in the <code>GET /api/approvals</code> list, plus <code>approved_by</code>, <code>approved_at</code>, and <code>note</code> fields once a decision has been made.</p>
+        </div>
+
+        <h2 id="post-approve">POST /api/approvals/{approval_id}/approve</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/approvals/{approval_id}/approve</code>
+          </div>
+          <p>Approve the pending action. The agent resumes execution immediately after a successful approval. The decision, approver identity, and optional note are persisted in the audit log.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "approver": "admin@company.com",
+  "note": "Verified — correct customer, correct refund amount"
+}</code></pre>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "approval_id": "apr_abc123",
+  "status": "approved",
+  "approved_by": "admin@company.com",
+  "approved_at": "2026-04-06T14:24:33Z",
+  "action_executed_at": "2026-04-06T14:24:34Z"
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>approver</code></td><td>string</td><td>Identity of the person approving (email or user ID)</td></tr>
+              <tr><td><code>note</code></td><td>string</td><td>Optional justification, stored in the audit log</td></tr>
+              <tr><td><code>action_executed_at</code></td><td>string</td><td>Timestamp when the agent's tool call was executed post-approval</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="post-deny">POST /api/approvals/{approval_id}/deny</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(239,68,68,0.15);color:#ef4444;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/approvals/{approval_id}/deny</code>
+          </div>
+          <p>Deny the pending action. The agent receives a block response and the tool call is not executed. The <code>reason</code> field is surfaced to the agent so it can communicate the outcome to the end user.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "approver": "admin@company.com",
+  "reason": "Wrong recipient address"
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>approver</code></td><td>string</td><td>Identity of the person denying</td></tr>
+              <tr><td><code>reason</code></td><td>string</td><td>Required. Reason for denial, stored in audit log and returned to the agent.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="get-approvals-audit">GET /api/approvals/audit</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/approvals/audit</code>
+          </div>
+          <p>Full audit log of all approval decisions across all agents. Returns both approved and denied decisions with full context. Useful for compliance reporting and security reviews.</p>
+          <h4>Query parameters</h4>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Filter by agent</td></tr>
+              <tr><td><code>status</code></td><td>string</td><td>Filter by status: <code>approved</code>, <code>denied</code>, <code>expired</code></td></tr>
+              <tr><td><code>from</code></td><td>ISO 8601</td><td>Start of time range (inclusive)</td></tr>
+              <tr><td><code>to</code></td><td>ISO 8601</td><td>End of time range (inclusive)</td></tr>
+              <tr><td><code>page</code></td><td>integer</td><td>Page number (default: 1)</td></tr>
+              <tr><td><code>limit</code></td><td>integer</td><td>Results per page (default: 50, max: 500)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info">
+          <strong>Timeout behavior:</strong> Approvals expire after the configured timeout. If no decision is made before <code>expires_at</code>, the action is blocked by default. You can change this behavior with <code>on_timeout: allow</code> in your gate policy — but this is not recommended for production environments where high-risk actions require explicit sign-off.
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/api-reference/sandbox.html" class="prev-link">← Sandbox API</a>
+          <a href="/docs/security/owasp-llm-top10.html" class="next-link">OWASP LLM Top 10 →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#get-approvals">GET /api/approvals</a></li>
+        <li><a href="#get-approval">GET /api/approvals/{approval_id}</a></li>
+        <li><a href="#post-approve">POST …/approve</a></li>
+        <li><a href="#post-deny">POST …/deny</a></li>
+        <li><a href="#get-approvals-audit">GET /api/approvals/audit</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

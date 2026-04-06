@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approval Boundaries — AgentCop Docs</title>
+  <meta name="description" content="Human-in-the-loop checkpoints that pause agent execution and require human sign-off before high-risk actions proceed.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/approval-boundaries.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Approval Boundaries","description":"Human-in-the-loop checkpoints that pause agent execution and require human sign-off before high-risk actions proceed.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item active">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Approval Boundaries</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Approval Boundaries</h1>
+        <p class="doc-lead">Human-in-the-loop checkpoints that pause agent execution and require human sign-off before high-risk actions proceed.</p>
+
+        <h2 id="when-humans-must-be-in-the-loop">When Humans Must Be in the Loop</h2>
+        <p>Not every agent action needs human review. But some do — and identifying that boundary is a security decision, not a UX decision.</p>
+        <p>Approval boundaries should be placed on:</p>
+        <ul>
+          <li><strong>Any irreversible action</strong> — delete, send, publish, transfer. These cannot be undone.</li>
+          <li><strong>Any action with external effect</strong> — emails, webhooks, database writes, API calls that trigger downstream processes</li>
+          <li><strong>Any action touching sensitive data</strong> — PII, financial records, credentials, health data</li>
+          <li><strong>Any action outside the agent's normal scope</strong> — if it's unusual, a human should confirm it</li>
+        </ul>
+
+        <h2 id="defining-approval-boundaries">Defining Approval Boundaries</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import ApprovalBoundary
+
+@ApprovalBoundary(
+    reason="Sending email to external recipient",
+    timeout=300,  # seconds to wait for approval
+    notify=["security@company.com", "manager@company.com"],
+    on_timeout="block"  # block | allow | escalate
+)
+def send_customer_email(to: str, subject: str, body: str):
+    # This function will pause and wait for approval
+    # before executing
+    mailer.send(to=to, subject=subject, body=body)</code></pre>
+        </div>
+
+        <h2 id="approval-request-format">Approval Request Format</h2>
+        <p>When a boundary is triggered, AgentCop generates a structured approval request containing the full context of what is being requested and why.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-json">{
+  "approval_id": "apr_abc123",
+  "agent_id": "customer-support-bot",
+  "action": "send_customer_email",
+  "parameters": {
+    "to": "customer@example.com",
+    "subject": "Your refund has been processed",
+    "body": "..."
+  },
+  "risk_level": "MEDIUM",
+  "requested_at": "2026-04-06T14:23:11Z",
+  "expires_at": "2026-04-06T14:28:11Z",
+  "context": {
+    "triggered_by": "user: process refund for order #4821",
+    "agent_run_id": "run_xyz789"
+  }
+}</code></pre>
+        </div>
+
+        <h2 id="approving-via-api">Approving via API</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Approve
+httpx.post(f"/api/approvals/{approval_id}/approve",
+           json={"approver": "admin@company.com", "note": "Refund verified"})
+
+# Deny
+httpx.post(f"/api/approvals/{approval_id}/deny",
+           json={"approver": "admin@company.com", "reason": "Wrong amount"})</code></pre>
+        </div>
+
+        <h2 id="audit-trail">Audit Trail</h2>
+        <p>Every approval decision is recorded in an immutable audit log. The log captures the approver identity, timestamp, the full parameters of the requested action, and the outcome (approved, denied, timed out).</p>
+        <p>This audit trail supports compliance requirements for frameworks including SOC 2 and HIPAA, where demonstrating human oversight of automated systems handling sensitive data is a control requirement.</p>
+
+        <div class="callout callout-sentinel">
+          <div class="callout-icon">AC</div>
+          <p class="callout-text">every email your agent sends is a potential phishing attack if the agent is compromised. require approval. every time.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/concepts/sandbox.html" class="pager-prev">← Sandbox</a>
+          <a href="/docs/concepts/badge-system.html" class="pager-next">Badge System →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#when-humans-must-be-in-the-loop" class="right-nav-link">When Humans Must Be in the Loop</a></li>
+        <li><a href="#defining-approval-boundaries" class="right-nav-link">Defining Approval Boundaries</a></li>
+        <li><a href="#approval-request-format" class="right-nav-link">Approval Request Format</a></li>
+        <li><a href="#approving-via-api" class="right-nav-link">Approving via API</a></li>
+        <li><a href="#audit-trail" class="right-nav-link">Audit Trail</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

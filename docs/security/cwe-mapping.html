@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CWE Mapping — AgentCop Docs</title>
+  <meta name="description" content="Every AgentCop finding maps to a Common Weakness Enumeration (CWE) ID for integration with security scanners, SBOMs, and compliance workflows.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/security/cwe-mapping.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"CWE Mapping","description":"Every AgentCop finding maps to a Common Weakness Enumeration (CWE) ID for integration with security scanners, SBOMs, and compliance workflows.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item nav-item-active">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/security/cwe-mapping.html">Security</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>CWE Mapping</span>
+        </nav>
+
+        <div class="doc-eyebrow">Security</div>
+        <h1 class="doc-title">CWE Mapping</h1>
+        <p class="doc-lead">Every AgentCop finding maps to a Common Weakness Enumeration (CWE) ID for integration with security scanners, SBOMs, and compliance workflows.</p>
+
+        <h2 id="what-is-cwe">What is CWE?</h2>
+        <p>Common Weakness Enumeration (CWE) is a community-developed list of common software and hardware security weaknesses. Maintained by MITRE, it provides a shared language for describing security flaws across tools and teams.</p>
+        <ul class="doc-list">
+          <li>Used in CVE descriptions to classify the root cause of known vulnerabilities</li>
+          <li>Referenced in SBOMs (Software Bill of Materials) for supply chain compliance</li>
+          <li>Consumed natively by SAST tools, GitHub Advanced Security, and SARIF-compatible scanners</li>
+          <li>AgentCop maps every detection to a CWE so findings plug directly into your existing security workflows — no translation layer needed</li>
+        </ul>
+
+        <h2 id="complete-mapping">Complete CWE Mapping</h2>
+        <div class="table-wrapper">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>AgentCop Detection</th>
+                <th>OWASP</th>
+                <th>CWE</th>
+                <th>CWE Name</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Prompt injection (f-string)</td>
+                <td><span class="owasp-ref">LLM01</span></td>
+                <td><span class="cwe-ref">CWE-20</span></td>
+                <td>Improper Input Validation</td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td>Prompt injection (.format)</td>
+                <td><span class="owasp-ref">LLM01</span></td>
+                <td><span class="cwe-ref">CWE-20</span></td>
+                <td>Improper Input Validation</td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><code>eval()</code> on LLM output</td>
+                <td><span class="owasp-ref">LLM02</span></td>
+                <td><span class="cwe-ref">CWE-95</span></td>
+                <td>Improper Neutralization of Directives in Dynamically Evaluated Code</td>
+                <td><span class="severity severity-critical">CRITICAL</span></td>
+              </tr>
+              <tr>
+                <td><code>exec()</code> on LLM output</td>
+                <td><span class="owasp-ref">LLM02</span></td>
+                <td><span class="cwe-ref">CWE-78</span></td>
+                <td>OS Command Injection</td>
+                <td><span class="severity severity-critical">CRITICAL</span></td>
+              </tr>
+              <tr>
+                <td>Hardcoded API key</td>
+                <td><span class="owasp-ref">LLM06</span></td>
+                <td><span class="cwe-ref">CWE-798</span></td>
+                <td>Use of Hard-coded Credentials</td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td>Hardcoded password</td>
+                <td><span class="owasp-ref">LLM06</span></td>
+                <td><span class="cwe-ref">CWE-259</span></td>
+                <td>Use of Hard-coded Password</td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td>Shell tool without gate</td>
+                <td><span class="owasp-ref">LLM08</span></td>
+                <td><span class="cwe-ref">CWE-78</span></td>
+                <td>OS Command Injection</td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td>Unvalidated vector store write</td>
+                <td><span class="owasp-ref">LLM03</span></td>
+                <td><span class="cwe-ref">CWE-20</span></td>
+                <td>Improper Input Validation</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Infinite loop (DoS)</td>
+                <td><span class="owasp-ref">LLM04</span></td>
+                <td><span class="cwe-ref">CWE-400</span></td>
+                <td>Uncontrolled Resource Consumption</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Unsafe HTML rendering</td>
+                <td><span class="owasp-ref">LLM02</span></td>
+                <td><span class="cwe-ref">CWE-79</span></td>
+                <td>Cross-site Scripting</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>File write without gate</td>
+                <td><span class="owasp-ref">LLM08</span></td>
+                <td><span class="cwe-ref">CWE-73</span></td>
+                <td>External Control of File Name or Path</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Email send without approval</td>
+                <td><span class="owasp-ref">LLM08</span></td>
+                <td><span class="cwe-ref">CWE-20</span></td>
+                <td>Improper Input Validation</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Unverified network POST</td>
+                <td><span class="owasp-ref">LLM08</span></td>
+                <td><span class="cwe-ref">CWE-918</span></td>
+                <td>Server-Side Request Forgery</td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="ci-filtering">Using CWE IDs in CI</h2>
+        <p>Filter findings by CWE in your CI pipeline to enforce severity thresholds or block on specific weakness classes.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Filter by CWE in CI pipeline
+agentcop scan agent.py --output json | \
+  jq '[.issues[] | select(.cwe == "CWE-95")]'
+# Returns only eval-on-LLM-output issues
+
+# Fail CI on any CRITICAL finding
+agentcop scan agent.py --output json | \
+  jq 'if [.issues[] | select(.severity == "CRITICAL")] | length > 0 then error else . end'</code></pre>
+        </div>
+
+        <h2 id="github-sarif">Integration with GitHub Code Scanning (SARIF)</h2>
+        <p>AgentCop can export findings as SARIF (Static Analysis Results Interchange Format) for direct integration with GitHub Advanced Security and other SARIF-compatible platforms.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Export as SARIF for GitHub Advanced Security
+agentcop scan agent.py --output sarif > agentcop.sarif
+
+# In .github/workflows/security.yml:
+# - uses: github/codeql-action/upload-sarif@v2
+#   with:
+#     sarif_file: agentcop.sarif</code></pre>
+        </div>
+
+        <p>The SARIF output includes full CWE and OWASP cross-references on every rule, so findings appear in GitHub's Security tab with complete classification metadata:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-json">{
+  "version": "2.1.0",
+  "runs": [{
+    "tool": {
+      "driver": {
+        "name": "AgentCop",
+        "version": "1.0.0",
+        "rules": [{
+          "id": "LLM02-eval",
+          "name": "InsecureOutputHandling",
+          "shortDescription": { "text": "eval() called on LLM-generated content" },
+          "properties": { "cwe": ["CWE-95"], "owasp": ["LLM02"] }
+        }]
+      }
+    },
+    "results": [{
+      "ruleId": "LLM02-eval",
+      "level": "error",
+      "locations": [{
+        "physicalLocation": {
+          "artifactLocation": { "uri": "agent.py" },
+          "region": { "startLine": 31 }
+        }
+      }]
+    }]
+  }]
+}</code></pre>
+        </div>
+
+        <nav class="doc-pagination">
+          <a href="/docs/security/owasp-llm-top10.html" class="pagination-prev">
+            <span class="pagination-label">Previous</span>
+            <span class="pagination-title">OWASP LLM Top 10</span>
+          </a>
+          <a href="/docs/security/threat-model.html" class="pagination-next">
+            <span class="pagination-label">Next</span>
+            <span class="pagination-title">Threat Model</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#what-is-cwe" class="right-nav-item">What is CWE?</a></li>
+        <li><a href="#complete-mapping" class="right-nav-item">Complete CWE Mapping</a></li>
+        <li><a href="#ci-filtering" class="right-nav-item">Using CWE IDs in CI</a></li>
+        <li><a href="#github-sarif" class="right-nav-item">GitHub SARIF Integration</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

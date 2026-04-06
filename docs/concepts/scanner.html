@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scanner Engine — AgentCop Docs</title>
+  <meta name="description" content="The AgentCop scanner uses AST (Abstract Syntax Tree) analysis to find security issues in agent code before deployment.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/scanner.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Scanner Engine","description":"The AgentCop scanner uses AST (Abstract Syntax Tree) analysis to find security issues in agent code before deployment.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item active">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Scanner Engine</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Scanner Engine</h1>
+        <p class="doc-lead">The AgentCop scanner uses AST (Abstract Syntax Tree) analysis to find security issues in agent code before deployment.</p>
+
+        <h2 id="how-it-works">How It Works</h2>
+        <p>The scanner does not use regex-based string matching. It parses the full AST of your Python code and walks the tree, identifying security-relevant constructs: function calls, variable assignments, imports, and string formatting expressions.</p>
+        <p>The core technique is <strong>taint tracking</strong> — following data from sources (user input, HTTP requests, environment variables) through assignments and transformations to dangerous sinks (LLM calls, subprocess invocations, eval).</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Source (user_input) → assignment → f-string → LLM prompt
+                                               ↑
+                               FLAGGED: LLM01 Prompt Injection</code></pre>
+        </div>
+
+        <h2 id="detection-categories">Detection Categories</h2>
+        <p>The scanner maps each detection to the relevant OWASP LLM Top 10 category.</p>
+
+        <div class="doc-table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>OWASP</th>
+                <th>What it detects</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Prompt Injection</td>
+                <td><span class="owasp-pill">LLM01</span></td>
+                <td>f-strings, .format(), concatenation in prompts</td>
+              </tr>
+              <tr>
+                <td>Insecure Output</td>
+                <td><span class="owasp-pill">LLM02</span></td>
+                <td>eval(), exec(), compile() on LLM output</td>
+              </tr>
+              <tr>
+                <td>Sensitive Data</td>
+                <td><span class="owasp-pill">LLM06</span></td>
+                <td>Hardcoded API keys, passwords, tokens</td>
+              </tr>
+              <tr>
+                <td>Excessive Agency</td>
+                <td><span class="owasp-pill">LLM08</span></td>
+                <td>Shell tools, file write, email without gates</td>
+              </tr>
+              <tr>
+                <td>DoS Patterns</td>
+                <td><span class="owasp-pill">LLM04</span></td>
+                <td>Infinite loops, unbounded recursion</td>
+              </tr>
+              <tr>
+                <td>Training Poisoning</td>
+                <td><span class="owasp-pill">LLM03</span></td>
+                <td>Unvalidated writes to vector stores</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="trust-score">Trust Score Calculation</h2>
+        <p>Each scan produces a Trust Score from 0 to 100. The score degrades based on the severity of detected issues.</p>
+        <ul>
+          <li>Starts at <strong>100</strong></li>
+          <li><strong>CRITICAL</strong> issues: −25 each (floor at 0)</li>
+          <li><strong>HIGH</strong> issues: −15 each</li>
+          <li><strong>MEDIUM</strong> issues: −8 each</li>
+          <li><strong>LOW</strong> issues: −3 each</li>
+        </ul>
+
+        <div class="score-legend">
+          <div class="score-band score-critical">0–39 · CRITICAL RISK</div>
+          <div class="score-band score-high">40–59 · HIGH RISK</div>
+          <div class="score-band score-moderate">60–79 · MODERATE</div>
+          <div class="score-band score-low">80–100 · LOW RISK</div>
+        </div>
+
+        <h2 id="code-examples">Code Examples — What the Scanner Finds</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># These patterns trigger Scanner Engine detections:
+
+# LLM01: Prompt Injection — f-string with external data
+def vulnerable_prompt(user_input):
+    prompt = f"Answer this: {user_input}"  # FLAGGED
+    return llm.invoke(prompt)
+
+# LLM02: Insecure Output — eval() on agent result
+result = agent.run(task)
+eval(result)  # FLAGGED
+
+# LLM06: Sensitive Data — hardcoded secret
+api_key = "sk-ant-api03-abc123"  # FLAGGED
+
+# Safe patterns — these do NOT trigger:
+def safe_prompt(user_input):
+    template = PromptTemplate(template="Answer: {question}", input_variables=["question"])
+    return llm.invoke(template.format(question=user_input))  # Safe</code></pre>
+        </div>
+
+        <h2 id="scan-via-api">Scan via API</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">import httpx
+
+result = httpx.post("https://api.agentcop.live/api/scan", json={
+    "code": open("agent.py").read(),
+    "description": "Customer support agent"
+}).json()
+
+for issue in result["issues"]:
+    print(f"[{issue['severity']}] {issue['type']}: {issue['description']}")
+    if issue.get("line"):
+        print(f"  Line {issue['line']}: {issue.get('code_snippet', '')}")</code></pre>
+        </div>
+
+        <div class="callout callout-danger">
+          <div class="callout-icon">AC</div>
+          <p class="callout-text">the scanner is necessary but not sufficient. a clean scan score means your code has no known static patterns — not that your agent is safe at runtime.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/concepts/" class="pager-prev">← Concepts Overview</a>
+          <a href="/docs/concepts/monitor.html" class="pager-next">Runtime Monitor →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#how-it-works" class="right-nav-link">How It Works</a></li>
+        <li><a href="#detection-categories" class="right-nav-link">Detection Categories</a></li>
+        <li><a href="#trust-score" class="right-nav-link">Trust Score Calculation</a></li>
+        <li><a href="#code-examples" class="right-nav-link">Code Examples</a></li>
+        <li><a href="#scan-via-api" class="right-nav-link">Scan via API</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

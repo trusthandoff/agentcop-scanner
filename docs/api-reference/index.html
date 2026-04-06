@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference Overview — AgentCop Docs</title>
+  <meta name="description" content="The AgentCop REST API. All endpoints return JSON. Base URL: https://api.agentcop.live">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"API Reference Overview","description":"The AgentCop REST API. All endpoints return JSON. Base URL: https://api.agentcop.live","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item active">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>API Reference Overview</h1>
+        <p class="doc-lead">The AgentCop REST API. All endpoints return JSON. Base URL: <code>https://api.agentcop.live</code></p>
+
+        <h2 id="authentication">Authentication</h2>
+        <p>All API requests require an API key. Pass it in the request header:</p>
+        <pre><code class="language-http">X-AgentCop-Key: your_api_key_here</code></pre>
+        <p>You can also set it as an environment variable and use the AgentCop SDK — the client will pick it up automatically:</p>
+        <pre><code class="language-bash">export AGENTCOP_API_KEY=your_api_key_here</code></pre>
+        <p>API keys are scoped to your account and can be rotated from the <a href="https://agentcop.live/settings/keys">dashboard</a>. Keep your key secret — it grants full access to all API modules on your account.</p>
+
+        <h2 id="base-url-versioning">Base URL &amp; Versioning</h2>
+        <p>The API is available at two URL prefixes:</p>
+        <ul>
+          <li><code>/api/</code> — always points to the latest stable version</li>
+          <li><code>/api/v1/</code> — pinned to v1 (current stable), safe for production use</li>
+        </ul>
+        <p>v1 is the only version currently available. Breaking changes will always be introduced under a new version prefix with a deprecation window of at least 6 months.</p>
+
+        <h2 id="rate-limits">Rate Limits</h2>
+        <p>Rate limits are applied per API key, per rolling 24-hour window.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Scans / day</th>
+              <th>Gate evaluations / day</th>
+              <th>Approval requests / day</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Free</td>
+              <td>100</td>
+              <td>1,000</td>
+              <td>500</td>
+            </tr>
+            <tr>
+              <td>Pro</td>
+              <td>10,000</td>
+              <td>100,000</td>
+              <td>50,000</td>
+            </tr>
+            <tr>
+              <td>Enterprise</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>When a rate limit is exceeded, the API responds with HTTP <code>429 Too Many Requests</code>. The response will include a <code>Retry-After</code> header indicating when the limit resets.</p>
+
+        <h2 id="error-format">Error Format</h2>
+        <p>All errors share a consistent JSON envelope:</p>
+        <pre><code class="language-json">{
+  "error": "scan_failed",
+  "message": "Code too large to scan (max 100KB)",
+  "code": 413,
+  "docs": "https://docs.agentcop.live/api-reference/"
+}</code></pre>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>error</code></td>
+              <td>string</td>
+              <td>Machine-readable error code</td>
+            </tr>
+            <tr>
+              <td><code>message</code></td>
+              <td>string</td>
+              <td>Human-readable description</td>
+            </tr>
+            <tr>
+              <td><code>code</code></td>
+              <td>integer</td>
+              <td>HTTP status code mirrored in the body</td>
+            </tr>
+            <tr>
+              <td><code>docs</code></td>
+              <td>string</td>
+              <td>Link to relevant documentation</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="api-modules">API Modules</h2>
+        <p>The AgentCop API is organized into five modules, each covering a distinct part of the security platform.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Path</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="/docs/api-reference/agentcop.html">AgentCop API</a></td>
+              <td><code>/api-reference/agentcop.html</code></td>
+              <td>Core scan endpoints</td>
+            </tr>
+            <tr>
+              <td><a href="/docs/api-reference/gate.html">Gate API</a></td>
+              <td><code>/api-reference/gate.html</code></td>
+              <td>Execution gate management</td>
+            </tr>
+            <tr>
+              <td><a href="/docs/api-reference/permissions.html">Permissions API</a></td>
+              <td><code>/api-reference/permissions.html</code></td>
+              <td>Permission layer CRUD</td>
+            </tr>
+            <tr>
+              <td><a href="/docs/api-reference/sandbox.html">Sandbox API</a></td>
+              <td><code>/api-reference/sandbox.html</code></td>
+              <td>Sandbox management</td>
+            </tr>
+            <tr>
+              <td><a href="/docs/api-reference/approvals.html">Approvals API</a></td>
+              <td><code>/api-reference/approvals.html</code></td>
+              <td>Human approval workflows</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="doc-pagination">
+          <a href="/docs/guides/runtime-protection.html" class="prev-link">← Runtime Protection</a>
+          <a href="/docs/api-reference/agentcop.html" class="next-link">AgentCop API →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#base-url-versioning">Base URL &amp; Versioning</a></li>
+        <li><a href="#rate-limits">Rate Limits</a></li>
+        <li><a href="#error-format">Error Format</a></li>
+        <li><a href="#api-modules">API Modules</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

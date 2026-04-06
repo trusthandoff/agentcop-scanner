@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Overview -->
+  <url><loc>https://docs.agentcop.live/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://docs.agentcop.live/why-agentcop.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+
+  <!-- Getting Started -->
+  <url><loc>https://docs.agentcop.live/getting-started/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://docs.agentcop.live/getting-started/installation.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/getting-started/first-scan.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Concepts -->
+  <url><loc>https://docs.agentcop.live/concepts/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/scanner.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/monitor.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/execution-gate.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/permission-layer.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/sandbox.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/approval-boundaries.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/concepts/badge-system.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Guides -->
+  <url><loc>https://docs.agentcop.live/guides/langchain.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/guides/crewai.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/guides/autogen.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/guides/openclaw.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/guides/moltbook.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/guides/runtime-protection.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- API Reference -->
+  <url><loc>https://docs.agentcop.live/api-reference/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/api-reference/agentcop.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/api-reference/gate.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/api-reference/permissions.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/api-reference/sandbox.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://docs.agentcop.live/api-reference/approvals.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Security -->
+  <url><loc>https://docs.agentcop.live/security/owasp-llm-top10.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://docs.agentcop.live/security/cwe-mapping.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.agentcop.live/security/threat-model.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+</urlset>

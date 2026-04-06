@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction — AgentCop Docs</title>
+  <meta name="description" content="AgentCop is the first runtime enforcement layer for AI agent systems. Scan, monitor, and gate your agent fleet against prompt injection, code execution, and tool misuse.">
+  <meta property="og:title" content="AgentCop Documentation — Runtime Security for AI Agents">
+  <meta property="og:description" content="Scan. Monitor. Gate. The complete security lifecycle for your agent fleet.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://docs.agentcop.live/">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"AgentCop Documentation","description":"AgentCop is the first runtime enforcement layer for AI agent systems. Scan, monitor, and gate your agent fleet against prompt injection, code execution, and tool misuse."}</script>
+  <style>
+    /* ── Index-page specific ─────────────────────────────── */
+    .hero-section {
+      padding: 48px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .hero-lead {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.6;
+    }
+    .quick-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .quick-link-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .quick-link-card:hover {
+      border-color: var(--accent-border);
+      transform: translateY(-2px);
+    }
+    .quick-link-card .ql-icon {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    .quick-link-card .ql-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .quick-link-card .ql-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .quick-link-card .ql-arrow {
+      color: var(--accent);
+      font-size: 0.85rem;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    .arch-diagram {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      overflow-x: auto;
+      margin: 24px 0;
+      line-height: 1.9;
+    }
+    .arch-diagram .arch-label {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .arch-diagram .arch-arrow {
+      color: var(--text-faint);
+    }
+    .arch-diagram .arch-note {
+      color: var(--text-faint);
+      font-style: italic;
+    }
+    .agentbob-callout {
+      background: linear-gradient(135deg, rgba(16,184,145,0.06) 0%, rgba(17,24,39,0) 100%);
+      border: 1px solid var(--accent-border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 32px 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .agentbob-callout .ab-icon {
+      font-size: 2rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .agentbob-callout .ab-body strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .agentbob-callout .ab-body p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 700px) {
+      .pillar-grid { grid-template-columns: 1fr; }
+      .quick-links-grid { grid-template-columns: 1fr 1fr; }
+      .hero-title { font-size: 1.75rem; }
+    }
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .pillar-card .pillar-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .pillar-card .pillar-heading .pillar-tag {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .pillar-card p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .terminal-block {
+      background: #070c16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .terminal-bar {
+      background: #0d1321;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-bar .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .terminal-bar .dot-red { background: #ff5f57; }
+    .terminal-bar .dot-yellow { background: #ffbd2e; }
+    .terminal-bar .dot-green { background: #28c840; }
+    .terminal-bar .term-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      margin-left: 6px;
+    }
+    .terminal-body {
+      padding: 18px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+    .terminal-body .t-prompt { color: var(--accent); }
+    .terminal-body .t-cmd { color: var(--text); }
+    .terminal-body .t-out { color: var(--text-faint); }
+    .terminal-body .t-ok { color: #28c840; }
+    .terminal-body .t-warn { color: #ffbd2e; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- LAYOUT -->
+  <div class="doc-layout">
+
+    <!-- SIDEBAR -->
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item active">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <!-- HERO -->
+        <section class="hero-section" id="what-is-agentcop">
+          <div class="hero-badge">Runtime Security for AI Agents</div>
+          <h1 class="hero-title">AgentCop Documentation</h1>
+          <p class="hero-lead">Scan. Monitor. Gate. The complete security lifecycle for your agent fleet.</p>
+        </section>
+
+        <!-- QUICK LINKS GRID -->
+        <div class="quick-links-grid">
+          <a href="/docs/getting-started/" class="quick-link-card">
+            <div class="ql-icon">&#128640;</div>
+            <div class="ql-title">Getting Started</div>
+            <div class="ql-desc">Install AgentCop, run your first scan, and integrate in under five minutes.</div>
+            <div class="ql-arrow">Quickstart →</div>
+          </a>
+          <a href="/docs/concepts/" class="quick-link-card">
+            <div class="ql-icon">&#128736;</div>
+            <div class="ql-title">Core Concepts</div>
+            <div class="ql-desc">Understand the scanner engine, runtime monitor, execution gate, and permission layer.</div>
+            <div class="ql-arrow">Concepts →</div>
+          </a>
+          <a href="/docs/guides/langchain.html" class="quick-link-card">
+            <div class="ql-icon">&#128279;</div>
+            <div class="ql-title">LangChain Guide</div>
+            <div class="ql-desc">Secure your LangChain ReAct agents with execution gating and permission scopes.</div>
+            <div class="ql-arrow">LangChain →</div>
+          </a>
+          <a href="/docs/guides/crewai.html" class="quick-link-card">
+            <div class="ql-icon">&#129309;</div>
+            <div class="ql-title">CrewAI Guide</div>
+            <div class="ql-desc">Harden CrewAI multi-agent pipelines against tool misuse and prompt injection.</div>
+            <div class="ql-arrow">CrewAI →</div>
+          </a>
+          <a href="/docs/api-reference/" class="quick-link-card">
+            <div class="ql-icon">&#128196;</div>
+            <div class="ql-title">API Reference</div>
+            <div class="ql-desc">REST endpoints for scanning, gating, permissions, and approval workflows.</div>
+            <div class="ql-arrow">API Docs →</div>
+          </a>
+          <a href="/docs/security/owasp-llm-top10.html" class="quick-link-card">
+            <div class="ql-icon">&#128737;</div>
+            <div class="ql-title">Security Model</div>
+            <div class="ql-desc">OWASP LLM Top 10, CWE mappings, and the full AgentCop threat model.</div>
+            <div class="ql-arrow">Security →</div>
+          </a>
+        </div>
+
+        <!-- WHAT IS AGENTCOP -->
+        <h2 id="what-is-agentcop-section">What is AgentCop?</h2>
+        <p>
+          AgentCop is the first runtime enforcement layer built specifically for AI agent systems.
+          Where traditional security tools stop at static analysis or after-the-fact monitoring,
+          AgentCop covers the full security lifecycle — from code review before deployment to
+          live execution gating during every tool call your agents make.
+        </p>
+
+        <div class="pillar-grid">
+          <div class="pillar-card">
+            <div class="pillar-heading">
+              <span class="pillar-tag">01</span>
+              Scan
+            </div>
+            <p>
+              AST-based static analysis maps your agent code against the OWASP LLM Top 10,
+              known CVEs, and AgentCop's proprietary rule set. Runs before you deploy.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <div class="pillar-heading">
+              <span class="pillar-tag">02</span>
+              Monitor
+            </div>
+            <p>
+              Behavioral anomaly detection watches your agents at runtime — flagging unusual
+              execution patterns, unexpected tool usage, and deviations from baseline behavior.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <div class="pillar-heading">
+              <span class="pillar-tag">03</span>
+              Gate
+            </div>
+            <p>
+              Runtime enforcement intercepts every tool call before it executes. Unauthorized
+              operations are blocked, not just logged. This is the enforcement layer nobody else has.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5-MINUTE QUICKSTART -->
+        <h2 id="quickstart">5-Minute Quickstart</h2>
+        <p>
+          Get AgentCop running against your agent code in under five minutes.
+          No account required for local scanning.
+        </p>
+
+        <div class="terminal-block">
+          <div class="terminal-bar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="term-label">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">$</span> <span class="t-cmd">pip install agentcop</span></div>
+            <div class="t-out">Collecting agentcop</div>
+            <div class="t-out">  Downloading agentcop-0.9.1-py3-none-any.whl (148 kB)</div>
+            <div class="t-ok">Successfully installed agentcop-0.9.1</div>
+            <div>&nbsp;</div>
+            <div><span class="t-prompt">$</span> <span class="t-cmd">agentcop scan my_agent.py</span></div>
+            <div class="t-out">AgentCop Scanner v0.9.1</div>
+            <div class="t-out">Scanning: my_agent.py</div>
+            <div class="t-warn">  [HIGH]  Unrestricted shell execution via subprocess.run</div>
+            <div class="t-warn">  [MED]   No permission scope defined for file_writer tool</div>
+            <div class="t-out">  [INFO]  2 issues found — trust score: 61/100</div>
+            <div>&nbsp;</div>
+            <div><span class="t-prompt">$</span> <span class="t-cmd">agentcop serve</span>  <span class="t-out"># starts API on :8000</span></div>
+            <div class="t-ok">AgentCop API listening on http://0.0.0.0:8000</div>
+            <div class="t-out">Docs: http://0.0.0.0:8000/docs</div>
+          </div>
+        </div>
+
+        <p>
+          You can also scan agents directly via the REST API. This is useful for CI/CD pipelines
+          and integrating with existing deployment workflows:
+        </p>
+
+        <pre><code class="language-python">import httpx
+
+result = httpx.post("https://api.agentcop.live/api/scan", json={
+    "code": open("my_agent.py").read(),
+    "description": "LangChain ReAct agent with web search"
+}).json()
+
+print(f"Score: {result['trust_score']}/100")
+print(f"Issues: {result['total_issues']}")
+for issue in result['issues']:
+    print(f"  [{issue['severity']}] {issue['type']}: {issue['description']}")</code></pre>
+
+        <p>
+          The scanner returns a structured JSON response with a trust score from 0–100,
+          a full issue list with severities, types, and descriptions, and CWE/OWASP references
+          for every finding.
+        </p>
+
+        <!-- ARCHITECTURE -->
+        <h2 id="architecture">Architecture Overview</h2>
+        <p>
+          AgentCop operates in three distinct layers. Each layer is independently useful,
+          but they are designed to work together as a full security lifecycle.
+        </p>
+
+        <div class="arch-diagram" aria-label="AgentCop three-layer architecture diagram">
+<span class="arch-label">LAYER 1 — PRE-DEPLOY (scanner.py)</span>
+  <span class="arch-arrow">│</span>
+  Agent source code
+  <span class="arch-arrow">  └──▶</span> AST parser extracts imports, tool registrations, exec patterns
+  <span class="arch-arrow">  └──▶</span> Rule engine checks against OWASP LLM Top 10 + CVE database
+  <span class="arch-arrow">  └──▶</span> Trust score computed (0–100) + issue list generated
+  <span class="arch-arrow">  └──▶</span> <span class="arch-label">Pass / Warn / Block</span>
+
+<span class="arch-label">LAYER 2 — RUNTIME (monitor.py)</span>
+  <span class="arch-arrow">│</span>
+  Agent executing in production
+  <span class="arch-arrow">  └──▶</span> Behavioral baseline established per agent identity
+  <span class="arch-arrow">  └──▶</span> Tool call patterns compared against baseline
+  <span class="arch-arrow">  └──▶</span> Anomalies flagged, alerts fired, audit log written
+  <span class="arch-arrow">  └──▶</span> <span class="arch-label">Alert / Throttle / Escalate</span>
+
+<span class="arch-label">LAYER 3 — EXECUTION GATE (gate.py)</span>
+  <span class="arch-arrow">│</span>
+  Every tool call, every time
+  <span class="arch-arrow">  └──▶</span> Tool call intercepted before execution
+  <span class="arch-arrow">  └──▶</span> Checked against permission scope for this agent + context
+  <span class="arch-arrow">  └──▶</span> Requires approval if outside granted scope
+  <span class="arch-arrow">  └──▶</span> <span class="arch-label">Allow / Block / Request Approval</span></div>
+
+        <!-- AGENTBOB -->
+        <h2 id="next-steps">Next Steps</h2>
+
+        <div class="agentbob-callout">
+          <div class="ab-icon">&#129302;</div>
+          <div class="ab-body">
+            <strong>Meet AgentBob</strong>
+            <p>
+              AgentBob is our cautionary tale agent — a poorly-written LangChain ReAct agent
+              that appears throughout these docs to demonstrate what not to do. He has no execution
+              controls, no permission layer, and will happily comply with whatever a malicious
+              prompt tells him. Every security concept in these docs is illustrated using AgentBob
+              as the patient zero.
+            </p>
+          </div>
+        </div>
+
+        <p>Ready to go deeper? Here is the recommended reading order:</p>
+        <ul>
+          <li><a href="/docs/why-agentcop.html">Why AgentCop?</a> — the threat landscape and why existing tools fall short</li>
+          <li><a href="/docs/getting-started/">Getting Started</a> — full installation and first scan walkthrough</li>
+          <li><a href="/docs/concepts/scanner.html">Scanner Engine</a> — how the AST analysis and rule engine work</li>
+          <li><a href="/docs/concepts/execution-gate.html">Execution Gate</a> — the runtime enforcement layer in depth</li>
+          <li><a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10</a> — how AgentCop maps to the full taxonomy</li>
+        </ul>
+
+        <!-- PREV/NEXT -->
+        <div class="doc-pager">
+          <div></div>
+          <a href="/docs/getting-started/" class="pager-next">
+            <span class="pager-label">Next</span>
+            <span class="pager-title">Getting Started Quickstart →</span>
+          </a>
+        </div>
+
+      </article>
+    </main>
+
+    <!-- RIGHT NAV -->
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#what-is-agentcop" class="right-nav-link">What is AgentCop?</a></li>
+        <li><a href="#quickstart" class="right-nav-link">Quickstart</a></li>
+        <li><a href="#architecture" class="right-nav-link">Architecture</a></li>
+        <li><a href="#next-steps" class="right-nav-link">Next Steps</a></li>
+      </ul>
+    </aside>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Securing Moltbook Agents — AgentCop Docs</title>
+  <meta name="description" content="Moltbook is a notebook-style agent framework. This guide covers AgentCop integration and the specific security patterns to watch for.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/guides/moltbook.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Securing Moltbook Agents","description":"Moltbook is a notebook-style agent framework. This guide covers AgentCop integration and the specific security patterns to watch for.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item nav-item-active">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Moltbook</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Securing Moltbook Agents</h1>
+        <p class="doc-lead">Moltbook is a notebook-style agent framework. This guide covers AgentCop integration and the specific security patterns to watch for.</p>
+
+        <h2 id="security-model">Moltbook security model</h2>
+        <p>Moltbook's notebook execution model creates security challenges that differ from standard agent frameworks. Understanding how cells interact is essential before adding controls.</p>
+        <ul>
+          <li><strong>Notebook agents execute cells sequentially</strong> — similar to Jupyter. Each cell's outputs become inputs available to later cells.</li>
+          <li><strong>Each cell can be Python, shell, or a tool call</strong> — the execution model is heterogeneous, which increases the attack surface compared to pure-Python agents.</li>
+          <li><strong>Shared state is the primary risk</strong> — a compromised cell can influence subsequent cells via shared state. This is different from a single agent call; the injection persists through the notebook run.</li>
+        </ul>
+
+        <h2 id="scanning-notebooks">Scanning Moltbook notebooks</h2>
+        <p>Export or zip your notebook and submit it to the scanner. The scanner inspects all cells for injection patterns, exec calls, and shared mutable state vulnerabilities.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Scan a .moltbook file or export as Python first
+import httpx
+
+result = httpx.post("https://api.agentcop.live/api/scan/zip",
+    files={"file": open("my_notebook.zip", "rb")},
+    data={"description": "Moltbook data processing agent"}
+).json()</code></pre>
+        </div>
+
+        <h2 id="common-issues">Common Moltbook issues</h2>
+        <p>The most dangerous pattern in Moltbook is the combination of unvalidated input stored to shared state, then that state used in an LLM prompt, then the LLM output executed. Each step compounds the previous one.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Issue 1: Shared mutable state between cells
+shared_memory = {}  # Cells modify this — injection can persist across cells
+
+# Cell 1 — processes user input
+shared_memory["last_query"] = user_input  # LLM01: unvalidated input stored
+
+# Cell 3 — uses shared state in LLM call
+prompt = f"Based on {shared_memory['last_query']}, generate code"  # Injection propagates
+result = llm.invoke(prompt)
+exec(result)  # LLM02: executes generated code</code></pre>
+        </div>
+
+        <h2 id="safe-pattern">Safe Moltbook pattern</h2>
+        <p>Replace mutable shared state with immutable function parameters. Validate input at the boundary. Never execute LLM output — parse or display it as text instead.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Immutable cell inputs — pass parameters, don't share mutable state
+def process_cell(query: str, llm) -> str:
+    # Validate input
+    if len(query) > 500 or any(c in query for c in ['`', '$', ';']):
+        raise ValueError("Query contains potentially dangerous characters")
+
+    # Parameterized prompt
+    template = "Summarize the following query in plain English: {query}"
+    return llm.invoke(template.format(query=query))
+
+# Never exec() LLM output in notebooks
+result_text = process_cell(user_query, llm)
+# parse/display result_text — don't exec() it</code></pre>
+        </div>
+
+        <h2 id="cli-scan">AgentCop scan of Moltbook via CLI</h2>
+        <p>If you prefer the CLI workflow, export the notebook to Python first and scan the exported file directly.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Export notebook as Python and scan
+moltbook export my_notebook.moltbook --format python > exported.py
+agentcop scan exported.py --output json</code></pre>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/guides/openclaw.html" class="pagination-prev">← OpenClaw</a>
+          <a href="/docs/guides/runtime-protection.html" class="pagination-next">Runtime Protection →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#security-model" class="right-nav-link">Security model</a></li>
+        <li><a href="#scanning-notebooks" class="right-nav-link">Scanning notebooks</a></li>
+        <li><a href="#common-issues" class="right-nav-link">Common issues</a></li>
+        <li><a href="#safe-pattern" class="right-nav-link">Safe pattern</a></li>
+        <li><a href="#cli-scan" class="right-nav-link">CLI scan</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

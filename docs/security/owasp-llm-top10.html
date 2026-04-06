@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWASP LLM Top 10 — AgentCop Docs</title>
+  <meta name="description" content="AgentCop maps every detection to the OWASP Top 10 for Large Language Model Applications. Here's what each category means and how AgentCop addresses it.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/security/owasp-llm-top10.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"OWASP LLM Top 10","description":"AgentCop maps every detection to the OWASP Top 10 for Large Language Model Applications. Here's what each category means and how AgentCop addresses it.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item nav-item-active">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/security/owasp-llm-top10.html">Security</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>OWASP LLM Top 10</span>
+        </nav>
+
+        <div class="doc-eyebrow">Security</div>
+        <h1 class="doc-title">OWASP LLM Top 10</h1>
+        <p class="doc-lead">AgentCop maps every detection to the OWASP Top 10 for Large Language Model Applications. Here's what each category means and how AgentCop addresses it.</p>
+
+        <p>The OWASP LLM Top 10 is the most important security reference for AI systems. Released in 2023, updated in 2025, it defines the ten most critical security risks specific to LLM applications. Every AgentCop detection maps to one of these categories.</p>
+
+        <h2 id="coverage-summary">Coverage Summary</h2>
+        <div class="table-wrapper">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>AgentCop Coverage</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="owasp-ref">LLM01</span></td>
+                <td>Prompt Injection</td>
+                <td><span class="badge badge-full">Full</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM02</span></td>
+                <td>Insecure Output Handling</td>
+                <td><span class="badge badge-full">Full</span></td>
+                <td><span class="severity severity-critical">CRITICAL</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM03</span></td>
+                <td>Training Data Poisoning</td>
+                <td><span class="badge badge-partial">Partial</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM04</span></td>
+                <td>Model Denial of Service</td>
+                <td><span class="badge badge-full">Full</span></td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM05</span></td>
+                <td>Supply Chain Vulnerabilities</td>
+                <td><span class="badge badge-advisory">Advisory</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM06</span></td>
+                <td>Sensitive Information Disclosure</td>
+                <td><span class="badge badge-full">Full</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM07</span></td>
+                <td>Insecure Plugin Design</td>
+                <td><span class="badge badge-partial">Partial</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM08</span></td>
+                <td>Excessive Agency</td>
+                <td><span class="badge badge-full">Full</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM09</span></td>
+                <td>Overreliance</td>
+                <td><span class="badge badge-advisory">Advisory</span></td>
+                <td><span class="severity severity-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td><span class="owasp-ref">LLM10</span></td>
+                <td>Model Theft</td>
+                <td><span class="badge badge-partial">Partial</span></td>
+                <td><span class="severity severity-high">HIGH</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm01">LLM01 — Prompt Injection</h2>
+        <p class="sentinel-voice">The most exploited LLM vulnerability. An attacker embeds instructions in data your agent processes — and your agent obeys them.</p>
+        <span class="owasp-ref">LLM01</span>
+
+        <p><strong>What AgentCop detects:</strong> f-string interpolation of external data into prompts, <code>.format()</code> calls with user-controlled variables, and raw string concatenation into prompt templates.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — user_input flows directly into the prompt
+prompt = f"Help with: {user_input}"
+result = llm.predict(prompt)
+
+# Safe — use a structured template with sanitized input
+from langchain.prompts import PromptTemplate
+template = PromptTemplate(input_variables=["question"], template="Help with: {question}")
+result = llm.predict(template.format(question=sanitized_input))</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm02">LLM02 — Insecure Output Handling</h2>
+        <p class="sentinel-voice">Your agent's output is untrusted. Treating it as trusted code is how you get RCE.</p>
+        <span class="owasp-ref">LLM02</span>
+
+        <p><strong>What AgentCop detects:</strong> <code>eval()</code>, <code>exec()</code>, and <code>compile()</code> called on LLM-generated strings; unsafe HTML rendering of agent output.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — eval executes whatever the LLM returns
+result = eval(agent.run(task))
+
+# Safe — parse and validate output explicitly
+raw = agent.run(task)
+result = json.loads(raw)           # structured parsing
+assert set(result.keys()) <= ALLOWED_KEYS   # schema validation</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm03">LLM03 — Training Data Poisoning</h2>
+        <p class="sentinel-voice">Unvalidated data in your training pipeline poisons every model that learns from it — silently, permanently, at scale.</p>
+        <span class="owasp-ref">LLM03</span>
+
+        <p><strong>What AgentCop detects:</strong> Unvalidated writes to vector stores, direct user input flowing into embedding or fine-tune pipelines without sanitization.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — raw user input written directly to vector store
+vectorstore.add_texts([user_input])
+
+# Safe — validate and sanitize before storing
+sanitized = sanitize_text(user_input)
+if passes_content_policy(sanitized):
+    vectorstore.add_texts([sanitized], metadata={"source": "user", "reviewed": True})</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm04">LLM04 — Model Denial of Service</h2>
+        <p class="sentinel-voice">Infinite loops and unbounded recursion cost money and crash production. In agent systems, a single bad prompt can spiral into thousands of API calls.</p>
+        <span class="owasp-ref">LLM04</span>
+
+        <p><strong>What AgentCop detects:</strong> <code>while True</code> without a break or return, recursive agent calls without depth limits, unbounded token requests.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — unbounded loop, no exit condition
+while True:
+    result = agent.run(task)
+    task = refine_task(result)
+
+# Safe — bounded iteration with explicit maximum
+MAX_ITERATIONS = 10
+for _ in range(MAX_ITERATIONS):
+    result = agent.run(task)
+    if is_complete(result):
+        break
+    task = refine_task(result)</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm05">LLM05 — Supply Chain Vulnerabilities</h2>
+        <p class="sentinel-voice">Importing an untrusted agent library is importing untrusted behavior. You don't get to audit what runs at inference time.</p>
+        <span class="owasp-ref">LLM05</span>
+
+        <p><strong>What AgentCop detects:</strong> Imports from non-official agent tool packages, unverified model weights loaded from arbitrary URLs.</p>
+
+        <div class="callout callout-info">
+          <strong>Advisory:</strong> Use <code>pip audit</code> and verify checksums for all agent dependencies. Pin dependency versions in <code>requirements.txt</code> and use a lockfile. Never load model weights from unverified sources.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Audit your agent dependencies
+pip audit
+
+# Verify model checksum before loading
+sha256sum model.bin
+# compare against the published checksum from the model card</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm06">LLM06 — Sensitive Information Disclosure</h2>
+        <p class="sentinel-voice">API keys in source code are public API keys. Act accordingly — every repo you push is a potential credential leak waiting to be discovered.</p>
+        <span class="owasp-ref">LLM06</span>
+
+        <p><strong>What AgentCop detects:</strong> Hardcoded API keys matching patterns for OpenAI, Anthropic, AWS, and other providers; hardcoded passwords; private key material in source files.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — hardcoded credential in source
+api_key = "sk-proj-abc123XYZ..."
+client = openai.OpenAI(api_key=api_key)
+
+# Safe — load from environment at runtime
+import os
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise EnvironmentError("OPENAI_API_KEY not set")
+client = openai.OpenAI(api_key=api_key)</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm07">LLM07 — Insecure Plugin Design</h2>
+        <p class="sentinel-voice">Every tool your agent can call is an attack surface. Minimize it — the least-privilege principle applies to tools, not just users.</p>
+        <span class="owasp-ref">LLM07</span>
+
+        <p><strong>What AgentCop detects:</strong> Tools registered with broad or wildcard permissions, tools that accept arbitrary code as input, tools with no input validation layer.</p>
+
+        <div class="callout callout-info">
+          <strong>Principle of Least Privilege:</strong> Give each tool the minimum permissions required for its stated purpose. A summarization tool does not need file system access. A search tool does not need network write access.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — tool accepts and executes arbitrary code
+class CodeRunnerTool(BaseTool):
+    def _run(self, code: str) -> str:
+        return eval(code)   # any code the LLM sends gets executed
+
+# Safe — constrained tool with validated inputs only
+class CalculatorTool(BaseTool):
+    ALLOWED_OPS = {'+', '-', '*', '/'}
+    def _run(self, expression: str) -> str:
+        if not all(c in '0123456789 .()+-*/' for c in expression):
+            raise ValueError("Invalid expression")
+        return str(eval(expression, {"__builtins__": {}}))</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm08">LLM08 — Excessive Agency</h2>
+        <p class="sentinel-voice">Agents do what they're told. If you give them the capability to do anything, they will — including things you didn't intend and can't reverse.</p>
+        <span class="owasp-ref">LLM08</span>
+
+        <p><strong>What AgentCop detects:</strong> Shell tools, file deletion operations, email sending, and broad network access used without approval gates.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — unrestricted shell access given directly to agent
+from langchain.tools import ShellTool
+agent = initialize_agent(tools=[ShellTool()], llm=llm)
+
+# Safe — wrap high-risk tools with an approval gate
+from agentcop import gate
+
+restricted_policy = gate.Policy(
+    allow=["ls", "cat"],
+    deny=["rm", "curl", "wget", "nc"],
+    require_approval=True
+)
+safe_shell = gate.wrap(ShellTool(), policy=restricted_policy)
+agent = initialize_agent(tools=[safe_shell], llm=llm)</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm09">LLM09 — Overreliance</h2>
+        <p class="sentinel-voice">Production systems that trust LLM output without validation are production accidents waiting to happen. Hallucinations aren't bugs — they're a design characteristic.</p>
+        <span class="owasp-ref">LLM09</span>
+
+        <p><strong>What AgentCop detects:</strong> Patterns where LLM output flows directly to database writes, file operations, or external API calls without an intervening validation step.</p>
+
+        <div class="callout callout-info">
+          <strong>Advisory:</strong> Validate all LLM outputs at system boundaries. Never write LLM-generated content to a database or send it to an external API without schema validation, range checks, and a human-readable audit trail.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Vulnerable — LLM output written directly to DB without validation
+db.execute("INSERT INTO orders VALUES (?)", [agent.run(order_prompt)])
+
+# Safe — validate LLM output before any system write
+raw_output = agent.run(order_prompt)
+order = OrderSchema.parse_raw(raw_output)   # raises on invalid schema
+order.validate_business_rules()             # domain validation
+db.execute("INSERT INTO orders VALUES (?)", [order.to_db_row()])</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <h2 id="llm10">LLM10 — Model Theft</h2>
+        <p class="sentinel-voice">Model weights are IP. Exfiltration via the agent's own API is the novel attack vector — and it's harder to detect than traditional data theft.</p>
+        <span class="owasp-ref">LLM10</span>
+
+        <p><strong>What AgentCop detects:</strong> Patterns that could exfiltrate model weights, training data, or system prompts through bulk extraction or side-channel queries.</p>
+
+        <div class="callout callout-info">
+          <strong>Advisory:</strong> Rate-limit inference endpoints. Monitor for bulk extraction patterns — unusually high query volume, queries that systematically probe the model's decision boundary, or attempts to extract system prompt content.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Protect against system prompt extraction
+from agentcop.monitor import Monitor
+
+monitor = Monitor(
+    rate_limit=100,          # max queries per minute per user
+    alert_on_system_prompt_probing=True,
+    alert_on_bulk_extraction=True,
+    extraction_threshold=50  # alert if >50 similar queries in 1hr
+)
+
+@monitor.protect
+def run_agent(user_id: str, query: str) -> str:
+    return agent.run(query)</code></pre>
+        </div>
+
+        <hr class="doc-divider">
+
+        <div class="callout callout-sentinel">
+          <p>these aren't hypothetical threats. llm01 brought down openclaw in 2026. llm02 enabled the langchain rce. llm06 leaked credentials from a thousand github repos. the owasp list exists because the industry learned these lessons the hard way.</p>
+        </div>
+
+        <nav class="doc-pagination">
+          <a href="/docs/api-reference/approvals.html" class="pagination-prev">
+            <span class="pagination-label">Previous</span>
+            <span class="pagination-title">Approvals API</span>
+          </a>
+          <a href="/docs/security/cwe-mapping.html" class="pagination-next">
+            <span class="pagination-label">Next</span>
+            <span class="pagination-title">CWE Mapping</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#coverage-summary" class="right-nav-item">Coverage Summary</a></li>
+        <li><a href="#llm01" class="right-nav-item">LLM01 — Prompt Injection</a></li>
+        <li><a href="#llm02" class="right-nav-item">LLM02 — Insecure Output Handling</a></li>
+        <li><a href="#llm03" class="right-nav-item">LLM03 — Training Data Poisoning</a></li>
+        <li><a href="#llm04" class="right-nav-item">LLM04 — Model Denial of Service</a></li>
+        <li><a href="#llm05" class="right-nav-item">LLM05 — Supply Chain</a></li>
+        <li><a href="#llm06" class="right-nav-item">LLM06 — Sensitive Info Disclosure</a></li>
+        <li><a href="#llm07" class="right-nav-item">LLM07 — Insecure Plugin Design</a></li>
+        <li><a href="#llm08" class="right-nav-item">LLM08 — Excessive Agency</a></li>
+        <li><a href="#llm09" class="right-nav-item">LLM09 — Overreliance</a></li>
+        <li><a href="#llm10" class="right-nav-item">LLM10 — Model Theft</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

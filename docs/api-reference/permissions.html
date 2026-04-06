@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permissions API — AgentCop Docs</title>
+  <meta name="description" content="CRUD operations for agent permission layers — define what each agent is and isn't allowed to do.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/permissions.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Permissions API","description":"CRUD operations for agent permission layers — define what each agent is and isn't allowed to do.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item active">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>Permissions API</h1>
+        <p class="doc-lead">CRUD operations for agent permission layers — define what each agent is and isn't allowed to do.</p>
+
+        <p>The Permissions API lets you define and manage the permission layer for every agent in your system. Permissions control which tools an agent may call, which data paths it may read or write, which network destinations it may reach, and how much compute it may consume per run. The Gate API enforces these permissions at runtime.</p>
+
+        <h2 id="get-permissions">GET /api/permissions/{agent_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/permissions/{agent_id}</code>
+          </div>
+          <p>Returns the current permission configuration for the specified agent.</p>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "agent_id": "invoice-processor",
+  "version": "1.2",
+  "tools": {
+    "allow": ["read_invoice", "write_invoice_status", "send_confirmation"],
+    "block": ["shell_execute", "delete_record"]
+  },
+  "data": {
+    "read": ["invoices/*", "customers/*/email"],
+    "write": ["invoices/*/status"],
+    "deny": ["customers/*/payment_method"]
+  },
+  "network": {
+    "allow": ["api.company.com"],
+    "block_outbound": true
+  },
+  "compute": {
+    "max_tokens_per_run": 10000,
+    "max_tool_calls_per_run": 20
+  },
+  "updated_at": "2026-04-05T10:00:00Z"
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>tools.allow</code></td><td>string[]</td><td>Explicitly permitted tool names</td></tr>
+              <tr><td><code>tools.block</code></td><td>string[]</td><td>Always-blocked tools, regardless of other rules</td></tr>
+              <tr><td><code>data.read</code></td><td>string[]</td><td>Glob patterns for readable data paths</td></tr>
+              <tr><td><code>data.write</code></td><td>string[]</td><td>Glob patterns for writable data paths</td></tr>
+              <tr><td><code>data.deny</code></td><td>string[]</td><td>Explicitly blocked data paths, highest precedence</td></tr>
+              <tr><td><code>network.allow</code></td><td>string[]</td><td>Whitelisted outbound hostnames</td></tr>
+              <tr><td><code>network.block_outbound</code></td><td>boolean</td><td>Block all outbound traffic not in <code>allow</code></td></tr>
+              <tr><td><code>compute.max_tokens_per_run</code></td><td>integer</td><td>Hard limit on tokens consumed per run</td></tr>
+              <tr><td><code>compute.max_tool_calls_per_run</code></td><td>integer</td><td>Hard limit on tool calls per run</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="post-permissions">POST /api/permissions/{agent_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/permissions/{agent_id}</code>
+          </div>
+          <p>Create a new permission configuration for an agent that has not yet been registered. Returns <code>409 Conflict</code> if permissions already exist for the given <code>agent_id</code> — use <code>PUT</code> to replace or <code>PATCH</code> to update.</p>
+          <p>The request body accepts the same schema as the response from <code>GET /api/permissions/{agent_id}</code>, omitting <code>version</code> and <code>updated_at</code> (both are set by the server).</p>
+        </div>
+
+        <h2 id="put-permissions">PUT /api/permissions/{agent_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">PUT</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/permissions/{agent_id}</code>
+          </div>
+          <p>Replace the entire permission configuration for an agent. Any fields not included in the request body are reset to their default values. If no permissions exist for this agent yet, a new record is created (upsert behavior).</p>
+          <p>The prior version is retained in the permissions history and remains accessible via the audit log.</p>
+        </div>
+
+        <h2 id="patch-permissions">PATCH /api/permissions/{agent_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">PATCH</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/permissions/{agent_id}</code>
+          </div>
+          <p>Partially update an agent's permissions without replacing the entire object. Use <code>add_allow</code> / <code>remove_allow</code> and equivalent keys to surgically modify allow and block lists.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "tools": {
+    "add_allow": ["read_customer_record"],
+    "remove_allow": ["write_invoice_status"]
+  }
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Key</th><th>Effect</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>tools.add_allow</code></td><td>Append items to <code>tools.allow</code></td></tr>
+              <tr><td><code>tools.remove_allow</code></td><td>Remove items from <code>tools.allow</code></td></tr>
+              <tr><td><code>tools.add_block</code></td><td>Append items to <code>tools.block</code></td></tr>
+              <tr><td><code>tools.remove_block</code></td><td>Remove items from <code>tools.block</code></td></tr>
+              <tr><td><code>data.add_read</code></td><td>Append patterns to <code>data.read</code></td></tr>
+              <tr><td><code>data.add_deny</code></td><td>Append patterns to <code>data.deny</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="delete-permissions">DELETE /api/permissions/{agent_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(239,68,68,0.15);color:#ef4444;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">DELETE</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/permissions/{agent_id}</code>
+          </div>
+          <p>Remove all permissions for an agent. Once deleted, any gate evaluation for this agent will return <code>block</code> with the reason <code>"no_policy_found"</code> until a new permission set is created.</p>
+          <p>Use with caution in production environments. The deletion is logged in the audit history and can be reviewed, but cannot be automatically undone.</p>
+          <p>Returns <code>204 No Content</code> on success.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/api-reference/gate.html" class="prev-link">← Gate API</a>
+          <a href="/docs/api-reference/sandbox.html" class="next-link">Sandbox API →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#get-permissions">GET /api/permissions/{agent_id}</a></li>
+        <li><a href="#post-permissions">POST /api/permissions/{agent_id}</a></li>
+        <li><a href="#put-permissions">PUT /api/permissions/{agent_id}</a></li>
+        <li><a href="#patch-permissions">PATCH /api/permissions/{agent_id}</a></li>
+        <li><a href="#delete-permissions">DELETE /api/permissions/{agent_id}</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

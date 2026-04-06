@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentCop API — AgentCop Docs</title>
+  <meta name="description" content="Core scanning endpoints — submit code, retrieve results, manage scan history.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/agentcop.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"AgentCop API","description":"Core scanning endpoints — submit code, retrieve results, manage scan history.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item active">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>AgentCop API</h1>
+        <p class="doc-lead">Core scanning endpoints — submit code, retrieve results, manage scan history.</p>
+
+        <h2 id="post-scan">POST /api/scan</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/scan</code>
+          </div>
+          <p>Submit agent source code for a security scan. Returns a trust score, risk level, and a detailed list of detected issues. Results are cached by code hash — identical code submitted again will return the cached result instantly.</p>
+          <h4>Request body</h4>
+          <pre><code class="language-json">{
+  "code": "import os\nagent = ...",
+  "description": "LangChain ReAct agent with web search",
+  "agent_name": "my-agent",
+  "framework": "langchain"
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>code</code></td><td>string</td><td>Yes</td><td>Agent source code to scan (max 100 KB)</td></tr>
+              <tr><td><code>description</code></td><td>string</td><td>No</td><td>Human-readable description of the agent</td></tr>
+              <tr><td><code>agent_name</code></td><td>string</td><td>No</td><td>Identifier used in scan history and share URLs</td></tr>
+              <tr><td><code>framework</code></td><td>string</td><td>No</td><td>Hint for framework-specific rules: <code>langchain</code>, <code>crewai</code>, <code>autogen</code>, <code>moltbook</code></td></tr>
+            </tbody>
+          </table>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "scan_id": "scan_abc123",
+  "trust_score": 72,
+  "risk_level": "MODERATE",
+  "total_issues": 3,
+  "issues": [
+    {
+      "id": "issue_001",
+      "type": "LLM01_PROMPT_INJECTION",
+      "severity": "HIGH",
+      "description": "f-string interpolation in LLM prompt",
+      "line": 14,
+      "code_snippet": "prompt = f'Answer: {user_input}'",
+      "fix": "Use PromptTemplate with input_variables",
+      "owasp": "LLM01",
+      "cwe": "CWE-20"
+    }
+  ],
+  "scan_time_ms": 234,
+  "created_at": "2026-04-06T14:23:11Z",
+  "share_url": "https://agentcop.live/scan/scan_abc123"
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>trust_score</code></td><td>integer (0–100)</td><td>Higher is safer. Penalized by severity and count of issues.</td></tr>
+              <tr><td><code>risk_level</code></td><td>string</td><td><code>SAFE</code>, <code>LOW</code>, <code>MODERATE</code>, <code>HIGH</code>, <code>CRITICAL</code></td></tr>
+              <tr><td><code>issues[].owasp</code></td><td>string</td><td>OWASP LLM Top 10 category (e.g., <code>LLM01</code>)</td></tr>
+              <tr><td><code>issues[].cwe</code></td><td>string</td><td>CWE identifier</td></tr>
+              <tr><td><code>share_url</code></td><td>string</td><td>Public permalink to this scan result</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="post-scan-zip">POST /api/scan/zip</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(16,184,145,0.15);color:var(--accent);padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">POST</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/scan/zip</code>
+          </div>
+          <p>Scan an entire agent project by uploading a ZIP archive. Accepts <code>multipart/form-data</code>. All <code>.py</code> files inside the archive are scanned and their issues are merged into a single result. Maximum archive size is 10 MB.</p>
+          <h4>Request (multipart/form-data)</h4>
+          <pre><code class="language-bash">curl -X POST https://api.agentcop.live/api/scan/zip \
+  -H "X-AgentCop-Key: your_api_key_here" \
+  -F "file=@agents.zip" \
+  -F "description=My agent project"</code></pre>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>file</code></td><td>file</td><td>Yes</td><td>ZIP archive containing agent source files</td></tr>
+              <tr><td><code>description</code></td><td>string</td><td>No</td><td>Project description, stored with scan result</td></tr>
+              <tr><td><code>framework</code></td><td>string</td><td>No</td><td>Framework hint applied to all files</td></tr>
+            </tbody>
+          </table>
+          <p>The response schema is identical to <code>POST /api/scan</code>, with an additional <code>files_scanned</code> integer field.</p>
+        </div>
+
+        <h2 id="get-scan">GET /api/scan/{scan_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/scan/{scan_id}</code>
+          </div>
+          <p>Retrieve a previously created scan result by its ID. Scan results are retained for 90 days on Free plans and indefinitely on Pro and Enterprise plans.</p>
+          <h4>Path parameters</h4>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>scan_id</code></td><td>string</td><td>The scan ID returned by <code>POST /api/scan</code></td></tr>
+            </tbody>
+          </table>
+          <p>Response schema is identical to <code>POST /api/scan</code>.</p>
+        </div>
+
+        <h2 id="get-badge">GET /api/badge/{badge_id}</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/api/badge/{badge_id}</code>
+          </div>
+          <p>Returns an SVG trust badge for a scan result. Intended for embedding in READMEs and documentation. The response carries <code>Content-Type: image/svg+xml</code> and <code>Cache-Control: max-age=3600</code>.</p>
+          <h4>Example embed</h4>
+          <pre><code class="language-markdown">![AgentCop Trust Score](https://api.agentcop.live/api/badge/scan_abc123)</code></pre>
+          <p>The badge_id is the same value as the scan_id returned from any scan endpoint.</p>
+        </div>
+
+        <h2 id="get-health">GET /health</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:13px;font-weight:700;">GET</span>
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--text);">/health</code>
+          </div>
+          <p>Returns the operational status of the API and its subsystems. Useful for uptime monitoring and readiness checks. Does not require authentication.</p>
+          <h4>Response</h4>
+          <pre><code class="language-json">{
+  "status": "ok",
+  "version": "1.0.0",
+  "scanner": "ok",
+  "database": "ok",
+  "uptime_seconds": 84623
+}</code></pre>
+          <p>Any subsystem in a degraded state will appear as <code>"degraded"</code>. If <code>status</code> itself is not <code>"ok"</code>, the HTTP status code will be <code>503</code>.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/api-reference/" class="prev-link">← API Reference Overview</a>
+          <a href="/docs/api-reference/gate.html" class="next-link">Gate API →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#post-scan">POST /api/scan</a></li>
+        <li><a href="#post-scan-zip">POST /api/scan/zip</a></li>
+        <li><a href="#get-scan">GET /api/scan/{scan_id}</a></li>
+        <li><a href="#get-badge">GET /api/badge/{badge_id}</a></li>
+        <li><a href="#get-health">GET /health</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

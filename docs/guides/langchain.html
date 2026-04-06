@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Securing LangChain Agents — AgentCop Docs</title>
+  <meta name="description" content="Add AgentCop scanning, monitoring, and execution gating to your LangChain agents.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/guides/langchain.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Securing LangChain Agents","description":"Add AgentCop scanning, monitoring, and execution gating to your LangChain agents.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item nav-item-active">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>LangChain</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Securing LangChain Agents</h1>
+        <p class="doc-lead">Add AgentCop scanning, monitoring, and execution gating to your LangChain agents.</p>
+
+        <h2 id="common-vulnerabilities">Common LangChain vulnerabilities</h2>
+        <p>LangChain is the most widely-deployed agent framework — and one of the most frequently exploited. The patterns below appear repeatedly in production codebases.</p>
+        <ul>
+          <li><strong>Prompt injection via user input</strong> — user-controlled strings passed directly into ReAct prompts without sanitization or parameterization</li>
+          <li><strong>eval() on LLM output</strong> — seen in LangChain expression parsers and output parsers that interpret model-generated code</li>
+          <li><strong>ShellTool without an execution gate</strong> — exposes the host OS to any instruction the LLM produces</li>
+          <li>
+            <strong>CVE-2025-68664</strong> — LangChain arbitrary code execution via eval in output parser
+            <span class="cve-chip">CVE-2025-68664</span>
+            <p style="margin-top:0.5rem;font-size:0.92rem;color:var(--text-muted)">Affected LangChain versions prior to 0.2.14. The <code>StructuredOutputParser</code> called <code>eval()</code> on LLM-generated content without sandboxing. Patch: upgrade to ≥ 0.2.14 and add an ExecutionGate.</p>
+          </li>
+        </ul>
+
+        <h2 id="scanning">Scanning a LangChain agent</h2>
+        <p>Run the AgentCop scanner against your agent file before deploying. This catches static issues — hardcoded keys, eval calls, injection patterns — that would otherwise reach production.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># 1. Scan before deploy
+import httpx
+
+with open("my_langchain_agent.py") as f:
+    code = f.read()
+
+result = httpx.post("https://api.agentcop.live/api/scan", json={
+    "code": code,
+    "description": "LangChain ReAct agent with web search and calculator"
+}).json()
+
+print(f"Score: {result['trust_score']}/100")
+# Check: result['issues'] for specific findings</code></pre>
+        </div>
+
+        <h2 id="agentbob-pattern">AgentBob's vulnerable LangChain pattern</h2>
+        <p>This is what <em>not</em> to do. AgentBob's agent passes user input directly into the prompt and exposes a shell tool with no gate — two critical vulnerabilities that work together.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># AgentBob's LangChain agent — full of issues
+from langchain.agents import initialize_agent, AgentType
+from langchain.tools import ShellTool
+from langchain_openai import ChatOpenAI
+
+# LLM01: user_input injected directly into prompt
+def run_agentbob(user_input: str):
+    agent = initialize_agent(
+        tools=[ShellTool()],  # LLM08: shell tool without gate
+        llm=ChatOpenAI(),
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    )
+    # No sanitization, no gate, no monitoring
+    return agent.run(f"Complete this task: {user_input}")  # LLM01</code></pre>
+        </div>
+
+        <h2 id="safe-pattern">Safe LangChain pattern with AgentCop</h2>
+        <p>The safe version uses a <code>PromptTemplate</code> to isolate user input as a parameter — it never touches the instruction structure. The commented gate lines show where runtime enforcement slots in once the AgentCop runtime module is installed.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from langchain.agents import initialize_agent, AgentType
+from langchain.tools import DuckDuckGoSearchRun
+from langchain_openai import ChatOpenAI
+from langchain.prompts import PromptTemplate
+# from agentcop import ExecutionGate, GatePolicy  # Runtime module
+
+llm = ChatOpenAI()
+tools = [DuckDuckGoSearchRun()]
+
+# Safe: parameterized prompt prevents injection
+prompt = PromptTemplate(
+    template="You are a research assistant. Answer: {question}",
+    input_variables=["question"]
+)
+
+# Gate blocks unauthorized tools (runtime module)
+# gate = ExecutionGate(policy=GatePolicy(
+#     allow=["duckduckgo_search"],
+#     block=["shell", "file_write"]
+# ))
+
+agent = initialize_agent(
+    tools=tools,
+    llm=llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+)
+
+def run_safe_agent(user_question: str):
+    # user_question is a parameter, not concatenated
+    return agent.run(prompt.format(question=user_question))</code></pre>
+        </div>
+
+        <h2 id="ci-integration">CI integration</h2>
+        <p>Gate merges on trust score. The workflow below fails the build if any agent scores below 75, blocking vulnerable code from reaching production.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">yaml</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-yaml"># .github/workflows/security.yml
+name: AgentCop Security Scan
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: { python-version: '3.11' }
+      - run: pip install agentcop
+      - run: agentcop scan agents/ --min-score 75 --output json > scan_results.json
+      - uses: actions/upload-artifact@v3
+        with:
+          name: agentcop-results
+          path: scan_results.json</code></pre>
+        </div>
+
+        <h2 id="checklist">Checklist</h2>
+        <ul class="checklist">
+          <li><strong>No f-string interpolation of user input into prompts</strong></li>
+          <li><strong>Use PromptTemplate with input_variables</strong></li>
+          <li><strong>No ShellTool without an ExecutionGate</strong></li>
+          <li><strong>No eval() on agent output</strong></li>
+          <li><strong>API keys from environment variables, never hardcoded</strong></li>
+          <li><strong>Trust Score ≥ 75 in CI</strong></li>
+        </ul>
+
+        <div class="doc-pagination">
+          <a href="/docs/concepts/badge-system.html" class="pagination-prev">← Badge System</a>
+          <a href="/docs/guides/crewai.html" class="pagination-next">CrewAI →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#common-vulnerabilities" class="right-nav-link">Common vulnerabilities</a></li>
+        <li><a href="#scanning" class="right-nav-link">Scanning a LangChain agent</a></li>
+        <li><a href="#agentbob-pattern" class="right-nav-link">AgentBob's pattern</a></li>
+        <li><a href="#safe-pattern" class="right-nav-link">Safe pattern</a></li>
+        <li><a href="#ci-integration" class="right-nav-link">CI integration</a></li>
+        <li><a href="#checklist" class="right-nav-link">Checklist</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

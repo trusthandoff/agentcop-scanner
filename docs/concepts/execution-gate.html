@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Execution Gate — AgentCop Docs</title>
+  <meta name="description" content="The Execution Gate is AgentCop's enforcement layer — a programmable checkpoint that runs before every tool call.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/concepts/execution-gate.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Execution Gate","description":"The Execution Gate is AgentCop's enforcement layer — a programmable checkpoint that runs before every tool call.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item active">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Execution Gate</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Execution Gate</h1>
+        <p class="doc-lead">The Execution Gate is AgentCop's enforcement layer — a programmable checkpoint that runs before every tool call.</p>
+
+        <h2 id="the-problem-it-solves">The Problem It Solves</h2>
+        <p>Without a gate, the moment an agent decides to call a tool, that tool executes immediately. The agent's decision is the only check. If the agent has been manipulated — by a prompt injection, a malicious tool description, or a compromised upstream agent — the tool call proceeds regardless.</p>
+        <p>The Execution Gate inserts a mandatory evaluation step between the agent's decision and the tool's execution.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Without Gate:
+  Agent → [tool call] → executes immediately → consequences
+
+With Gate:
+  Agent → [tool call] → ExecutionGate.evaluate()
+                              ↓
+                    ┌─────────────────┐
+                    │  ALLOW          │ → tool executes
+                    │  BLOCK          │ → raises AgentCopBlockError
+                    │  REQUIRE APPROVAL│ → pauses, notifies human
+                    └─────────────────┘</code></pre>
+        </div>
+
+        <h2 id="basic-usage">Basic Usage</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import ExecutionGate, GatePolicy
+
+gate = ExecutionGate(
+    policy=GatePolicy(
+        allow=["web_search", "read_file"],
+        block=["shell_execute", "delete_file"],
+        require_approval=["send_email", "write_file", "api_post"]
+    )
+)
+
+# Wrap a LangChain tool
+from langchain.tools import ShellTool
+safe_shell = gate.wrap(ShellTool(), name="shell_execute")
+
+# Now shell commands require gate approval</code></pre>
+        </div>
+
+        <h2 id="policy-configuration">Policy Configuration</h2>
+        <p>Gate policies are defined as code, which means they can be version-controlled alongside your agent.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python"># Policy as code — version-control your agent's permissions
+policy = GatePolicy.from_yaml("""
+agent_id: customer-support-bot
+version: "1.2"
+
+allow:
+  - web_search
+  - read_knowledge_base
+  - send_slack_notification
+
+require_approval:
+  - send_email
+  - create_ticket
+  - update_customer_record
+
+block:
+  - shell_execute
+  - delete_record
+  - access_payment_system
+
+on_block: raise  # Options: raise, log, alert
+on_violation_notify: security@company.com
+""")</code></pre>
+        </div>
+
+        <h2 id="handling-blocked-calls">Handling Blocked Calls</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.exceptions import AgentCopBlockError, ApprovalRequiredError
+
+try:
+    result = gated_agent.run(task)
+except AgentCopBlockError as e:
+    print(f"Blocked: {e.tool_name} — {e.reason}")
+    # Log, alert, escalate
+except ApprovalRequiredError as e:
+    approval = request_human_approval(e.tool_name, e.parameters)
+    if approval.granted:
+        result = e.retry_with_approval(approval.token)</code></pre>
+        </div>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">Warning</div>
+          <p>The Gate does not guarantee security. A sufficiently sophisticated prompt injection may convince an allow-listed tool to take harmful actions within its permitted scope. Defense in depth requires all three layers.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/docs/concepts/monitor.html" class="pager-prev">← Runtime Monitor</a>
+          <a href="/docs/concepts/permission-layer.html" class="pager-next">Permission Layer →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#the-problem-it-solves" class="right-nav-link">The Problem It Solves</a></li>
+        <li><a href="#basic-usage" class="right-nav-link">Basic Usage</a></li>
+        <li><a href="#policy-configuration" class="right-nav-link">Policy Configuration</a></li>
+        <li><a href="#handling-blocked-calls" class="right-nav-link">Handling Blocked Calls</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

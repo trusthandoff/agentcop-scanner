@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quickstart — 5 minutes to your first scan — AgentCop Docs</title>
+  <meta name="description" content="Scan your first AI agent for security issues in under 5 minutes. No account required. Install AgentCop, run a scan, and understand your results.">
+  <link rel="canonical" href="https://docs.agentcop.live/getting-started/">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"AgentCop Quickstart","description":"Scan your first AI agent for security issues in under 5 minutes. No account required."}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item nav-item-active">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Getting Started</span>
+        </nav>
+
+        <div class="doc-eyebrow">Getting Started</div>
+        <h1 id="quickstart">Quickstart — 5 minutes to your first scan</h1>
+        <p class="doc-lead">Scan your first AI agent for security issues in under 5 minutes. No account required.</p>
+
+        <!-- Prerequisites -->
+        <div class="callout callout-info" id="prerequisites">
+          <div class="callout-icon">ℹ</div>
+          <div class="callout-body">
+            <strong>Prerequisites</strong>
+            <ul>
+              <li><strong>Python 3.9+</strong> — check with <code>python --version</code></li>
+              <li><strong>pip</strong> — comes bundled with Python 3.9+</li>
+              <li><strong>An agent to scan</strong> — use one of your own, or follow along with AgentBob in <a href="/docs/getting-started/first-scan.html">Your First Scan</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step list -->
+        <h2 id="steps">Steps</h2>
+        <ol class="steps">
+
+          <!-- Step 1 -->
+          <li class="step" id="install">
+            <div class="step-header">
+              <span class="step-number">1</span>
+              <h3>Install AgentCop</h3>
+            </div>
+            <p>Install the AgentCop CLI and Python library from PyPI — the recommended method for most users.</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+                <span class="terminal-title">terminal</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="prompt">$ </span><span class="cmd">pip install agentcop</span></div>
+                <div class="out">Successfully installed agentcop-1.0.0</div>
+              </div>
+            </div>
+            <p>Prefer to run from source? Clone the repo instead:</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+                <span class="terminal-title">terminal</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="prompt">$ </span><span class="cmd">git clone https://github.com/agentcop/agentcop &amp;&amp; cd agentcop &amp;&amp; pip install -e ".[dev]"</span></div>
+              </div>
+            </div>
+            <p>See <a href="/docs/getting-started/installation.html">Installation</a> for Docker and self-hosted server options.</p>
+          </li>
+
+          <!-- Step 2 -->
+          <li class="step" id="scan">
+            <div class="step-header">
+              <span class="step-number">2</span>
+              <h3>Scan a file</h3>
+            </div>
+            <p>Point AgentCop at any Python agent file. The scanner performs static analysis using AST parsing and optional AI-enhanced review.</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+                <span class="terminal-title">terminal</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="prompt">$ </span><span class="cmd">agentcop scan agent.py</span></div>
+                <div class="out">  scanning agent.py...</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  ✓ AgentCop v1.0.0</div>
+                <div class="out">  ─────────────────────────────</div>
+                <div class="out">  Trust Score: 62/100  [MODERATE RISK]</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  3 issues found:</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  [HIGH]   LLM01 · Prompt Injection</div>
+                <div class="out">           Line 14: f-string interpolation in LLM prompt</div>
+                <div class="out">           Fix: Use parameterized prompt templates</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  [MEDIUM] LLM02 · Insecure Output Handling</div>
+                <div class="out">           Line 31: eval() called on agent output</div>
+                <div class="out">           Fix: Validate and sanitize before eval</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  [LOW]    LLM08 · Unreviewed External Actions</div>
+                <div class="out">           Line 47: POST request without human approval gate</div>
+                <div class="out">           Fix: Add ApprovalBoundary before network calls</div>
+                <div class="out">&nbsp;</div>
+                <div class="out">  Run 'agentcop explain &lt;issue-id&gt;' for details</div>
+                <div class="out">  View full report: https://agentcop.live/scan/abc123</div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Step 3 -->
+          <li class="step" id="review-results">
+            <div class="step-header">
+              <span class="step-number">3</span>
+              <h3>Review results</h3>
+            </div>
+            <p>Each scan produces three key outputs:</p>
+            <dl class="result-fields">
+              <dt><strong>Trust Score</strong></dt>
+              <dd>A 0–100 score. Higher is safer. Scores below 40 indicate critical risks that should block deployment. Scores of 80+ are considered production-ready.</dd>
+              <dt><strong>Issues</strong></dt>
+              <dd>Each issue includes a severity level (<code>CRITICAL</code>, <code>HIGH</code>, <code>MEDIUM</code>, <code>LOW</code>, <code>INFO</code>), the relevant <a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10</a> category, the offending line number, and an actionable fix.</dd>
+              <dt><strong>Severity levels</strong></dt>
+              <dd><code>CRITICAL</code> — immediate exploit risk, must fix before deployment.<br>
+                  <code>HIGH</code> — significant risk, fix before any shared or production use.<br>
+                  <code>MEDIUM</code> — notable weakness, fix before public exposure.<br>
+                  <code>LOW</code> — minor concern or defense-in-depth improvement.<br>
+                  <code>INFO</code> — informational, no immediate action required.</dd>
+            </dl>
+          </li>
+
+          <!-- Step 4 -->
+          <li class="step" id="fix-issues">
+            <div class="step-header">
+              <span class="step-number">4</span>
+              <h3>Fix issues</h3>
+            </div>
+            <p>Each issue includes a one-line fix hint in the CLI output. For deeper guidance — including code examples and exploit scenarios — see the <a href="/docs/concepts/scanner.html">Scanner Engine</a> documentation and the <a href="/docs/getting-started/first-scan.html">Your First Scan</a> walkthrough, which patches a deliberately vulnerable agent step by step.</p>
+          </li>
+
+          <!-- Step 5 -->
+          <li class="step" id="add-to-ci">
+            <div class="step-header">
+              <span class="step-number">5</span>
+              <h3>Add to CI</h3>
+            </div>
+            <p>Gate your deployments on a passing Trust Score by adding AgentCop to your GitHub Actions workflow. The CLI exits with a non-zero code when the score falls below the threshold you set.</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-lang">yaml</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><code class="language-yaml"># .github/workflows/agentcop.yml
+name: AgentCop Security Scan
+
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install AgentCop
+        run: pip install agentcop
+
+      - name: Scan agents
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Fail the build if Trust Score drops below 70
+          agentcop scan agents/ --min-score 70</code></pre>
+            </div>
+          </li>
+
+        </ol>
+
+        <!-- Scan via API -->
+        <h2 id="api">Scan via API</h2>
+        <p>You can also scan code directly through the AgentCop REST API — useful for integrating into custom tooling, web UIs, or non-Python pipelines.</p>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <pre><code class="language-python">import httpx
+
+response = httpx.post("https://api.agentcop.live/api/scan", json={
+    "code": open("agent.py").read(),
+    "description": "My ReAct agent"
+})
+
+result = response.json()
+print(f"Trust Score: {result['trust_score']}/100")</code></pre>
+        </div>
+        <p>The response includes <code>trust_score</code>, <code>issues</code> (array), <code>scan_id</code>, and a <code>report_url</code>. See the <a href="/docs/api-reference/agentcop.html">AgentCop API reference</a> for the full schema.</p>
+
+        <!-- What's next -->
+        <h2 id="whats-next">What's next</h2>
+        <div class="card-grid">
+          <a href="/docs/getting-started/installation.html" class="doc-card">
+            <div class="doc-card-icon">⚙</div>
+            <div class="doc-card-title">Installation</div>
+            <div class="doc-card-desc">Full installation options — PyPI, Docker, self-hosted server, and environment variable reference.</div>
+          </a>
+          <a href="/docs/getting-started/first-scan.html" class="doc-card">
+            <div class="doc-card-icon">🔍</div>
+            <div class="doc-card-title">Your First Scan</div>
+            <div class="doc-card-desc">Detailed walkthrough: scan AgentBob, read the report, patch each vulnerability, and re-scan.</div>
+          </a>
+          <a href="/docs/concepts/" class="doc-card">
+            <div class="doc-card-icon">🧠</div>
+            <div class="doc-card-title">Core Concepts</div>
+            <div class="doc-card-desc">Understand how the scanner engine, execution gate, and permission layer work under the hood.</div>
+          </a>
+          <a href="/docs/guides/langchain.html" class="doc-card">
+            <div class="doc-card-icon">🔗</div>
+            <div class="doc-card-title">LangChain Guide</div>
+            <div class="doc-card-desc">AgentCop patterns and rules specific to LangChain agents, tools, and chains.</div>
+          </a>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="doc-pagination">
+          <a href="/docs/" class="pagination-link pagination-prev">
+            <span class="pagination-dir">← Previous</span>
+            <span class="pagination-label">Introduction</span>
+          </a>
+          <a href="/docs/getting-started/installation.html" class="pagination-link pagination-next">
+            <span class="pagination-dir">Next →</span>
+            <span class="pagination-label">Installation</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#prerequisites" class="right-nav-link">Prerequisites</a></li>
+        <li><a href="#install" class="right-nav-link">Install</a></li>
+        <li><a href="#scan" class="right-nav-link">Scan</a></li>
+        <li><a href="#review-results" class="right-nav-link">Review Results</a></li>
+        <li><a href="#fix-issues" class="right-nav-link">Fix Issues</a></li>
+        <li><a href="#add-to-ci" class="right-nav-link">Add to CI</a></li>
+        <li><a href="#api" class="right-nav-link">API</a></li>
+        <li><a href="#whats-next" class="right-nav-link">What's Next</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

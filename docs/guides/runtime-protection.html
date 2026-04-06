@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runtime Protection — AgentCop Docs</title>
+  <meta name="description" content="A complete guide to protecting AI agents at runtime — from first deployment to full enforcement.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/guides/runtime-protection.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Runtime Protection","description":"A complete guide to protecting AI agents at runtime — from first deployment to full enforcement.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item nav-item-active">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Runtime Protection</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Runtime Protection</h1>
+        <p class="doc-lead">A complete guide to protecting AI agents at runtime — from first deployment to full enforcement.</p>
+
+        <h2 id="lifecycle">The runtime security lifecycle</h2>
+        <p>Securing an agent is not a one-time event. It spans three phases, each with distinct tools and responsibilities.</p>
+        <ol>
+          <li><strong>Pre-deploy</strong> — scan your code, fix static issues, set a trust score baseline. Nothing ships below the threshold.</li>
+          <li><strong>Deploy</strong> — launch with the monitor active and the gate configured. The gate enforces your policy; the monitor records behavior.</li>
+          <li><strong>Operate</strong> — monitor alerts surface anomalies, gate logs show blocked calls, approval workflows handle edge cases. Security becomes an ongoing signal, not a one-time gate.</li>
+        </ol>
+
+        <h2 id="phase1-scanning">Phase 1 — Pre-deploy scanning</h2>
+        <p>Run the scanner across your entire agents directory before any deployment. The <code>--min-score</code> flag fails the command with a non-zero exit code if any file falls below the threshold — making it CI-ready.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Scan all agent files
+agentcop scan agents/ --recursive --min-score 75
+
+# Generate a report
+agentcop scan agents/ --output report.html
+open report.html</code></pre>
+        </div>
+
+        <h2 id="phase2-instrumentation">Phase 2 — Runtime instrumentation</h2>
+        <p>The <code>AgentCop</code> class wraps any agent with three simultaneous layers: the scanner runs at startup to catch anything that slipped through CI, the monitor observes every action, and the gate enforces your policy on every tool call.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import AgentCop
+
+# One-line instrumentation
+cop = AgentCop(
+    agent_id="production-agent",
+    scan=True,        # Run scanner on startup
+    monitor=True,     # Enable runtime monitor
+    gate=True,        # Enable execution gate
+    policy_file="policies/agent.yaml"
+)
+
+# Wrap your agent
+agent = cop.wrap(my_agent)
+
+# Now your agent has full coverage:
+# - Static issues flagged before first run
+# - Behavior monitored during execution
+# - Gate enforces permissions on every tool call</code></pre>
+        </div>
+
+        <h2 id="phase3-policy">Phase 3 — Policy as code</h2>
+        <p>Store your security policy in version control alongside your agent code. Policy files declare the minimum trust score, alert channels, allowed and blocked tools, and sandbox configuration. Changes go through code review like everything else.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">yaml</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-yaml"># policies/production-agent.yaml
+agent_id: production-agent
+version: "2.1"
+environment: production
+
+scan:
+  min_score: 80
+  fail_on: [CRITICAL, HIGH]
+
+monitor:
+  sensitivity: high
+  alert_channels:
+    - type: slack
+      webhook: ${SLACK_WEBHOOK}
+    - type: email
+      to: security@company.com
+
+gate:
+  allow:
+    - web_search
+    - read_knowledge_base
+    - send_notification
+  require_approval:
+    - send_email
+    - write_to_database
+    - call_external_api
+  block:
+    - shell_execute
+    - delete_record
+    - access_auth_system
+  on_block: raise_and_alert
+
+sandbox:
+  mode: container
+  image: agentcop/agent-sandbox:2.0
+  timeout: 60</code></pre>
+        </div>
+
+        <h2 id="incident-response">Incident response</h2>
+        <p>When something is flagged, the path from alert to resolution is the same every time.</p>
+        <ul>
+          <li><strong>Gate blocked a call</strong> — check <code>gate.log</code> for the blocked tool name and the input that triggered it. Review your policy to decide whether to add it to <code>require_approval</code> or leave it blocked.</li>
+          <li><strong>Monitor detected an anomaly</strong> — review the agent run trace attached to the alert. Look for unusual tool sequences or responses that deviate from prior runs. Check whether user input could have triggered an injection.</li>
+          <li><strong>Trust score dropped in CI</strong> — review the diff between the passing and failing commit. The scanner output will identify the specific file and line. Check what was added or changed.</li>
+        </ul>
+
+        <h2 id="full-example">Full example — production-ready agent</h2>
+        <p>This is the complete pattern: configure AgentCop with an explicit gate policy, build the agent normally, wrap it, and run it. The agent behaves identically to an unwrapped agent from the application's perspective.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">import os
+from agentcop import AgentCop, GatePolicy
+from langchain.agents import initialize_agent, AgentType
+from langchain.tools import DuckDuckGoSearchRun
+from langchain_openai import ChatOpenAI
+
+# Configure AgentCop
+cop = AgentCop(
+    agent_id="production-search-agent",
+    policy=GatePolicy(
+        allow=["duckduckgo_search"],
+        block=["shell_execute", "file_write", "eval"],
+    ),
+    monitor=True,
+    sandbox_mode="container"
+)
+
+# Build agent normally
+llm = ChatOpenAI(model="gpt-4")
+tools = [DuckDuckGoSearchRun()]
+agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
+
+# Wrap with AgentCop — all three layers active
+protected_agent = cop.wrap(agent)
+
+# Run with full coverage
+result = protected_agent.run("What are the latest AI security vulnerabilities?")</code></pre>
+        </div>
+
+        <div class="callout callout-sentinel">
+          <p>runtime protection is not an add-on. it's the reason agentcop exists. static scanners have been around for decades. nobody built a runtime cop for agents — until now.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/docs/guides/moltbook.html" class="pagination-prev">← Moltbook</a>
+          <a href="/docs/api-reference/" class="pagination-next">API Reference →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#lifecycle" class="right-nav-link">The security lifecycle</a></li>
+        <li><a href="#phase1-scanning" class="right-nav-link">Phase 1 — Pre-deploy</a></li>
+        <li><a href="#phase2-instrumentation" class="right-nav-link">Phase 2 — Deploy</a></li>
+        <li><a href="#phase3-policy" class="right-nav-link">Phase 3 — Policy as code</a></li>
+        <li><a href="#incident-response" class="right-nav-link">Incident response</a></li>
+        <li><a href="#full-example" class="right-nav-link">Full example</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — AgentCop Docs</title>
+  <meta name="description" content="Install AgentCop as a CLI tool, Python library, or REST API. Covers PyPI, Docker, self-hosted server, system requirements, and environment variables.">
+  <link rel="canonical" href="https://docs.agentcop.live/getting-started/installation.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"AgentCop Installation","description":"Install AgentCop as a CLI tool, Python library, or REST API. Covers PyPI, Docker, self-hosted server, system requirements, and environment variables."}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item nav-item-active">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/getting-started/">Getting Started</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Installation</span>
+        </nav>
+
+        <div class="doc-eyebrow">Getting Started</div>
+        <h1 id="installation">Installation</h1>
+        <p class="doc-lead">AgentCop works as a CLI tool, Python library, and REST API. Install what fits your workflow.</p>
+
+        <!-- PyPI -->
+        <h2 id="pypi">PyPI (recommended)</h2>
+        <p>The easiest way to get started. Installs the <code>agentcop</code> CLI and the Python library in a single command.</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">pip install agentcop</span></div>
+            <div class="out">Successfully installed agentcop-1.0.0</div>
+            <div class="out">&nbsp;</div>
+            <div><span class="prompt">$ </span><span class="cmd">agentcop --version</span></div>
+            <div class="out">agentcop 1.0.0</div>
+          </div>
+        </div>
+        <p>We recommend installing inside a virtual environment to avoid dependency conflicts:</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">python -m venv .venv &amp;&amp; source .venv/bin/activate</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">pip install agentcop</span></div>
+          </div>
+        </div>
+
+        <!-- From source -->
+        <h2 id="from-source">From source</h2>
+        <p>Install from the GitHub repository to get the latest unreleased changes or to contribute to development.</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">git clone https://github.com/agentcop/agentcop</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">cd agentcop</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">pip install -e ".[dev]"</span></div>
+          </div>
+        </div>
+        <p>The <code>[dev]</code> extra includes testing dependencies (<code>pytest</code>, <code>httpx</code>, <code>ruff</code>). Omit it for a lighter install if you are not contributing.</p>
+
+        <!-- Docker -->
+        <h2 id="docker">Docker</h2>
+        <p>Use the official image to scan files without installing Python locally. Mount your project directory into the container at <code>/workspace</code>.</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">docker pull ghcr.io/agentcop/agentcop:latest</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">docker run -v $(pwd):/workspace agentcop scan /workspace/agent.py</span></div>
+          </div>
+        </div>
+        <p>Pass environment variables with <code>-e</code> flags, for example <code>-e ANTHROPIC_API_KEY=sk-ant-...</code> to enable AI-enhanced analysis.</p>
+
+        <!-- Self-hosted API server -->
+        <h2 id="self-hosted">Self-hosted API server</h2>
+        <p>Run the AgentCop REST API on your own infrastructure — useful for air-gapped environments, team-wide scanning endpoints, or CI pipelines that need low-latency local access.</p>
+
+        <h3>Direct with uvicorn</h3>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">git clone https://github.com/agentcop/agentcop</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">cd agentcop</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">pip install -r requirements.txt</span></div>
+            <div><span class="prompt">$ </span><span class="cmd">uvicorn main:app --host 0.0.0.0 --port 8000</span></div>
+            <div class="out">INFO:     Started server process [12345]</div>
+            <div class="out">INFO:     Uvicorn running on http://0.0.0.0:8000</div>
+          </div>
+        </div>
+
+        <h3>With Docker Compose</h3>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">docker-compose up -d</span></div>
+            <div class="out"># API available at http://localhost:8000</div>
+          </div>
+        </div>
+
+        <!-- Requirements table -->
+        <h2 id="requirements">System requirements</h2>
+        <div class="table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Minimum</th>
+                <th>Recommended</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Python</td>
+                <td>3.9</td>
+                <td>3.11+</td>
+              </tr>
+              <tr>
+                <td>RAM</td>
+                <td>512 MB</td>
+                <td>2 GB</td>
+              </tr>
+              <tr>
+                <td>Disk</td>
+                <td>200 MB</td>
+                <td>500 MB</td>
+              </tr>
+              <tr>
+                <td>OS</td>
+                <td>Linux / macOS / Windows</td>
+                <td>Linux</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Dependencies -->
+        <h2 id="dependencies">Dependencies</h2>
+        <p>AgentCop's key runtime dependencies are listed below. All are pinned in <code>requirements.txt</code> and installed automatically via pip.</p>
+        <div class="table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fastapi</code></td>
+                <td>REST API framework for the scan server</td>
+              </tr>
+              <tr>
+                <td><code>uvicorn</code></td>
+                <td>ASGI server that runs FastAPI</td>
+              </tr>
+              <tr>
+                <td><code>anthropic</code></td>
+                <td>Claude SDK — powers AI-enhanced scan explanations</td>
+              </tr>
+              <tr>
+                <td><code>tree-sitter</code></td>
+                <td>Incremental AST parser for precise code analysis</td>
+              </tr>
+              <tr>
+                <td><code>httpx</code></td>
+                <td>Async HTTP client used in tests and API examples</td>
+              </tr>
+              <tr>
+                <td><code>sqlalchemy</code></td>
+                <td>ORM layer for scan result caching (SQLite by default)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Environment variables -->
+        <h2 id="environment-variables">Environment variables</h2>
+        <p>Configure AgentCop via environment variables — set them in your shell, <code>.env</code> file, or CI secrets store.</p>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">bash</span>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <pre><code class="language-bash">ANTHROPIC_API_KEY=sk-ant-...   # Required for AI-enhanced scan
+DATABASE_URL=sqlite:///./agentcop.db  # Default: SQLite
+PORT=8000                       # API server port
+AGENTCOP_LOG_LEVEL=INFO        # Logging verbosity</code></pre>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">ℹ</div>
+          <div class="callout-body">
+            <strong>ANTHROPIC_API_KEY is optional.</strong> Without it, AgentCop uses rule-based detection only. With it, you get AI-enhanced analysis and natural language explanations for every finding — including suggested code fixes tailored to your specific agent pattern.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ANTHROPIC_API_KEY</code></td>
+                <td>—</td>
+                <td>Enables AI-enhanced scan mode via Claude</td>
+              </tr>
+              <tr>
+                <td><code>DATABASE_URL</code></td>
+                <td><code>sqlite:///./agentcop.db</code></td>
+                <td>SQLAlchemy connection string for scan cache</td>
+              </tr>
+              <tr>
+                <td><code>PORT</code></td>
+                <td><code>8000</code></td>
+                <td>Port the API server listens on</td>
+              </tr>
+              <tr>
+                <td><code>AGENTCOP_LOG_LEVEL</code></td>
+                <td><code>INFO</code></td>
+                <td>Log verbosity: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Verification -->
+        <h2 id="verification">Verification</h2>
+        <p>Confirm your installation is working correctly with the <code>health</code> command:</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">agentcop --version</span></div>
+            <div class="out">agentcop 1.0.0</div>
+            <div class="out">&nbsp;</div>
+            <div><span class="prompt">$ </span><span class="cmd">agentcop health</span></div>
+            <div class="out">  ✓ Scanner engine: OK</div>
+            <div class="out">  ✓ API connection: OK</div>
+            <div class="out">  ✓ Database: OK</div>
+          </div>
+        </div>
+        <p>If any check fails, see the <a href="/docs/getting-started/">Quickstart</a> troubleshooting section or open an issue on <a href="https://github.com/agentcop/agentcop">GitHub</a>.</p>
+
+        <!-- Pagination -->
+        <nav class="doc-pagination">
+          <a href="/docs/getting-started/" class="pagination-link pagination-prev">
+            <span class="pagination-dir">← Previous</span>
+            <span class="pagination-label">Quickstart</span>
+          </a>
+          <a href="/docs/getting-started/first-scan.html" class="pagination-link pagination-next">
+            <span class="pagination-dir">Next →</span>
+            <span class="pagination-label">Your First Scan</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#pypi" class="right-nav-link">PyPI</a></li>
+        <li><a href="#from-source" class="right-nav-link">From Source</a></li>
+        <li><a href="#docker" class="right-nav-link">Docker</a></li>
+        <li><a href="#self-hosted" class="right-nav-link">Self-Hosted</a></li>
+        <li><a href="#requirements" class="right-nav-link">Requirements</a></li>
+        <li><a href="#dependencies" class="right-nav-link">Dependencies</a></li>
+        <li><a href="#environment-variables" class="right-nav-link">Environment Variables</a></li>
+        <li><a href="#verification" class="right-nav-link">Verification</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>

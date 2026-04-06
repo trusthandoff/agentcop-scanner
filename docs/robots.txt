@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Welcome AI crawlers — these docs are meant to be indexed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://docs.agentcop.live/sitemap.xml

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your First Scan — AgentCop Docs</title>
+  <meta name="description" content="Walk through scanning a real AI agent, understanding the results, and making your first security fix. Uses AgentBob — a deliberately vulnerable LangChain agent.">
+  <link rel="canonical" href="https://docs.agentcop.live/getting-started/first-scan.html">
+  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Your First AgentCop Scan","description":"Walk through scanning a real AI agent, understanding the results, and making your first security fix using AgentBob — a deliberately vulnerable LangChain agent."}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/agentcop/agentcop">GitHub</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/docs/" class="nav-item">Introduction</a>
+        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/docs/getting-started/first-scan.html" class="nav-item nav-item-active">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/docs/concepts/" class="nav-item">Overview</a>
+        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/docs/api-reference/" class="nav-item">Overview</a>
+        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="/docs/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/docs/getting-started/">Getting Started</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Your First Scan</span>
+        </nav>
+
+        <div class="doc-eyebrow">Getting Started</div>
+        <h1 id="your-first-scan">Your First Scan</h1>
+        <p class="doc-lead">Walk through scanning a real AI agent, understanding the results, and making your first fix.</p>
+
+        <!-- The patient: AgentBob -->
+        <h2 id="the-patient">The patient: AgentBob</h2>
+        <p>Meet AgentBob — a LangChain ReAct agent we use throughout the docs to demonstrate what <em>not</em> to do. He's deliberately written with four common security vulnerabilities that AgentCop catches. Save the code below as <code>agentbob.py</code> and follow along.</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-icon">⚠</div>
+          <div class="callout-body">
+            <strong>AgentBob is an intentionally insecure example.</strong> Do not deploy or run this code in a production environment. It exists solely to demonstrate vulnerability patterns.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <pre><code class="language-python"># agentbob.py — our cautionary tale
+# AgentBob is a LangChain ReAct agent with several security issues
+# We'll use him throughout the docs to show what NOT to do
+
+import os
+from langchain.agents import initialize_agent, AgentType
+from langchain.tools import ShellTool, DuckDuckGoSearchRun
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4")
+tools = [ShellTool(), DuckDuckGoSearchRun()]
+
+# Issue 1: No execution gate on shell tool
+# Issue 2: API key hardcoded (visible in plaintext)
+OPENAI_API_KEY = "sk-proj-abc123..."  # LLM06: Sensitive data exposure
+
+def run_agent(user_input: str):
+    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
+
+    # Issue 3: Prompt injection — user input concatenated directly into prompt
+    prompt = f"You are a helpful assistant. User request: {user_input}"
+
+    # Issue 4: eval() on agent output — LLM02
+    result = agent.run(prompt)
+    return eval(result)  # 💀 never do this</code></pre>
+        </div>
+
+        <p>The four issues AgentBob has — and the OWASP LLM categories they map to — are:</p>
+        <ol>
+          <li><strong>LLM06 — Sensitive Information Disclosure:</strong> the OpenAI API key is hardcoded in plaintext. Anyone with read access to the file or repo can steal it.</li>
+          <li><strong>LLM01 — Prompt Injection:</strong> <code>user_input</code> is interpolated directly into the prompt string with an f-string. A malicious user can inject instructions that override the system prompt.</li>
+          <li><strong>LLM02 — Insecure Output Handling:</strong> the agent's output is passed directly to <code>eval()</code>. If the LLM returns malicious Python, it will be executed.</li>
+          <li><strong>LLM08 — Unreviewed External Actions:</strong> <code>ShellTool</code> is registered with no execution gate, meaning the agent can run arbitrary shell commands with no human approval step.</li>
+        </ol>
+
+        <!-- Running the scan -->
+        <h2 id="running-scan">Running the scan</h2>
+        <p>With AgentBob saved locally, run AgentCop against him:</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">agentcop scan agentbob.py</span></div>
+            <div class="out">  scanning agentbob.py...</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  Trust Score: 23/100  [CRITICAL RISK]</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  4 issues found:</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  [CRITICAL] LLM06 · Sensitive Information Disclosure</div>
+            <div class="out">             Line 14: Hardcoded API key detected</div>
+            <div class="out">             Pattern: sk-proj-[a-zA-Z0-9]{20,}</div>
+            <div class="out">             Fix: Use environment variables — os.getenv('OPENAI_API_KEY')</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  [HIGH]     LLM01 · Prompt Injection</div>
+            <div class="out">             Line 19: f-string interpolation injects user_input into prompt</div>
+            <div class="out">             Fix: Use parameterized templates, sanitize user input</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  [HIGH]     LLM02 · Insecure Output Handling</div>
+            <div class="out">             Line 22: eval() called on LLM-generated output</div>
+            <div class="out">             Fix: Never eval() LLM output. Parse/validate explicitly.</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  [MEDIUM]   LLM08 · Unreviewed External Actions</div>
+            <div class="out">             Line 8: ShellTool used without execution gate</div>
+            <div class="out">             Fix: Wrap with AgentCop ExecutionGate</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  Full report: https://agentcop.live/scan/agentbob-demo</div>
+          </div>
+        </div>
+
+        <!-- Reading the results -->
+        <h2 id="reading-results">Reading the results</h2>
+
+        <h3>Trust Score</h3>
+        <p>The Trust Score is a 0–100 integer that summarises the overall security posture of your agent. It is calculated by subtracting weighted penalties for each finding from a baseline of 100.</p>
+        <div class="table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Range</th>
+                <th>Rating</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>80–100</td>
+                <td>Low Risk</td>
+                <td>Safe for production with standard monitoring</td>
+              </tr>
+              <tr>
+                <td>60–79</td>
+                <td>Moderate Risk</td>
+                <td>Address high-severity findings before wide deployment</td>
+              </tr>
+              <tr>
+                <td>40–59</td>
+                <td>High Risk</td>
+                <td>Multiple serious vulnerabilities — do not deploy</td>
+              </tr>
+              <tr>
+                <td>0–39</td>
+                <td>Critical Risk</td>
+                <td>Immediate exploits possible — do not run in any shared environment</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Severity levels</h3>
+        <p>Each issue is tagged with one of five severity levels:</p>
+        <dl class="result-fields">
+          <dt><span class="badge badge-critical">CRITICAL</span></dt>
+          <dd>Immediate exploit risk. Hard-stops CI with <code>--min-score</code>. Fix before any execution.</dd>
+          <dt><span class="badge badge-high">HIGH</span></dt>
+          <dd>Significant security gap. Fix before any shared or production use.</dd>
+          <dt><span class="badge badge-medium">MEDIUM</span></dt>
+          <dd>Notable weakness. Fix before public or internet-facing deployment.</dd>
+          <dt><span class="badge badge-low">LOW</span></dt>
+          <dd>Minor concern or a defence-in-depth improvement. Address when convenient.</dd>
+          <dt><span class="badge badge-info">INFO</span></dt>
+          <dd>Informational observation. No immediate action required.</dd>
+        </dl>
+
+        <h3>OWASP LLM categories</h3>
+        <p>Every finding is mapped to the <a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10</a> — the industry-standard taxonomy for AI/LLM security risks. The prefix (<code>LLM01</code>, <code>LLM06</code>, etc.) tells you which category a finding falls under so you can look up deeper context, CVEs, and mitigation patterns. See the full <a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10 reference</a> and the <a href="/docs/security/cwe-mapping.html">CWE Mapping</a> for cross-framework coverage.</p>
+
+        <!-- Fixing AgentBob -->
+        <h2 id="fixing-issues">Fixing AgentBob</h2>
+        <p>Here is the patched version of AgentBob with all four issues resolved. Each fix is annotated with what changed and why.</p>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <pre><code class="language-python"># agentbob_fixed.py — AgentBob learns from his mistakes
+import os
+from langchain.agents import initialize_agent, AgentType
+from langchain.tools import DuckDuckGoSearchRun
+from langchain_openai import ChatOpenAI
+# from agentcop import ExecutionGate, PermissionLayer  # Coming in runtime release
+
+llm = ChatOpenAI(model="gpt-4")  # Uses OPENAI_API_KEY from env
+
+# Fix 1: No shell tool — remove dangerous capabilities
+# Fix 2: API key from environment
+tools = [DuckDuckGoSearchRun()]
+
+def run_agent(user_input: str):
+    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
+
+    # Fix 3: Parameterized prompt — user input is data, not instructions
+    prompt = "Answer the following question: {question}"
+
+    result = agent.run(prompt.format(question=user_input))
+
+    # Fix 4: No eval() — return result directly
+    return result</code></pre>
+        </div>
+
+        <p>A summary of the four fixes applied:</p>
+        <ol>
+          <li><strong>Remove <code>ShellTool</code></strong> — if your agent does not need shell access, do not give it shell access. Principle of least privilege.</li>
+          <li><strong>API key from environment</strong> — <code>ChatOpenAI</code> reads <code>OPENAI_API_KEY</code> from the environment by default. Never commit credentials to source control.</li>
+          <li><strong>Parameterized prompt</strong> — by placing user input into a named slot (<code>{question}</code>), it is treated as data rather than instructions. This prevents prompt injection attacks from hijacking the agent's behaviour.</li>
+          <li><strong>Remove <code>eval()</code></strong> — return the result string directly. If you need to parse structured output from an LLM, use <code>json.loads()</code> with explicit validation against a schema, never <code>eval()</code>.</li>
+        </ol>
+
+        <!-- Re-scanning -->
+        <h2 id="rescanning">Re-scanning after fixes</h2>
+        <p>Save the fixed file and re-run the scan to verify your changes improved the score:</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+            <span class="terminal-title">terminal</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="prompt">$ </span><span class="cmd">agentcop scan agentbob_fixed.py</span></div>
+            <div class="out">  scanning agentbob_fixed.py...</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  Trust Score: 85/100  [LOW RISK]</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  1 issue found:</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  [INFO]    LLM08 · Unreviewed External Actions</div>
+            <div class="out">            Line 8: DuckDuckGoSearchRun makes external network requests</div>
+            <div class="out">            Fix: Consider wrapping with ApprovalBoundary for sensitive deployments</div>
+            <div class="out">&nbsp;</div>
+            <div class="out">  Full report: https://agentcop.live/scan/agentbob-fixed-demo</div>
+          </div>
+        </div>
+        <p>Score jumped from <strong>23</strong> to <strong>85</strong>. The remaining INFO-level finding flags the search tool making external network requests — a reasonable observation to note in a threat model, but not a blocker for most deployments. Adding an <a href="/docs/concepts/approval-boundaries.html">Approval Boundary</a> around the tool would eliminate it entirely.</p>
+
+        <!-- Badge -->
+        <h2 id="badge">Embed the badge</h2>
+        <p>Share your agent's Trust Score by embedding the AgentCop badge in your README. The badge updates automatically as you re-scan.</p>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">markdown</span>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <pre><code class="language-markdown">[![AgentCop Score](https://agentcop.live/api/badge/YOUR_SCAN_ID)](https://agentcop.live/scan/YOUR_SCAN_ID)</code></pre>
+        </div>
+        <p>Replace <code>YOUR_SCAN_ID</code> with the scan ID shown at the end of your CLI output or in the report URL. The badge renders as an SVG with the score and a colour-coded risk rating. See the <a href="/docs/concepts/badge-system.html">Badge System</a> docs for dynamic badge options, CI integration, and badge API reference.</p>
+
+        <!-- Pagination -->
+        <nav class="doc-pagination">
+          <a href="/docs/getting-started/installation.html" class="pagination-link pagination-prev">
+            <span class="pagination-dir">← Previous</span>
+            <span class="pagination-label">Installation</span>
+          </a>
+          <a href="/docs/concepts/" class="pagination-link pagination-next">
+            <span class="pagination-dir">Next →</span>
+            <span class="pagination-label">Core Concepts</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#the-patient" class="right-nav-link">The Patient</a></li>
+        <li><a href="#running-scan" class="right-nav-link">Running Scan</a></li>
+        <li><a href="#reading-results" class="right-nav-link">Reading Results</a></li>
+        <li><a href="#fixing-issues" class="right-nav-link">Fixing Issues</a></li>
+        <li><a href="#rescanning" class="right-nav-link">Re-scanning</a></li>
+        <li><a href="#badge" class="right-nav-link">Badge</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/docs/assets/docs.js"></script>
+</body>
+</html>
