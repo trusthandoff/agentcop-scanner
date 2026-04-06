@@ -6,13 +6,13 @@
   <title>Your First Scan — AgentCop Docs</title>
   <meta name="description" content="Walk through scanning a real AI agent, understanding the results, and making your first security fix. Uses AgentBob — a deliberately vulnerable LangChain agent.">
   <link rel="canonical" href="https://docs.agentcop.live/getting-started/first-scan.html">
-  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <link rel="stylesheet" href="/assets/docs.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Your First AgentCop Scan","description":"Walk through scanning a real AI agent, understanding the results, and making your first security fix using AgentBob — a deliberately vulnerable LangChain agent."}</script>
 </head>
 <body>
   <header class="doc-header">
     <button class="menu-toggle" aria-label="Menu">☰</button>
-    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
     <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
     <nav class="header-links">
       <a href="https://agentcop.live">Home</a>
@@ -25,58 +25,58 @@
     <nav class="doc-sidebar">
       <div class="nav-section">
         <span class="nav-section-label">Overview</span>
-        <a href="/docs/" class="nav-item">Introduction</a>
-        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Getting Started</span>
-        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
-        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
-        <a href="/docs/getting-started/first-scan.html" class="nav-item nav-item-active">Your First Scan</a>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item nav-item-active">Your First Scan</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Concepts</span>
-        <a href="/docs/concepts/" class="nav-item">Overview</a>
-        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
-        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
-        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
-        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
-        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
-        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
-        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Guides</span>
-        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
-        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
-        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
-        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
-        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
-        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">API Reference</span>
-        <a href="/docs/api-reference/" class="nav-item">Overview</a>
-        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
-        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
-        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
-        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
-        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Security</span>
-        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
-        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
-        <a href="/docs/security/threat-model.html" class="nav-item">Threat Model</a>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
       </div>
     </nav>
     <main class="doc-main">
       <article class="doc-content">
 
         <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <a href="/docs/">Docs</a>
+          <a href="/">Docs</a>
           <span class="breadcrumb-sep">›</span>
-          <a href="/docs/getting-started/">Getting Started</a>
+          <a href="/getting-started/">Getting Started</a>
           <span class="breadcrumb-sep">›</span>
           <span>Your First Scan</span>
         </nav>
@@ -228,7 +228,7 @@ def run_agent(user_input: str):
         </dl>
 
         <h3>OWASP LLM categories</h3>
-        <p>Every finding is mapped to the <a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10</a> — the industry-standard taxonomy for AI/LLM security risks. The prefix (<code>LLM01</code>, <code>LLM06</code>, etc.) tells you which category a finding falls under so you can look up deeper context, CVEs, and mitigation patterns. See the full <a href="/docs/security/owasp-llm-top10.html">OWASP LLM Top 10 reference</a> and the <a href="/docs/security/cwe-mapping.html">CWE Mapping</a> for cross-framework coverage.</p>
+        <p>Every finding is mapped to the <a href="/security/owasp-llm-top10.html">OWASP LLM Top 10</a> — the industry-standard taxonomy for AI/LLM security risks. The prefix (<code>LLM01</code>, <code>LLM06</code>, etc.) tells you which category a finding falls under so you can look up deeper context, CVEs, and mitigation patterns. See the full <a href="/security/owasp-llm-top10.html">OWASP LLM Top 10 reference</a> and the <a href="/security/cwe-mapping.html">CWE Mapping</a> for cross-framework coverage.</p>
 
         <!-- Fixing AgentBob -->
         <h2 id="fixing-issues">Fixing AgentBob</h2>
@@ -294,7 +294,7 @@ def run_agent(user_input: str):
             <div class="out">  Full report: https://agentcop.live/scan/agentbob-fixed-demo</div>
           </div>
         </div>
-        <p>Score jumped from <strong>23</strong> to <strong>85</strong>. The remaining INFO-level finding flags the search tool making external network requests — a reasonable observation to note in a threat model, but not a blocker for most deployments. Adding an <a href="/docs/concepts/approval-boundaries.html">Approval Boundary</a> around the tool would eliminate it entirely.</p>
+        <p>Score jumped from <strong>23</strong> to <strong>85</strong>. The remaining INFO-level finding flags the search tool making external network requests — a reasonable observation to note in a threat model, but not a blocker for most deployments. Adding an <a href="/concepts/approval-boundaries.html">Approval Boundary</a> around the tool would eliminate it entirely.</p>
 
         <!-- Badge -->
         <h2 id="badge">Embed the badge</h2>
@@ -306,15 +306,15 @@ def run_agent(user_input: str):
           </div>
           <pre><code class="language-markdown">[![AgentCop Score](https://agentcop.live/api/badge/YOUR_SCAN_ID)](https://agentcop.live/scan/YOUR_SCAN_ID)</code></pre>
         </div>
-        <p>Replace <code>YOUR_SCAN_ID</code> with the scan ID shown at the end of your CLI output or in the report URL. The badge renders as an SVG with the score and a colour-coded risk rating. See the <a href="/docs/concepts/badge-system.html">Badge System</a> docs for dynamic badge options, CI integration, and badge API reference.</p>
+        <p>Replace <code>YOUR_SCAN_ID</code> with the scan ID shown at the end of your CLI output or in the report URL. The badge renders as an SVG with the score and a colour-coded risk rating. See the <a href="/concepts/badge-system.html">Badge System</a> docs for dynamic badge options, CI integration, and badge API reference.</p>
 
         <!-- Pagination -->
         <nav class="doc-pagination">
-          <a href="/docs/getting-started/installation.html" class="pagination-link pagination-prev">
+          <a href="/getting-started/installation.html" class="pagination-link pagination-prev">
             <span class="pagination-dir">← Previous</span>
             <span class="pagination-label">Installation</span>
           </a>
-          <a href="/docs/concepts/" class="pagination-link pagination-next">
+          <a href="/concepts/" class="pagination-link pagination-next">
             <span class="pagination-dir">Next →</span>
             <span class="pagination-label">Core Concepts</span>
           </a>
@@ -336,6 +336,6 @@ def run_agent(user_input: str):
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
-  <script src="/docs/assets/docs.js"></script>
+  <script src="/assets/docs.js"></script>
 </body>
 </html>

@@ -6,13 +6,13 @@
   <title>Threat Model — AgentCop Docs</title>
   <meta name="description" content="AgentCop's threat model for AI agent systems. Who attacks agents, how they do it, and what AgentCop stops.">
   <link rel="canonical" href="https://docs.agentcop.live/docs/security/threat-model.html">
-  <link rel="stylesheet" href="/docs/assets/docs.css">
+  <link rel="stylesheet" href="/assets/docs.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Threat Model","description":"AgentCop's threat model for AI agent systems. Who attacks agents, how they do it, and what AgentCop stops.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
 </head>
 <body>
   <header class="doc-header">
     <button class="menu-toggle" aria-label="Menu">☰</button>
-    <a href="/docs/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
     <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
     <nav class="header-links">
       <a href="https://agentcop.live">Home</a>
@@ -25,58 +25,58 @@
     <nav class="doc-sidebar">
       <div class="nav-section">
         <span class="nav-section-label">Overview</span>
-        <a href="/docs/" class="nav-item">Introduction</a>
-        <a href="/docs/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Getting Started</span>
-        <a href="/docs/getting-started/" class="nav-item">Quickstart</a>
-        <a href="/docs/getting-started/installation.html" class="nav-item">Installation</a>
-        <a href="/docs/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Concepts</span>
-        <a href="/docs/concepts/" class="nav-item">Overview</a>
-        <a href="/docs/concepts/scanner.html" class="nav-item">Scanner Engine</a>
-        <a href="/docs/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
-        <a href="/docs/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
-        <a href="/docs/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
-        <a href="/docs/concepts/sandbox.html" class="nav-item">Sandbox</a>
-        <a href="/docs/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
-        <a href="/docs/concepts/badge-system.html" class="nav-item">Badge System</a>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Guides</span>
-        <a href="/docs/guides/langchain.html" class="nav-item">LangChain</a>
-        <a href="/docs/guides/crewai.html" class="nav-item">CrewAI</a>
-        <a href="/docs/guides/autogen.html" class="nav-item">AutoGen</a>
-        <a href="/docs/guides/openclaw.html" class="nav-item">OpenClaw</a>
-        <a href="/docs/guides/moltbook.html" class="nav-item">Moltbook</a>
-        <a href="/docs/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">API Reference</span>
-        <a href="/docs/api-reference/" class="nav-item">Overview</a>
-        <a href="/docs/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
-        <a href="/docs/api-reference/gate.html" class="nav-item">Gate API</a>
-        <a href="/docs/api-reference/permissions.html" class="nav-item">Permissions API</a>
-        <a href="/docs/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
-        <a href="/docs/api-reference/approvals.html" class="nav-item">Approvals API</a>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Security</span>
-        <a href="/docs/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
-        <a href="/docs/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
-        <a href="/docs/security/threat-model.html" class="nav-item nav-item-active">Threat Model</a>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item nav-item-active">Threat Model</a>
       </div>
     </nav>
     <main class="doc-main">
       <article class="doc-content">
 
         <nav class="breadcrumb">
-          <a href="/docs/">Docs</a>
+          <a href="/">Docs</a>
           <span class="breadcrumb-sep">›</span>
-          <a href="/docs/security/threat-model.html">Security</a>
+          <a href="/security/threat-model.html">Security</a>
           <span class="breadcrumb-sep">›</span>
           <span>Threat Model</span>
         </nav>
@@ -290,7 +290,7 @@ Agent routes communications to attacker's address.
         </div>
 
         <nav class="doc-pagination">
-          <a href="/docs/security/cwe-mapping.html" class="pagination-prev">
+          <a href="/security/cwe-mapping.html" class="pagination-prev">
             <span class="pagination-label">Previous</span>
             <span class="pagination-title">CWE Mapping</span>
           </a>
@@ -315,6 +315,6 @@ Agent routes communications to attacker's address.
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
-  <script src="/docs/assets/docs.js"></script>
+  <script src="/assets/docs.js"></script>
 </body>
 </html>
