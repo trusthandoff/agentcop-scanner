@@ -890,6 +890,66 @@
     </div>
   </section>
 
+  <!-- RUNTIME ENFORCEMENT -->
+  <section id="runtime-enforcement" class="py-24 bg-dark-800/20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-500/10 border border-cyber-500/20 text-cyber-400 text-xs font-mono mb-4">
+          RUNTIME ENFORCEMENT
+        </div>
+        <h2 class="text-4xl font-extrabold text-white tracking-tight">Runtime Enforcement — not just scanning</h2>
+        <p class="text-gray-400 mt-4 max-w-2xl mx-auto">agentcop doesn't just detect threats. it blocks them.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+        <!-- Card 1 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="text-2xl mb-4">🔒</div>
+          <h3 class="text-white font-semibold mb-2">Execution Gate</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Every tool call checked before execution. Unauthorized actions blocked, not just flagged.</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="text-2xl mb-4">🛡️</div>
+          <h3 class="text-white font-semibold mb-2">Permission Layer</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Agents declare what they need. Everything else is denied by default.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="text-2xl mb-4">📦</div>
+          <h3 class="text-white font-semibold mb-2">Runtime Sandbox</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Agent execution isolated. File system, network, subprocess — all intercepted.</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="feature-card rounded-xl p-6 bg-dark-700/30 reveal">
+          <div class="text-2xl mb-4">✅</div>
+          <h3 class="text-white font-semibold mb-2">Approval Boundaries</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">High-risk actions pause for human approval. You stay in control.</p>
+        </div>
+      </div>
+
+      <div class="max-w-2xl mx-auto reveal">
+        <div class="code-block p-5 font-mono text-sm mb-6">
+          <div class="text-gray-500 mb-3 text-xs">Python</div>
+          <div class="text-cyber-400">from agentcop import AgentCop</div>
+          <div class="text-gray-300 mt-2">cop = AgentCop(gate=..., permissions=..., sandbox=..., approvals=...)</div>
+          <div class="text-gray-300 mt-1">protected = cop.protect(agent)</div>
+        </div>
+        <div class="flex justify-center">
+          <div class="flex items-center gap-3 code-block px-5 py-3 font-mono text-sm text-cyber-400">
+            <span>pip install agentcop[runtime]</span>
+            <button onclick="navigator.clipboard.writeText('pip install agentcop[runtime]')" class="text-gray-500 hover:text-cyber-400 transition-colors" title="Copy">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ─── SCANNER ──────────────────────────────────────────────────────────────── -->
   <section id="scanner" class="py-20 bg-gradient-to-b from-dark-800/60 to-dark-900 border-t border-cyber-500/10">
     <div class="max-w-3xl mx-auto px-6">
@@ -901,6 +961,7 @@
         </div>
         <h2 class="text-3xl font-extrabold text-white tracking-tight mb-2">Scan your agent now</h2>
         <p class="text-gray-400">Paste code, upload a ZIP, or point at a GitHub repo. No signup required.</p>
+        <p class="text-gray-500 text-sm mt-2">🔒 Now with Runtime Enforcement — execution gating, permission layer, sandbox, approval boundaries.</p>
       </div>
 
       <!-- Input Card -->
