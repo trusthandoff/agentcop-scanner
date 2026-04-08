@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliability Guide — AgentCop Docs</title>
+  <meta name="description" content="A complete practical guide to measuring and improving agent reliability with AgentCop — from first instrumentation to reading reports and fixing instability.">
+  <link rel="canonical" href="https://docs.agentcop.live/guides/reliability.html">
+  <link rel="stylesheet" href="/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Reliability Guide","description":"A complete practical guide to measuring and improving agent reliability with AgentCop — from first instrumentation to reading reports and fixing instability.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/trusthandoff/agentcop">GitHub</a>
+      <a href="https://twitter.com/theagentcop" target="_blank">𝕏 @theagentcop</a>
+      <a href="https://www.moltbook.com/profile/sentinel_theagentcop" target="_blank">🦞 Moltbook</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item active">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item">Reliability API</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Reliability</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Reliability Guide</h1>
+        <p class="doc-lead">A complete practical guide to measuring and improving agent reliability — from first instrumentation to reading reports and fixing the specific metrics that are hurting your score.</p>
+
+        <h2 id="instrument">Instrument your agent with ReliabilityTracer</h2>
+        <p>The <code>ReliabilityTracer</code> is a context manager that wraps any agent invocation. It intercepts tool calls, records timing and outcomes, and writes a structured run record to the local <code>ReliabilityStore</code>. No network calls. No external dependencies. Just a local SQLite store under <code>~/.agentcop/reliability.db</code> by default.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.reliability import ReliabilityTracer
+
+# Basic usage — wrap any agent invocation
+with ReliabilityTracer(agent_id="my-agent") as tracer:
+    result = agent.run("What are the top 5 results for 'AI security'?")
+
+# The tracer automatically records:
+#   - tool call sequence and timing
+#   - which branches were taken
+#   - retry counts per tool
+#   - token usage
+#   - final output and exit status
+
+# Access the run record directly after the block
+run = tracer.run_record
+print(f"Reliability score: {run.reliability_score}/100")
+print(f"Tier: {run.tier}")
+print(f"Dominant penalty: {run.dominant_penalty}")</code></pre>
+        </div>
+
+        <p>The tracer can also receive callbacks for real-time monitoring:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.reliability import ReliabilityTracer
+
+def on_instability(event):
+    print(f"[RELIABILITY] {event.metric}: {event.value:.2f} (threshold {event.threshold})")
+    # Send to Slack, PagerDuty, etc.
+
+with ReliabilityTracer(
+    agent_id="my-agent",
+    on_instability=on_instability,
+    retry_threshold=3,          # flag retry explosion at 3+ retries
+    budget_pressure_warn=0.80,  # flag token budget above 80%
+) as tracer:
+    result = agent.run(user_input)</code></pre>
+        </div>
+
+        <h2 id="wrap-adapter">Wrap an existing adapter</h2>
+        <p>If you are already using an AgentCop adapter, use <code>wrap_for_reliability</code> to add reliability tracking with one line. This preserves all existing security instrumentation and adds the reliability layer on top.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import AgentCop
+from agentcop.reliability import wrap_for_reliability
+
+# Existing setup
+cop = AgentCop(agent_id="my-agent", monitor=True, gate=True)
+protected_agent = cop.wrap(my_agent)
+
+# Add reliability tracking on top
+reliable_agent = wrap_for_reliability(
+    protected_agent,
+    agent_id="my-agent",     # must match the AgentCop agent_id
+    store_path="~/.agentcop/reliability.db",  # optional, default shown
+)
+
+# Use as normal — both security enforcement and reliability tracking active
+result = reliable_agent.run(user_input)</code></pre>
+        </div>
+
+        <h2 id="read-report">Read the reliability report</h2>
+        <p>After running your agent a few times, pull the reliability report from the CLI. You need at least 5 runs before the report is statistically meaningful; the CLI will warn you if you have fewer.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Print a summary report for a specific agent
+agentcop reliability report my-agent
+
+# Example output:
+# ─────────────────────────────────────────────────────────
+# AgentCop Reliability Report — my-agent
+# Runs analyzed: 47  |  Window: last 7 days
+# ─────────────────────────────────────────────────────────
+# Composite score:      79/100  🟡 VARIABLE
+#
+# Path entropy:         0.21    (−3.2 pts)
+# Tool variance:        0.14    (−2.8 pts)
+# Retry explosion:      0.00    (−0.0 pts)  ✓
+# Branch instability:   0.18    (−3.6 pts)
+# Token budget avg:     0.57    (−11.4 pts) ← dominant penalty
+#
+# Dominant issue: token_budget_pressure
+# Recommendation: reduce average prompt size or switch to a
+#   larger context model. 8 of 47 runs exceeded 80% budget.
+# ─────────────────────────────────────────────────────────
+
+# Filter by date range
+agentcop reliability report my-agent --since 2026-03-01 --until 2026-04-01
+
+# Show individual run breakdown
+agentcop reliability report my-agent --runs</code></pre>
+        </div>
+
+        <h2 id="fix-instability">Fix instability — what to do for each metric</h2>
+
+        <h3 id="fix-path-entropy">High path entropy</h3>
+        <p>The agent is taking different routes to the same answer. This usually means the system prompt is too vague, the tool descriptions overlap, or the model is being given too many tools.</p>
+        <ul>
+          <li>Reduce the tool set — remove tools the agent does not need for this task.</li>
+          <li>Make tool descriptions unambiguous — if <code>search_knowledge_base</code> and <code>call_external_api</code> could both plausibly answer the same query, one of them needs a tighter description.</li>
+          <li>Add a step-by-step instruction to the system prompt that specifies the expected path for common query types.</li>
+        </ul>
+
+        <h3 id="fix-tool-variance">High tool variance</h3>
+        <p>The agent is calling tools it shouldn't need for some fraction of runs. Often caused by the model "helpfully" adding an extra step — like sending a confirmation email after completing a task — when the task doesn't require it.</p>
+        <ul>
+          <li>Add explicit negative constraints to the system prompt: "Do not call <code>send_email</code> unless explicitly asked."</li>
+          <li>Use the AgentCop Gate to block unexpected tools outright — if a tool should never be called for a given agent type, block it at the policy level rather than hoping the model stays on task.</li>
+          <li>Review run traces for the outlier calls to understand what the model was reasoning about when it made them.</li>
+        </ul>
+
+        <h3 id="fix-retry-explosion">Retry explosion</h3>
+        <p>A tool call is failing repeatedly and the agent has no exit strategy. Add an explicit retry limit in your tool implementation, and instruct the agent to give up and report the failure after N retries.</p>
+        <ul>
+          <li>Set <code>max_retries</code> in your tool implementation (most frameworks support this).</li>
+          <li>Add to the system prompt: "If a tool call fails 3 times in a row, stop and report the failure to the user."</li>
+          <li>Use the <code>retry_threshold</code> parameter in <code>ReliabilityTracer</code> to get an alert before the explosion becomes expensive.</li>
+        </ul>
+
+        <h3 id="fix-branch-instability">Branch instability</h3>
+        <p>The agent is making different classification or routing decisions for equivalent inputs. This is the hardest metric to fix because it often reflects genuine model non-determinism at decision boundaries.</p>
+        <ul>
+          <li>Set <code>temperature=0</code> on the model for classification steps.</li>
+          <li>Use structured output (JSON mode or function calling) for branching decisions — force the model to choose from a fixed set of options rather than freeform reasoning.</li>
+          <li>Add worked examples to the system prompt for the boundary cases where the model is inconsistent.</li>
+        </ul>
+
+        <h3 id="fix-token-budget">Token budget pressure</h3>
+        <p>The agent is regularly consuming most of its context window. Sustained high budget pressure leads to truncation, incomplete reasoning, and degraded output quality.</p>
+        <ul>
+          <li>Summarize long tool responses before passing them back to the model — raw API responses are often 10x longer than necessary.</li>
+          <li>Use a model with a larger context window for agents that handle long documents.</li>
+          <li>Implement context pruning: drop early turns from the conversation history once they are no longer relevant.</li>
+          <li>Set a hard limit on tool response size in your tool implementation.</li>
+        </ul>
+
+        <h2 id="langchain-example">LangChain example</h2>
+        <p>A fully instrumented LangChain ReAct agent with both security enforcement and reliability tracking active.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop import AgentCop, GatePolicy
+from agentcop.reliability import wrap_for_reliability
+from langchain.agents import initialize_agent, AgentType
+from langchain.tools import DuckDuckGoSearchRun
+from langchain_openai import ChatOpenAI
+
+AGENT_ID = "langchain-search-agent"
+
+# 1. Configure security layer
+cop = AgentCop(
+    agent_id=AGENT_ID,
+    policy=GatePolicy(
+        allow=["duckduckgo_search"],
+        block=["shell_execute", "file_write"],
+    ),
+    monitor=True,
+)
+
+# 2. Build the LangChain agent
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+tools = [DuckDuckGoSearchRun()]
+agent = initialize_agent(
+    tools, llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    max_iterations=5,  # explicit bound prevents retry explosion
+)
+
+# 3. Wrap with security enforcement
+protected_agent = cop.wrap(agent)
+
+# 4. Add reliability tracking on top
+reliable_agent = wrap_for_reliability(protected_agent, agent_id=AGENT_ID)
+
+# 5. Run — both layers active
+with reliable_agent.tracer as t:
+    result = reliable_agent.run("What are the latest AI safety research papers?")
+    print(f"Score: {t.run_record.reliability_score}/100 ({t.run_record.tier})")</code></pre>
+        </div>
+
+        <h2 id="crewai-example">CrewAI example</h2>
+        <p>Wrapping a CrewAI crew with reliability tracking. Because CrewAI runs multiple agents in a pipeline, use a separate <code>ReliabilityTracer</code> per agent identity to get per-agent scores.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from crewai import Agent, Task, Crew
+from agentcop.reliability import ReliabilityTracer
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+researcher = Agent(
+    role="Researcher",
+    goal="Find and summarize relevant information",
+    llm=llm,
+    tools=[search_tool],
+)
+writer = Agent(
+    role="Writer",
+    goal="Draft a clear summary from the research",
+    llm=llm,
+)
+
+task1 = Task(description="Research AI security trends", agent=researcher)
+task2 = Task(description="Write a 3-paragraph summary", agent=writer)
+crew = Crew(agents=[researcher, writer], tasks=[task1, task2])
+
+# Wrap the full crew execution in a single tracer for pipeline-level reliability
+with ReliabilityTracer(agent_id="crewai-research-pipeline") as tracer:
+    result = crew.kickoff()
+
+print(f"Pipeline reliability: {tracer.run_record.reliability_score}/100")
+print(f"Tier: {tracer.run_record.tier}")
+
+# For per-agent scores, use separate tracers per agent via crew callbacks:
+# researcher.step_callback = lambda step: tracer.record_step(step)</code></pre>
+        </div>
+
+        <h2 id="export-report">Export an HTML report</h2>
+        <p>For sharing with stakeholders or storing as an artifact in CI, export the reliability report as a self-contained HTML file.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Export HTML report to current directory
+agentcop reliability export my-agent --format html
+
+# Outputs: my-agent_reliability_2026-04-08.html
+# Self-contained — no external CSS/JS dependencies.
+
+# Specify output path
+agentcop reliability export my-agent --format html --output reports/weekly.html
+
+# Export JSON for programmatic use
+agentcop reliability export my-agent --format json --output reports/weekly.json
+
+# Export and open in browser immediately (macOS)
+agentcop reliability export my-agent --format html --open</code></pre>
+        </div>
+
+        <p>The HTML report includes a score summary, trend charts for each metric over time, a per-run breakdown table, and inline recommendations for the highest-penalty metrics.</p>
+
+        <div class="callout callout-sentinel">
+          <p>reliability is not a vanity metric. an agent with a 40/100 reliability score is a liability in production — it will behave differently tomorrow than it did today, and you won't know why until a user reports a bad outcome.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/guides/runtime-protection.html" class="pagination-prev">← Runtime Protection</a>
+          <a href="/api-reference/reliability.html" class="pagination-next">Reliability API →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#instrument" class="right-nav-link">Instrument with ReliabilityTracer</a></li>
+        <li><a href="#wrap-adapter" class="right-nav-link">Wrap existing adapter</a></li>
+        <li><a href="#read-report" class="right-nav-link">Read the report</a></li>
+        <li><a href="#fix-instability" class="right-nav-link">Fix instability</a></li>
+        <li><a href="#langchain-example" class="right-nav-link">LangChain example</a></li>
+        <li><a href="#crewai-example" class="right-nav-link">CrewAI example</a></li>
+        <li><a href="#export-report" class="right-nav-link">Export HTML report</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>

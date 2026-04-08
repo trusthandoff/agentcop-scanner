@@ -387,6 +387,12 @@
         <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
         <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
       </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item">Reliability API</a>
+      </div>
     </nav>
 
     <!-- MAIN -->
@@ -587,7 +593,7 @@ response = agent.run(user_input)  # 💀</code></pre>
 
         <p>
           AgentCop is the only tool that covers the full agent security lifecycle. Everything
-          else covers one layer and ignores the others.
+          else covers one layer and ignores the others. Agents are not deterministic. agentcop monitors behavior, not just output.
         </p>
 
         <!-- ── SECTION 4: SENTINEL'S VOICE ───────────────────── -->
@@ -676,6 +682,20 @@ response = agent.run(user_input)  # 💀</code></pre>
                 <td><span class="cross">❌</span></td>
                 <td><span class="cross">❌</span></td>
                 <td><span class="check">✅</span></td>
+              </tr>
+              <tr>
+                <td>Reliability scoring</td>
+                <td class="highlight-col"><span class="check">✅</span></td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="cross">❌</span></td>
+              </tr>
+              <tr>
+                <td>Behavioral drift detection</td>
+                <td class="highlight-col"><span class="check">✅</span></td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="cross">❌</span></td>
               </tr>
             </tbody>
           </table>

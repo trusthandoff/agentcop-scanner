@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliability API — AgentCop Docs</title>
+  <meta name="description" content="Full API reference for the AgentCop Reliability Layer — ReliabilityTracer, ReliabilityStore, ReliabilityReport, and all metric calculators.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/reliability.html">
+  <link rel="stylesheet" href="/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Reliability API","description":"Full API reference for the AgentCop Reliability Layer — ReliabilityTracer, ReliabilityStore, ReliabilityReport, and all metric calculators.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/trusthandoff/agentcop">GitHub</a>
+      <a href="https://twitter.com/theagentcop" target="_blank">𝕏 @theagentcop</a>
+      <a href="https://www.moltbook.com/profile/sentinel_theagentcop" target="_blank">🦞 Moltbook</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item active">Reliability API</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>Reliability API</h1>
+        <p class="doc-lead">Full reference for the AgentCop Reliability Layer — all classes, methods, fields, and calculators.</p>
+
+        <h2 id="reliability-tracer">ReliabilityTracer</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--accent);">agentcop.reliability.ReliabilityTracer</code>
+          </div>
+          <p>Context manager that intercepts tool calls during an agent run, computes reliability metrics, and writes a <code>RunRecord</code> to the <code>ReliabilityStore</code>. Can be used standalone or layered on top of a <code>wrap_for_reliability</code>-wrapped agent.</p>
+
+          <h4>Constructor</h4>
+          <pre><code class="language-python">ReliabilityTracer(
+    agent_id: str,
+    store_path: str = "~/.agentcop/reliability.db",
+    retry_threshold: int = 3,
+    budget_pressure_warn: float = 0.80,
+    on_instability: Callable[[InstabilityEvent], None] | None = None,
+    labels: dict[str, str] | None = None,
+)</code></pre>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>str</td><td>required</td><td>Identifier for the agent. Used to group runs in the store and CLI reports.</td></tr>
+              <tr><td><code>store_path</code></td><td>str</td><td><code>~/.agentcop/reliability.db</code></td><td>Path to the SQLite store. Use an absolute path for multi-process setups.</td></tr>
+              <tr><td><code>retry_threshold</code></td><td>int</td><td>3</td><td>Number of consecutive retries on the same tool call before <code>retry_explosion</code> is flagged.</td></tr>
+              <tr><td><code>budget_pressure_warn</code></td><td>float</td><td>0.80</td><td>Token budget fraction (0–1) at which the <code>on_instability</code> callback fires mid-run.</td></tr>
+              <tr><td><code>on_instability</code></td><td>callable</td><td>None</td><td>Optional callback invoked immediately when a metric exceeds its threshold during a live run.</td></tr>
+              <tr><td><code>labels</code></td><td>dict</td><td>None</td><td>Arbitrary key/value metadata stored with the run record. Useful for environment, version, etc.</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Context manager protocol</h4>
+          <pre><code class="language-python">with ReliabilityTracer(agent_id="my-agent") as tracer:
+    result = agent.run(input)
+
+# After the block:
+tracer.run_record    # RunRecord — populated after __exit__
+tracer.elapsed_ms    # int — total run duration in milliseconds</code></pre>
+
+          <h4>Methods</h4>
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>record_step(step)</code></td><td>Manually record a tool step. Use with frameworks that expose a step callback instead of supporting context managers directly.</td></tr>
+              <tr><td><code>record_token_usage(prompt_tokens, completion_tokens, model_limit)</code></td><td>Manually supply token counts when automatic interception is not available.</td></tr>
+              <tr><td><code>finalize(output, exit_status)</code></td><td>Explicitly close the run record. Called automatically by <code>__exit__</code>; only call manually if not using the context manager.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="reliability-store">ReliabilityStore</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--accent);">agentcop.reliability.ReliabilityStore</code>
+          </div>
+          <p>SQLite-backed store for run records. Manages persistence, querying, and report generation. The <code>ReliabilityTracer</code> writes to the store automatically; use the store directly only when you need to query historical data or build custom reports.</p>
+
+          <h4>Constructor</h4>
+          <pre><code class="language-python">ReliabilityStore(path: str = "~/.agentcop/reliability.db")</code></pre>
+
+          <h4>record_run</h4>
+          <pre><code class="language-python">store.record_run(run: RunRecord) -> str
+# Returns the run_id assigned to the stored record.</code></pre>
+          <p>Persists a <code>RunRecord</code> to the store. Called automatically by <code>ReliabilityTracer.__exit__</code>.</p>
+
+          <h4>get_runs</h4>
+          <pre><code class="language-python">store.get_runs(
+    agent_id: str,
+    since: datetime | None = None,
+    until: datetime | None = None,
+    limit: int = 200,
+) -> list[RunRecord]</code></pre>
+          <p>Returns stored run records for the given agent, ordered by timestamp descending. Optionally filtered by date range. <code>limit</code> caps the result count.</p>
+
+          <h4>get_report</h4>
+          <pre><code class="language-python">store.get_report(
+    agent_id: str,
+    since: datetime | None = None,
+    until: datetime | None = None,
+    min_runs: int = 5,
+) -> ReliabilityReport</code></pre>
+          <p>Computes and returns a <code>ReliabilityReport</code> aggregated from all matching runs. Raises <code>InsufficientDataError</code> if fewer than <code>min_runs</code> records are found.</p>
+        </div>
+
+        <h2 id="reliability-report">ReliabilityReport</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <code style="font-family:var(--font-mono);font-size:14px;color:var(--accent);">agentcop.reliability.ReliabilityReport</code>
+          </div>
+          <p>Dataclass representing the aggregated reliability analysis for an agent across a set of runs. Returned by <code>ReliabilityStore.get_report</code> and by the CLI <code>agentcop reliability report</code> command.</p>
+
+          <h4>Fields</h4>
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>str</td><td>The agent identifier this report covers.</td></tr>
+              <tr><td><code>run_count</code></td><td>int</td><td>Number of runs included in this report.</td></tr>
+              <tr><td><code>since</code></td><td>datetime</td><td>Earliest run timestamp included.</td></tr>
+              <tr><td><code>until</code></td><td>datetime</td><td>Latest run timestamp included.</td></tr>
+              <tr><td><code>composite_score</code></td><td>float</td><td>Weighted composite reliability score, 0–100.</td></tr>
+              <tr><td><code>tier</code></td><td>str</td><td><code>STABLE</code>, <code>VARIABLE</code>, <code>UNSTABLE</code>, or <code>CRITICAL</code>.</td></tr>
+              <tr><td><code>path_entropy_avg</code></td><td>float</td><td>Mean path entropy across runs, 0–1.</td></tr>
+              <tr><td><code>tool_variance_avg</code></td><td>float</td><td>Mean tool variance across runs, 0–1.</td></tr>
+              <tr><td><code>retry_explosion_rate</code></td><td>float</td><td>Fraction of runs that triggered retry explosion, 0–1.</td></tr>
+              <tr><td><code>branch_instability_avg</code></td><td>float</td><td>Mean branch instability across runs, 0–1.</td></tr>
+              <tr><td><code>token_budget_avg</code></td><td>float</td><td>Mean token budget pressure across runs, 0–1.</td></tr>
+              <tr><td><code>dominant_penalty</code></td><td>str</td><td>Name of the metric contributing the largest penalty to the composite score.</td></tr>
+              <tr><td><code>recommendations</code></td><td>list[str]</td><td>Human-readable recommendations for the top-penalty metrics.</td></tr>
+              <tr><td><code>score_trend</code></td><td>list[float]</td><td>Composite score per run in chronological order. Useful for trend charts.</td></tr>
+              <tr><td><code>badge_text</code></td><td>str</td><td>Formatted badge string, e.g. <code>"🟢 STABLE 87/100"</code>.</td></tr>
+              <tr><td><code>generated_at</code></td><td>datetime</td><td>Timestamp when this report object was created.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="calculators">Metric Calculators</h2>
+        <p>Each reliability metric is computed by a dedicated calculator class. The <code>ReliabilityTracer</code> instantiates and runs all calculators automatically. You can also instantiate them directly to compute metrics on your own run data.</p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <h4>PathEntropyCalculator</h4>
+          <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">agentcop.reliability.PathEntropyCalculator</code>
+          <pre><code class="language-python">from agentcop.reliability import PathEntropyCalculator
+
+calc = PathEntropyCalculator()
+
+# Feed sequences of tool call names
+calc.observe(["search_kb", "summarize", "respond"])
+calc.observe(["call_api", "parse", "search_kb", "respond"])
+calc.observe(["search_kb", "call_api", "respond"])
+
+entropy = calc.compute()   # float 0–1
+# entropy = 0.97 in this example (three distinct paths)</code></pre>
+          <p>Uses Shannon entropy over normalized path frequencies. A single repeated path has entropy 0. All unique paths have entropy approaching 1.</p>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <h4>ToolVarianceCalculator</h4>
+          <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">agentcop.reliability.ToolVarianceCalculator</code>
+          <pre><code class="language-python">from agentcop.reliability import ToolVarianceCalculator
+
+calc = ToolVarianceCalculator(expected_tools=["web_search", "summarize"])
+
+calc.observe(["web_search", "summarize"])
+calc.observe(["web_search", "summarize", "send_email"])
+calc.observe(["web_search", "summarize"])
+
+variance = calc.compute()   # float 0–1
+# variance ≈ 0.17 (one run had an unexpected tool)</code></pre>
+          <p>Measures the fraction of runs that called one or more tools outside the expected set, weighted by how far outside the norm each unexpected call is. If <code>expected_tools</code> is not provided, the calculator infers the expected set from the first 10 observed runs.</p>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <h4>RetryExplosionDetector</h4>
+          <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">agentcop.reliability.RetryExplosionDetector</code>
+          <pre><code class="language-python">from agentcop.reliability import RetryExplosionDetector
+
+detector = RetryExplosionDetector(threshold=3)
+
+# Record individual tool call outcomes during a run
+detector.record_call("fetch_record", success=False)
+detector.record_call("fetch_record", success=False)
+detector.record_call("fetch_record", success=False)
+detector.record_call("fetch_record", success=False)  # threshold exceeded
+
+exploded = detector.check()   # bool — True if any tool exceeded threshold
+details = detector.details()  # dict[tool_name, retry_count]</code></pre>
+          <p>Returns a boolean rather than a float. A run that triggers retry explosion receives the full −25 penalty; a run that does not receives 0 penalty. The <code>threshold</code> is the number of consecutive failures on the same <code>(tool_name, input_hash)</code> pair before the detector flags.</p>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <h4>BranchInstabilityCalculator</h4>
+          <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">agentcop.reliability.BranchInstabilityCalculator</code>
+          <pre><code class="language-python">from agentcop.reliability import BranchInstabilityCalculator
+
+calc = BranchInstabilityCalculator()
+
+# Record (input_hash, branch_taken) pairs across runs
+calc.observe(input_hash="h1a2b3", branch="routine")
+calc.observe(input_hash="h1a2b3", branch="routine")
+calc.observe(input_hash="h1a2b3", branch="escalate")   # divergence
+calc.observe(input_hash="h4c5d6", branch="standard")   # different input
+
+instability = calc.compute()   # float 0–1</code></pre>
+          <p>Groups observations by <code>input_hash</code> and measures the fraction of input groups where more than one distinct branch was observed. Input hashing is done automatically by the tracer (semantic similarity bucketing); when using the calculator directly, provide your own stable hash.</p>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <h4>TokenBudgetCalculator</h4>
+          <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">agentcop.reliability.TokenBudgetCalculator</code>
+          <pre><code class="language-python">from agentcop.reliability import TokenBudgetCalculator
+
+calc = TokenBudgetCalculator(model_limit=128_000)
+
+# Record token usage per run
+calc.observe(prompt_tokens=24300, completion_tokens=1200)
+calc.observe(prompt_tokens=61200, completion_tokens=3400)
+calc.observe(prompt_tokens=98400, completion_tokens=5100)
+
+pressure_avg = calc.compute()   # float 0–1 (mean budget fraction)
+runs_above_warn = calc.above_threshold(warn=0.80)  # int</code></pre>
+          <p>Computes the average of <code>(prompt_tokens + completion_tokens) / model_limit</code> across all observed runs. <code>above_threshold</code> returns the count of runs that exceeded the specified fraction. The <code>model_limit</code> defaults to 128,000 if not specified; pass the actual limit for your model for accurate results.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/api-reference/approvals.html" class="prev-link">← Approvals API</a>
+          <a href="/concepts/reliability.html" class="next-link">Reliability Concepts →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#reliability-tracer">ReliabilityTracer</a></li>
+        <li><a href="#reliability-store">ReliabilityStore</a></li>
+        <li><a href="#reliability-report">ReliabilityReport</a></li>
+        <li><a href="#calculators">Metric Calculators</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>

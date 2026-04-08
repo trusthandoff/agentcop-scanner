@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliability Layer — AgentCop Docs</title>
+  <meta name="description" content="Understand how AgentCop measures agent reliability — path entropy, tool variance, retry explosion, branch instability, and token budget pressure.">
+  <link rel="canonical" href="https://docs.agentcop.live/concepts/reliability.html">
+  <link rel="stylesheet" href="/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Reliability Layer","description":"Understand how AgentCop measures agent reliability — path entropy, tool variance, retry explosion, branch instability, and token budget pressure.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/trusthandoff/agentcop">GitHub</a>
+      <a href="https://twitter.com/theagentcop" target="_blank">𝕏 @theagentcop</a>
+      <a href="https://www.moltbook.com/profile/sentinel_theagentcop" target="_blank">🦞 Moltbook</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item active">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item">Reliability API</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/concepts/">Concepts</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Reliability Layer</span>
+        </nav>
+
+        <div class="doc-eyebrow">Concepts</div>
+        <h1 class="doc-title">Reliability Layer</h1>
+        <p class="doc-lead">Agents are not deterministic. The same prompt can take five different tool paths on five consecutive runs. The Reliability Layer measures that variance — and gives you a score you can act on.</p>
+
+        <h2 id="path-entropy">Path Entropy</h2>
+        <p>Path entropy measures how consistently an agent reaches its goal via the same sequence of tool calls. An agent with low entropy takes roughly the same steps every run. An agent with high entropy wanders — picking different tools, reordering steps, or arriving at the answer via routes that vary dramatically between runs.</p>
+        <p><strong>Why it matters:</strong> high path entropy makes it hard to reason about what your agent will do in production. A support agent that sometimes uses <code>search_knowledge_base</code> and sometimes uses <code>call_external_api</code> for the same query is a reliability risk — and potentially a security risk if those paths have different permission requirements.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Run 1: search_kb → summarize → respond           (path A)
+Run 2: call_api → parse → search_kb → respond    (path B)
+Run 3: search_kb → call_api → respond            (path C)
+
+Path entropy = HIGH — three distinct paths for the same input.
+A well-tuned agent would converge on path A every time.</code></pre>
+        </div>
+
+        <p>Path entropy is calculated as the Shannon entropy of observed tool-call sequences across the last N runs, normalized to 0–1. A score of 0 means every run followed the identical path. A score of 1 means every run took a completely different path.</p>
+
+        <h2 id="tool-variance">Tool Variance</h2>
+        <p>Tool variance measures how stable your agent's tool selection is across runs with equivalent inputs. It differs from path entropy in that it looks at <em>which</em> tools were called, not in what order. An agent with low tool variance calls roughly the same set of tools for the same class of task.</p>
+        <p><strong>Concrete example:</strong> a research agent should call <code>web_search</code> and <code>summarize</code> for every research query. If it occasionally also calls <code>send_email</code> or <code>write_to_database</code> without a clear reason, tool variance is high — and those unexpected calls may represent a security boundary being crossed unpredictably.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Expected tool set: {web_search, summarize}
+Observed across 20 runs:
+  - web_search called: 20/20 runs    ← stable
+  - summarize called: 18/20 runs     ← mostly stable
+  - send_email called: 3/20 runs     ← unexpected variance
+  - write_to_database called: 1/20   ← high-severity variance
+
+Tool variance score: 0.31  (0 = perfectly stable, 1 = fully random)</code></pre>
+        </div>
+
+        <h2 id="retry-explosion">Retry Explosion</h2>
+        <p>Retry explosion tracks how often your agent re-attempts a tool call after a failure — and whether those retries are bounded. An agent that retries a failing API call 40 times is not a reliable agent. It's a runaway process that wastes tokens, burns rate limits, and may trigger downstream alerts.</p>
+        <p><strong>Concrete example:</strong> a data pipeline agent calls <code>fetch_record(id=42)</code>. The record doesn't exist. The agent retries. And retries. And retries. Without an explicit retry limit, this loop can run until the token budget is exhausted or the process is killed externally. The Retry Explosion detector flags any run where a single tool call is retried more than a configurable threshold (default: 3).</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">tool_call: fetch_record(id=42) → FAILED (not found)
+tool_call: fetch_record(id=42) → FAILED (not found)
+tool_call: fetch_record(id=42) → FAILED (not found)
+tool_call: fetch_record(id=42) → FAILED (not found)  ← threshold exceeded
+tool_call: fetch_record(id=42) → FAILED (not found)
+...
+
+retry_explosion = TRUE  (5 retries on same call, threshold = 3)
+Reliability penalty: −25 points</code></pre>
+        </div>
+
+        <h2 id="branch-instability">Branch Instability</h2>
+        <p>Branch instability measures how often your agent takes conditional branches that differ across runs with the same input. A stable agent makes the same decisions given the same context. An unstable agent flips between branches — sometimes taking the safe path, sometimes the expensive path, sometimes erroring out — with no clear reason.</p>
+        <p><strong>Concrete example:</strong> a customer support agent is given the same complaint. On some runs it classifies it as "routine" and routes to the knowledge base. On other runs it classifies it as "escalation" and drafts an email to a human. The input is identical; the outcome is not. Branch instability is measured by tracking decision-point outcomes across runs with semantically equivalent inputs.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Input: "My order hasn't arrived after 5 days."
+Run 1 → branch: "routine"   → lookup_order_status
+Run 2 → branch: "routine"   → lookup_order_status
+Run 3 → branch: "escalate"  → draft_escalation_email   ← divergence
+Run 4 → branch: "routine"   → lookup_order_status
+Run 5 → branch: "escalate"  → draft_escalation_email   ← divergence
+
+Branch instability = 0.4 (40% of runs took an unexpected branch)</code></pre>
+        </div>
+
+        <h2 id="token-budget">Token Budget Pressure</h2>
+        <p>Token budget pressure measures how close your agent runs to its context window limit. An agent consistently operating at 90%+ of its token budget is fragile: one slightly longer input, one verbose tool response, and the run fails or truncates. Budget pressure is measured as the ratio of tokens consumed to the model's context limit, averaged across runs.</p>
+        <p><strong>Concrete example:</strong> a summarization agent is given documents of varying length. Short documents use 20% of the token budget — fine. But long documents push to 95%, and at that point the model starts truncating its own reasoning, producing incomplete outputs. Budget pressure above 80% on average is flagged as UNSTABLE.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Context window: 128,000 tokens
+Run 1: 24,300 tokens used  (19%)  ← comfortable
+Run 2: 61,200 tokens used  (48%)  ← comfortable
+Run 3: 98,400 tokens used  (77%)  ← elevated
+Run 4: 121,000 tokens used (94%)  ← CRITICAL — near truncation
+Run 5: 115,000 tokens used (90%)  ← CRITICAL
+
+Average budget pressure: 65.6%  → VARIABLE tier</code></pre>
+        </div>
+
+        <h2 id="reliability-score">Reliability Score</h2>
+        <p>The composite Reliability Score is a weighted penalty model that combines all five metrics into a single 0–100 value. Higher is more reliable.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Reliability Score = 100
+  − (path_entropy        × 15)   # max −15
+  − (tool_variance       × 20)   # max −20
+  − (retry_explosion     × 25)   # max −25 (binary: 0 or 1)
+  − (branch_instability  × 20)   # max −20
+  − (token_budget_avg    × 20)   # max −20
+
+All metrics normalized to 0–1 before multiplication.
+Score clamped to 0–100.
+
+Example:
+  path_entropy = 0.2   → −3
+  tool_variance = 0.1  → −2
+  retry_explosion = 0  → −0
+  branch_instability = 0.15 → −3
+  token_budget_avg = 0.65   → −13
+
+  Score = 100 − 3 − 2 − 0 − 3 − 13 = 79  → VARIABLE</code></pre>
+        </div>
+
+        <h2 id="tiers">Reliability Tiers</h2>
+        <p>Every agent run is assigned a reliability tier based on its composite score.</p>
+
+        <div class="doc-table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Score Range</th>
+                <th>Badge</th>
+                <th>What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>STABLE</strong></td>
+                <td>80–100</td>
+                <td>🟢 STABLE</td>
+                <td>Agent behavior is consistent and predictable. Low variance across all metrics.</td>
+              </tr>
+              <tr>
+                <td><strong>VARIABLE</strong></td>
+                <td>60–79</td>
+                <td>🟡 VARIABLE</td>
+                <td>Some variance detected. Investigate the dominant penalty metric before shipping to production.</td>
+              </tr>
+              <tr>
+                <td><strong>UNSTABLE</strong></td>
+                <td>40–59</td>
+                <td>🟠 UNSTABLE</td>
+                <td>High variance. Agent behavior is unpredictable. Tune the agent before relying on it for production workloads.</td>
+              </tr>
+              <tr>
+                <td><strong>CRITICAL</strong></td>
+                <td>0–39</td>
+                <td>🔴 CRITICAL</td>
+                <td>Severe instability. One or more metrics are in a failure state. Do not run in production.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="badge-format">Badge Format</h2>
+        <p>The Reliability Layer adds a second dimension to the existing AgentCop trust badge. The combined badge shows both the security trust score and the reliability score in a single line.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">✅ SECURED 94/100 | 🟢 STABLE 87/100
+
+Format breakdown:
+  ✅  = trust score above 80 (SECURED)
+  94/100 = security trust score
+  |   = separator
+  🟢  = reliability tier indicator
+  STABLE = reliability tier label
+  87/100 = reliability composite score
+
+Other examples:
+  ✅ SECURED 88/100 | 🟡 VARIABLE 71/100
+  ⚠️  MODERATE 62/100 | 🟠 UNSTABLE 55/100
+  ❌ CRITICAL 31/100 | 🔴 CRITICAL 22/100</code></pre>
+        </div>
+
+        <div class="callout callout-danger">
+          <div class="callout-icon">AC</div>
+          <p class="callout-text">a high security trust score does not imply a high reliability score, and vice versa. an agent can be free of known vulnerabilities and still be wildly unpredictable at runtime. both dimensions matter.</p>
+        </div>
+
+        <div class="doc-pager">
+          <a href="/concepts/badge-system.html" class="pager-prev">← Badge System</a>
+          <a href="/guides/reliability.html" class="pager-next">Reliability Guide →</a>
+        </div>
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#path-entropy" class="right-nav-link">Path Entropy</a></li>
+        <li><a href="#tool-variance" class="right-nav-link">Tool Variance</a></li>
+        <li><a href="#retry-explosion" class="right-nav-link">Retry Explosion</a></li>
+        <li><a href="#branch-instability" class="right-nav-link">Branch Instability</a></li>
+        <li><a href="#token-budget" class="right-nav-link">Token Budget Pressure</a></li>
+        <li><a href="#reliability-score" class="right-nav-link">Reliability Score</a></li>
+        <li><a href="#tiers" class="right-nav-link">Reliability Tiers</a></li>
+        <li><a href="#badge-format" class="right-nav-link">Badge Format</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>
