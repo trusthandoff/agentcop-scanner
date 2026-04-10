@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Chain Guide — AgentCop Docs</title>
+  <meta name="description" content="A complete guide to TrustChain — attestation, context integrity, RAG trust, memory protection, and agent hierarchy enforcement.">
+  <link rel="canonical" href="https://docs.agentcop.live/docs/guides/trust-chain.html">
+  <link rel="stylesheet" href="/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Trust Chain Guide","description":"A complete guide to TrustChain — attestation, context integrity, RAG trust, memory protection, and agent hierarchy enforcement.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/trusthandoff/agentcop">GitHub</a>
+      <a href="https://twitter.com/theagentcop" target="_blank">𝕏 @theagentcop</a>
+      <a href="https://www.moltbook.com/profile/sentinel_theagentcop" target="_blank">🦞 Moltbook</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item">Reliability API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">TrustChain</span>
+        <a href="/concepts/trust-chain.html" class="nav-item">Trust Chain</a>
+        <a href="/guides/trust-chain.html" class="nav-item nav-item-active">Trust Chain Guide</a>
+        <a href="/api-reference/trust.html" class="nav-item">Trust Reference</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <nav class="breadcrumbs">
+          <a href="/">Docs</a>
+          <span class="breadcrumb-sep">›</span>
+          <a href="/guides/">Guides</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Trust Chain Guide</span>
+        </nav>
+
+        <div class="doc-eyebrow">Guides</div>
+        <h1>Trust Chain Guide</h1>
+        <p class="doc-lead">A complete guide to TrustChain — from a one-liner quickstart to production-grade attestation, context integrity, RAG trust, memory protection, and agent hierarchy enforcement.</p>
+
+        <h2 id="quickstart">TrustChainBuilder quickstart</h2>
+        <p>The fastest path to a fully attested agent is <code>TrustChainBuilder</code>. One call wraps your agent with all TrustChain components configured to safe defaults.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import TrustChainBuilder
+
+# One-liner: all components, safe defaults
+chain = TrustChainBuilder(agent_id="my-agent").build()
+
+# Run your agent through the chain
+result = chain.run(my_agent, input="Summarize the quarterly report")</code></pre>
+        </div>
+
+        <p>The builder enables attestation signing, context snapshot/verify, RAG source validation, memory integrity, and agent hierarchy checks — all with default settings. Each component can be individually configured or disabled.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import TrustChainBuilder
+
+chain = (
+    TrustChainBuilder(agent_id="production-agent")
+    .with_attestation(signed=True, key_path="/secrets/agent.pem")
+    .with_context_guard(snapshot_on=["tool_call", "llm_response"])
+    .with_rag_trust(sources=["s3://my-kb/", "https://docs.internal/"])
+    .with_memory_guard(backend="redis://localhost:6379/0")
+    .with_hierarchy(supervisor="orchestrator-agent", workers=["search", "summarize"])
+    .build()
+)</code></pre>
+        </div>
+
+        <h2 id="node-attestor">NodeAttestor: signed vs unsigned attestation</h2>
+        <p>The <code>NodeAttestor</code> signs each execution step with a cryptographic key. Every tool call, LLM response, and context read produces a signed attestation record that can be independently verified.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import NodeAttestor
+
+# Unsigned attestation — records steps but does not sign them
+# Use for development and audit logging without key management
+attestor = NodeAttestor(agent_id="dev-agent", signed=False)
+
+# Signed attestation — each record is HMAC-signed with your key
+# Use in production — unsigned records will fail verification
+attestor = NodeAttestor(
+    agent_id="production-agent",
+    signed=True,
+    key_path="/run/secrets/attestation_key",   # PEM or raw bytes
+)
+
+# Attach to your agent
+attestor.attach(my_agent)
+
+# Each step now produces a signed attestation record
+# Verify a chain after the fact:
+chain_records = attestor.export_chain()
+attestor.verify_chain(chain_records)  # raises AttestationError if invalid</code></pre>
+        </div>
+
+        <p>Signed and unsigned attestation differ in their security guarantees:</p>
+        <ul>
+          <li><strong>Unsigned</strong> — records that each step occurred and in what order. Detects missing or reordered steps but cannot prove the record was not modified after the fact.</li>
+          <li><strong>Signed</strong> — each record is cryptographically bound to the signing key. Any modification to the record or its position in the chain causes verification to fail. Suitable for regulatory audit trails.</li>
+        </ul>
+
+        <h2 id="context-guard">ContextGuard: snapshot and verify</h2>
+        <p>The <code>ContextGuard</code> takes a cryptographic snapshot of the agent's context window at specified points and verifies that the context has not been mutated between those points.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import ContextGuard
+
+guard = ContextGuard(
+    agent_id="my-agent",
+    snapshot_on=["tool_call", "llm_response", "memory_read"],
+    # Raise immediately if context mutation detected
+    on_mutation="raise",   # or "log", "alert"
+)
+
+# Wrap your agent
+protected = guard.wrap(my_agent)
+
+# After a run, inspect the context integrity log
+for record in guard.integrity_log():
+    print(f"{record.step}: {record.status} — {record.snapshot_hash[:12]}")</code></pre>
+        </div>
+
+        <p>When a mutation is detected, <code>ContextGuard</code> raises a <code>ContextMutationError</code> with a diff showing exactly which keys changed between the last snapshot and the current state. This makes it straightforward to identify which component in the pipeline modified the context unexpectedly.</p>
+
+        <h2 id="rag-trust-layer">RAGTrustLayer: register sources, detect poisoning</h2>
+        <p>The <code>RAGTrustLayer</code> maintains a registry of trusted document sources. Every document retrieved during agent execution is checked against this registry before it is added to the agent's context.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import RAGTrustLayer
+
+rag = RAGTrustLayer(agent_id="my-agent")
+
+# Register trusted sources — only documents from these sources are allowed
+rag.register_source("s3://company-kb/docs/", trust_level="high")
+rag.register_source("https://docs.internal/api/", trust_level="high")
+rag.register_source("https://external-partner.example.com/", trust_level="medium")
+
+# Optionally register known-good document hashes for strict verification
+rag.register_document_hash(
+    uri="s3://company-kb/docs/policy-v2.pdf",
+    sha256="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+)
+
+# Wrap your retrieval function
+@rag.guard
+def retrieve(query: str) -> list[str]:
+    return vector_store.similarity_search(query)
+
+# Untrusted or hash-mismatched documents raise RAGPoisoningError
+# or are quarantined depending on configuration
+rag.on_untrusted = "quarantine"  # or "raise", "log"</code></pre>
+        </div>
+
+        <h2 id="memory-guard">MemoryGuard: snapshot, verify, read_safe</h2>
+        <p>The <code>MemoryGuard</code> protects an agent's persistent memory store against poisoning by taking cryptographic snapshots and verifying reads against those snapshots.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import MemoryGuard
+
+guard = MemoryGuard(
+    agent_id="my-agent",
+    backend="redis://localhost:6379/1",  # or "sqlite:///memory.db"
+)
+
+# Take a snapshot of known-good memory state
+snapshot_id = guard.snapshot()
+
+# Later — verify memory has not changed since snapshot
+guard.verify(snapshot_id)  # raises MemoryPoisoningError if modified
+
+# Use read_safe instead of direct reads in production
+# read_safe verifies the entry against the last snapshot before returning it
+belief = guard.read_safe("user_preferences")
+
+# Write to memory — also logged and included in next snapshot
+guard.write("user_preferences", {"language": "en", "timezone": "UTC"})
+
+# Export the full memory audit trail
+for entry in guard.audit_log():
+    print(f"{entry.timestamp}: {entry.operation} — {entry.key}")</code></pre>
+        </div>
+
+        <h2 id="agent-hierarchy">AgentHierarchy: supervisor/worker setup, veto, quorum</h2>
+        <p>The <code>AgentHierarchy</code> component enforces which agents can instruct which other agents, and what approval thresholds are required for high-stakes decisions.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import AgentHierarchy
+
+hierarchy = AgentHierarchy()
+
+# Define the hierarchy
+hierarchy.set_supervisor("orchestrator", workers=["search-agent", "summarize-agent", "write-agent"])
+hierarchy.set_supervisor("search-agent", workers=["web-fetcher"])
+
+# Veto rights — orchestrator can override any worker decision
+hierarchy.grant_veto("orchestrator", over=["search-agent", "summarize-agent", "write-agent"])
+
+# Quorum — write-agent actions require sign-off from orchestrator AND summarize-agent
+hierarchy.require_quorum(
+    agent="write-agent",
+    actions=["publish", "delete", "send_email"],
+    approvers=["orchestrator", "summarize-agent"],
+    threshold=2  # both must approve
+)
+
+# Enforce: a worker cannot accept instructions from a non-supervisor
+hierarchy.enforce(strict=True)
+
+# Attach to your agents
+orchestrator_agent = hierarchy.wrap("orchestrator", orchestrator_agent)
+search_agent = hierarchy.wrap("search-agent", search_agent)</code></pre>
+        </div>
+
+        <p>When <code>strict=True</code>, any agent that receives instructions from a non-registered supervisor raises a <code>HierarchyViolationError</code>. This prevents a compromised low-privilege agent from delegating to a high-privilege agent and using its authority.</p>
+
+        <h2 id="trust-interop">TrustInterop: cross-runtime portable claims</h2>
+        <p>The <code>TrustInterop</code> module exports attestation records as portable signed claims that can be verified by other runtimes, services, or auditors without access to your internal AgentCop instance.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import TrustInterop
+
+interop = TrustInterop(
+    issuer="agentcop:production-agent",
+    public_key_url="https://keys.agentcop.live/production-agent.pub",
+)
+
+# Export the current chain as a portable JWT-based claim bundle
+claims = interop.export_claims(attestor.export_chain())
+
+# Share claims with an external auditor or downstream service
+print(claims.to_json())  # signed JSON, verifiable with the public key
+
+# Verify a claim bundle received from another runtime
+received_claims = TrustInterop.import_claims(external_json)
+received_claims.verify()  # raises TrustInteropError if signature invalid</code></pre>
+        </div>
+
+        <h2 id="docker-production">Docker/production: in-memory mode, env vars</h2>
+        <p>In containerized environments, TrustChain components can be configured entirely through environment variables and run in in-memory mode — no external storage required.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash"># Environment variables for TrustChain in production
+AGENTCOP_TRUST_SIGNED=true
+AGENTCOP_TRUST_KEY_PATH=/run/secrets/attestation_key
+AGENTCOP_TRUST_MEMORY_BACKEND=memory://   # in-memory, no Redis needed
+AGENTCOP_TRUST_RAG_STRICT=true
+AGENTCOP_TRUST_HIERARCHY_STRICT=true
+AGENTCOP_TRUST_ON_VIOLATION=raise</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-python">from agentcop.trust import TrustChainBuilder
+
+# Reads configuration from environment variables automatically
+chain = TrustChainBuilder.from_env(agent_id="production-agent").build()
+
+# In-memory mode: no persistent storage, suitable for stateless containers
+# Memory snapshots are held in process memory and discarded on shutdown
+chain = TrustChainBuilder(
+    agent_id="production-agent",
+    memory_backend="memory://",  # override env if needed
+).build()</code></pre>
+        </div>
+
+        <div class="callout callout-sentinel">
+          <p>trust is not assumed. trust is earned, signed, and verified — at every step, by every component, across every runtime.</p>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/guides/runtime-protection.html" class="pagination-prev">← Runtime Protection</a>
+          <a href="/api-reference/trust.html" class="pagination-next">Trust Reference →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#quickstart" class="right-nav-link">Quickstart</a></li>
+        <li><a href="#node-attestor" class="right-nav-link">NodeAttestor</a></li>
+        <li><a href="#context-guard" class="right-nav-link">ContextGuard</a></li>
+        <li><a href="#rag-trust-layer" class="right-nav-link">RAGTrustLayer</a></li>
+        <li><a href="#memory-guard" class="right-nav-link">MemoryGuard</a></li>
+        <li><a href="#agent-hierarchy" class="right-nav-link">AgentHierarchy</a></li>
+        <li><a href="#trust-interop" class="right-nav-link">TrustInterop</a></li>
+        <li><a href="#docker-production" class="right-nav-link">Docker/production</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Reference — AgentCop Docs</title>
+  <meta name="description" content="Complete API reference for AgentCop TrustChain — all 13 modules with methods, parameters, and return types.">
+  <link rel="canonical" href="https://docs.agentcop.live/api-reference/trust.html">
+  <link rel="stylesheet" href="/assets/docs.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","name":"Trust Reference","description":"Complete API reference for AgentCop TrustChain — all modules with methods, parameters, and return types.","publisher":{"@type":"Organization","name":"AgentCop"}}</script>
+</head>
+<body>
+  <header class="doc-header">
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <a href="/" class="header-logo"><span class="logo-icon">AC</span> agentcop <span>docs</span></a>
+    <div class="header-search"><input class="search-input" type="search" placeholder="Search docs... (/)"></div>
+    <nav class="header-links">
+      <a href="https://agentcop.live">Home</a>
+      <a href="https://github.com/trusthandoff/agentcop">GitHub</a>
+      <a href="https://twitter.com/theagentcop" target="_blank">𝕏 @theagentcop</a>
+      <a href="https://www.moltbook.com/profile/sentinel_theagentcop" target="_blank">🦞 Moltbook</a>
+      <a href="https://agentcop.live" class="header-cta">Try Scanner →</a>
+    </nav>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="doc-layout">
+    <nav class="doc-sidebar">
+      <div class="nav-section">
+        <span class="nav-section-label">Overview</span>
+        <a href="/" class="nav-item">Introduction</a>
+        <a href="/why-agentcop.html" class="nav-item">Why AgentCop?</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="/getting-started/" class="nav-item">Quickstart</a>
+        <a href="/getting-started/installation.html" class="nav-item">Installation</a>
+        <a href="/getting-started/first-scan.html" class="nav-item">Your First Scan</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Concepts</span>
+        <a href="/concepts/" class="nav-item">Overview</a>
+        <a href="/concepts/scanner.html" class="nav-item">Scanner Engine</a>
+        <a href="/concepts/monitor.html" class="nav-item">Runtime Monitor</a>
+        <a href="/concepts/execution-gate.html" class="nav-item">Execution Gate</a>
+        <a href="/concepts/permission-layer.html" class="nav-item">Permission Layer</a>
+        <a href="/concepts/sandbox.html" class="nav-item">Sandbox</a>
+        <a href="/concepts/approval-boundaries.html" class="nav-item">Approval Boundaries</a>
+        <a href="/concepts/badge-system.html" class="nav-item">Badge System</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Guides</span>
+        <a href="/guides/langchain.html" class="nav-item">LangChain</a>
+        <a href="/guides/crewai.html" class="nav-item">CrewAI</a>
+        <a href="/guides/autogen.html" class="nav-item">AutoGen</a>
+        <a href="/guides/openclaw.html" class="nav-item">OpenClaw</a>
+        <a href="/guides/moltbook.html" class="nav-item">Moltbook</a>
+        <a href="/guides/runtime-protection.html" class="nav-item">Runtime Protection</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="/api-reference/" class="nav-item">Overview</a>
+        <a href="/api-reference/agentcop.html" class="nav-item">AgentCop API</a>
+        <a href="/api-reference/gate.html" class="nav-item">Gate API</a>
+        <a href="/api-reference/permissions.html" class="nav-item">Permissions API</a>
+        <a href="/api-reference/sandbox.html" class="nav-item">Sandbox API</a>
+        <a href="/api-reference/approvals.html" class="nav-item">Approvals API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Security</span>
+        <a href="/security/owasp-llm-top10.html" class="nav-item">OWASP LLM Top 10</a>
+        <a href="/security/cwe-mapping.html" class="nav-item">CWE Mapping</a>
+        <a href="/security/threat-model.html" class="nav-item">Threat Model</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Reliability Layer</span>
+        <a href="/concepts/reliability.html" class="nav-item">Reliability Concepts</a>
+        <a href="/guides/reliability.html" class="nav-item">Reliability Guide</a>
+        <a href="/api-reference/reliability.html" class="nav-item">Reliability API</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">TrustChain</span>
+        <a href="/concepts/trust-chain.html" class="nav-item">Trust Chain</a>
+        <a href="/guides/trust-chain.html" class="nav-item">Trust Chain Guide</a>
+        <a href="/api-reference/trust.html" class="nav-item active">Trust Reference</a>
+      </div>
+    </nav>
+    <main class="doc-main">
+      <article class="doc-content">
+
+        <div class="doc-eyebrow">API Reference</div>
+        <h1>Trust Reference</h1>
+        <p class="doc-lead">Complete reference for all TrustChain modules — attestation, context integrity, RAG trust, memory protection, hierarchy enforcement, and cross-runtime interoperability.</p>
+
+        <p>All TrustChain modules are available under <code>agentcop.trust</code>. Import individually or use <code>TrustChainBuilder</code> to compose them.</p>
+
+        <!-- TrustChainBuilder -->
+        <h2 id="trust-chain-builder">TrustChainBuilder</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Fluent builder for composing TrustChain components. Produces a configured chain object ready to wrap an agent.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Yes</td><td>Unique identifier for the agent being protected</td></tr>
+              <tr><td><code>memory_backend</code></td><td>string</td><td>No</td><td>URI for memory store. Defaults to <code>memory://</code> (in-process)</td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>with_attestation(**kwargs)</code></td><td>See NodeAttestor</td><td>self</td><td>Enable attestation with the given configuration</td></tr>
+              <tr><td><code>with_context_guard(**kwargs)</code></td><td>See ContextGuard</td><td>self</td><td>Enable context integrity checking</td></tr>
+              <tr><td><code>with_rag_trust(**kwargs)</code></td><td>See RAGTrustLayer</td><td>self</td><td>Enable RAG source validation</td></tr>
+              <tr><td><code>with_memory_guard(**kwargs)</code></td><td>See MemoryGuard</td><td>self</td><td>Enable memory integrity protection</td></tr>
+              <tr><td><code>with_hierarchy(**kwargs)</code></td><td>See AgentHierarchy</td><td>self</td><td>Enable agent hierarchy enforcement</td></tr>
+              <tr><td><code>build()</code></td><td>—</td><td>TrustChain</td><td>Build and return the configured chain</td></tr>
+              <tr><td><code>from_env(agent_id)</code></td><td>agent_id: string</td><td>TrustChainBuilder</td><td>Class method. Read all configuration from environment variables</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TrustChain -->
+        <h2 id="trust-chain">TrustChain</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>The composed chain object returned by <code>TrustChainBuilder.build()</code>. Wraps an agent with all configured protection layers.</p>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>run(agent, input)</code></td><td>agent: Any, input: str</td><td>Any</td><td>Run the agent through all TrustChain layers</td></tr>
+              <tr><td><code>export_audit()</code></td><td>—</td><td>AuditBundle</td><td>Export the complete audit trail for the most recent run</td></tr>
+              <tr><td><code>verify()</code></td><td>—</td><td>bool</td><td>Verify the integrity of the most recent run's chain</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- NodeAttestor -->
+        <h2 id="node-attestor">NodeAttestor</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Signs each execution step with a cryptographic key. Produces an ordered chain of attestation records.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Yes</td><td>Agent identifier included in every record</td></tr>
+              <tr><td><code>signed</code></td><td>bool</td><td>No</td><td>Enable HMAC signing. Default: <code>False</code></td></tr>
+              <tr><td><code>key_path</code></td><td>string</td><td>If signed=True</td><td>Path to PEM key or raw bytes key file</td></tr>
+              <tr><td><code>algorithm</code></td><td>string</td><td>No</td><td>Signing algorithm. Default: <code>"HS256"</code></td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>attach(agent)</code></td><td>agent: Any</td><td>None</td><td>Instrument the agent to produce attestation records</td></tr>
+              <tr><td><code>export_chain()</code></td><td>—</td><td>list[AttestationRecord]</td><td>Return all records from the current session</td></tr>
+              <tr><td><code>verify_chain(records)</code></td><td>records: list[AttestationRecord]</td><td>bool</td><td>Verify signatures and ordering. Raises <code>AttestationError</code> on failure</td></tr>
+              <tr><td><code>attest(step, data)</code></td><td>step: str, data: dict</td><td>AttestationRecord</td><td>Manually attest a step. Used for custom integration points</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>AttestationError</code></td><td>Chain verification fails — missing record, invalid signature, or ordering violation</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AttestationRecord -->
+        <h2 id="attestation-record">AttestationRecord</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>A single signed record in the attestation chain.</p>
+          <h4>Fields</h4>
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Agent that produced this record</td></tr>
+              <tr><td><code>step</code></td><td>string</td><td>Step type: <code>tool_call</code>, <code>llm_response</code>, <code>memory_read</code>, <code>context_snapshot</code></td></tr>
+              <tr><td><code>sequence</code></td><td>int</td><td>Monotonically increasing position in the chain</td></tr>
+              <tr><td><code>timestamp</code></td><td>string</td><td>ISO 8601 timestamp</td></tr>
+              <tr><td><code>data_hash</code></td><td>string</td><td>SHA-256 hash of the step's input/output data</td></tr>
+              <tr><td><code>signature</code></td><td>string | null</td><td>HMAC signature. Null if <code>signed=False</code></td></tr>
+              <tr><td><code>prev_hash</code></td><td>string</td><td>Hash of the previous record — creates the chain linkage</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ContextGuard -->
+        <h2 id="context-guard">ContextGuard</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Snapshots and verifies the agent's context window at specified execution points to detect context mutation.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Yes</td><td>Agent identifier</td></tr>
+              <tr><td><code>snapshot_on</code></td><td>list[string]</td><td>No</td><td>Events that trigger a snapshot. Default: <code>["tool_call", "llm_response"]</code></td></tr>
+              <tr><td><code>on_mutation</code></td><td>string</td><td>No</td><td>Action on detected mutation: <code>"raise"</code>, <code>"log"</code>, <code>"alert"</code>. Default: <code>"raise"</code></td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>wrap(agent)</code></td><td>agent: Any</td><td>Any</td><td>Wrap agent with context integrity checking</td></tr>
+              <tr><td><code>snapshot(context)</code></td><td>context: dict</td><td>ContextSnapshot</td><td>Manually take a snapshot of the given context dict</td></tr>
+              <tr><td><code>verify(snapshot, context)</code></td><td>snapshot: ContextSnapshot, context: dict</td><td>bool</td><td>Verify context matches snapshot. Raises <code>ContextMutationError</code> if not</td></tr>
+              <tr><td><code>integrity_log()</code></td><td>—</td><td>list[IntegrityRecord]</td><td>Return all snapshot/verify records from the current session</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>ContextMutationError</code></td><td>Context does not match the most recent snapshot. Includes a diff of changed keys</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RAGTrustLayer -->
+        <h2 id="rag-trust-layer">RAGTrustLayer</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Validates retrieved documents against a registry of trusted sources and known content hashes. Detects RAG poisoning attacks.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Yes</td><td>Agent identifier</td></tr>
+              <tr><td><code>on_untrusted</code></td><td>string</td><td>No</td><td>Action for untrusted documents: <code>"raise"</code>, <code>"quarantine"</code>, <code>"log"</code>. Default: <code>"raise"</code></td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>register_source(uri, trust_level)</code></td><td>uri: string, trust_level: string</td><td>None</td><td>Register a trusted source URI prefix. trust_level: <code>"high"</code>, <code>"medium"</code>, <code>"low"</code></td></tr>
+              <tr><td><code>register_document_hash(uri, sha256)</code></td><td>uri: string, sha256: string</td><td>None</td><td>Register a known-good hash for a specific document</td></tr>
+              <tr><td><code>guard(fn)</code></td><td>fn: callable</td><td>callable</td><td>Decorator. Wraps a retrieval function with trust validation</td></tr>
+              <tr><td><code>validate(document, source_uri)</code></td><td>document: str, source_uri: str</td><td>TrustResult</td><td>Validate a single document against the registry</td></tr>
+              <tr><td><code>quarantine_log()</code></td><td>—</td><td>list[QuarantineRecord]</td><td>Return all quarantined documents from the current session</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>RAGPoisoningError</code></td><td>Retrieved document comes from an unregistered source or fails hash verification</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- MemoryGuard -->
+        <h2 id="memory-guard">MemoryGuard</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Protects agent persistent memory against poisoning via cryptographic snapshots and verified reads.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>string</td><td>Yes</td><td>Agent identifier</td></tr>
+              <tr><td><code>backend</code></td><td>string</td><td>No</td><td>Storage backend URI. Supports <code>memory://</code>, <code>redis://</code>, <code>sqlite:///</code>. Default: <code>memory://</code></td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>snapshot()</code></td><td>—</td><td>string</td><td>Take a snapshot of the current memory state. Returns a snapshot ID</td></tr>
+              <tr><td><code>verify(snapshot_id)</code></td><td>snapshot_id: string</td><td>bool</td><td>Verify current memory matches the given snapshot. Raises <code>MemoryPoisoningError</code> if not</td></tr>
+              <tr><td><code>read_safe(key)</code></td><td>key: string</td><td>Any</td><td>Read a memory entry after verifying it against the last snapshot</td></tr>
+              <tr><td><code>write(key, value)</code></td><td>key: string, value: Any</td><td>None</td><td>Write to memory. Logged and included in next snapshot</td></tr>
+              <tr><td><code>audit_log()</code></td><td>—</td><td>list[MemoryAuditEntry]</td><td>Return all memory operations from the current session</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>MemoryPoisoningError</code></td><td>Memory does not match the snapshot — a write occurred between the snapshot and the verify call</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AgentHierarchy -->
+        <h2 id="agent-hierarchy">AgentHierarchy</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Enforces who can instruct whom in a multi-agent system. Supports supervisor/worker relationships, veto rights, and quorum requirements.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>strict</code></td><td>bool</td><td>No</td><td>Raise on hierarchy violations. Default: <code>False</code> (log only)</td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>set_supervisor(agent_id, workers)</code></td><td>agent_id: string, workers: list[string]</td><td>None</td><td>Register an agent as supervisor of the given workers</td></tr>
+              <tr><td><code>grant_veto(agent_id, over)</code></td><td>agent_id: string, over: list[string]</td><td>None</td><td>Grant veto rights over the listed agents' decisions</td></tr>
+              <tr><td><code>require_quorum(agent, actions, approvers, threshold)</code></td><td>See parameters</td><td>None</td><td>Require quorum approval for specific actions</td></tr>
+              <tr><td><code>enforce(strict)</code></td><td>strict: bool</td><td>None</td><td>Set strict mode. When True, violations raise instead of logging</td></tr>
+              <tr><td><code>wrap(agent_id, agent)</code></td><td>agent_id: string, agent: Any</td><td>Any</td><td>Wrap an agent with hierarchy enforcement</td></tr>
+              <tr><td><code>check_permission(caller_id, callee_id)</code></td><td>caller_id: string, callee_id: string</td><td>bool</td><td>Check whether caller is permitted to instruct callee</td></tr>
+            </tbody>
+          </table>
+          <h4>require_quorum parameters</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>agent</code></td><td>string</td><td>The agent whose actions require quorum</td></tr>
+              <tr><td><code>actions</code></td><td>list[string]</td><td>Tool/action names that require quorum</td></tr>
+              <tr><td><code>approvers</code></td><td>list[string]</td><td>Agent IDs whose approval counts toward quorum</td></tr>
+              <tr><td><code>threshold</code></td><td>int</td><td>Number of approvals required before action is permitted</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>HierarchyViolationError</code></td><td>An agent receives instructions from a non-registered supervisor (strict mode only)</td></tr>
+              <tr><td><code>QuorumNotMetError</code></td><td>An action requiring quorum is attempted without sufficient approvals</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TrustInterop -->
+        <h2 id="trust-interop">TrustInterop</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>Exports attestation records as portable signed claims verifiable by external runtimes, services, or auditors.</p>
+          <h4>Constructor</h4>
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>issuer</code></td><td>string</td><td>Yes</td><td>Claim issuer identifier, e.g. <code>"agentcop:production-agent"</code></td></tr>
+              <tr><td><code>public_key_url</code></td><td>string</td><td>No</td><td>URL where the public verification key can be fetched by external verifiers</td></tr>
+            </tbody>
+          </table>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>export_claims(records)</code></td><td>records: list[AttestationRecord]</td><td>ClaimBundle</td><td>Export records as a portable signed claim bundle</td></tr>
+              <tr><td><code>import_claims(json_str)</code></td><td>json_str: string</td><td>ClaimBundle</td><td>Class method. Parse and import an external claim bundle</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ClaimBundle -->
+        <h2 id="claim-bundle">ClaimBundle</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <p>A portable signed bundle of attestation claims, exportable as JSON for cross-runtime verification.</p>
+          <h4>Methods</h4>
+          <table>
+            <thead><tr><th>Method</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>to_json()</code></td><td>—</td><td>string</td><td>Serialize to a signed JSON string</td></tr>
+              <tr><td><code>verify()</code></td><td>—</td><td>bool</td><td>Verify the bundle's signature. Raises <code>TrustInteropError</code> if invalid</td></tr>
+              <tr><td><code>issuer</code></td><td>—</td><td>string</td><td>Claim issuer identifier</td></tr>
+              <tr><td><code>issued_at</code></td><td>—</td><td>string</td><td>ISO 8601 timestamp when the bundle was created</td></tr>
+              <tr><td><code>records</code></td><td>—</td><td>list[dict]</td><td>The attestation records included in the bundle</td></tr>
+            </tbody>
+          </table>
+          <h4>Exceptions</h4>
+          <table>
+            <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>TrustInteropError</code></td><td>Bundle signature is invalid, issuer is unrecognized, or the bundle has been tampered with</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Environment variables -->
+        <h2 id="environment-variables">Environment variables</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:24px 0;">
+          <table>
+            <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>AGENTCOP_TRUST_SIGNED</code></td><td><code>false</code></td><td>Enable signed attestation</td></tr>
+              <tr><td><code>AGENTCOP_TRUST_KEY_PATH</code></td><td>—</td><td>Path to attestation signing key</td></tr>
+              <tr><td><code>AGENTCOP_TRUST_MEMORY_BACKEND</code></td><td><code>memory://</code></td><td>Memory guard storage backend URI</td></tr>
+              <tr><td><code>AGENTCOP_TRUST_RAG_STRICT</code></td><td><code>false</code></td><td>Raise on untrusted RAG sources instead of logging</td></tr>
+              <tr><td><code>AGENTCOP_TRUST_HIERARCHY_STRICT</code></td><td><code>false</code></td><td>Raise on hierarchy violations instead of logging</td></tr>
+              <tr><td><code>AGENTCOP_TRUST_ON_VIOLATION</code></td><td><code>log</code></td><td>Default action for all violations: <code>raise</code>, <code>log</code>, <code>alert</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-pagination">
+          <a href="/guides/trust-chain.html" class="prev-link">← Trust Chain Guide</a>
+          <a href="/api-reference/" class="next-link">API Reference Overview →</a>
+        </div>
+
+      </article>
+    </main>
+    <aside class="doc-right-nav">
+      <div class="right-nav-title">On this page</div>
+      <ul class="right-nav-list">
+        <li><a href="#trust-chain-builder">TrustChainBuilder</a></li>
+        <li><a href="#trust-chain">TrustChain</a></li>
+        <li><a href="#node-attestor">NodeAttestor</a></li>
+        <li><a href="#attestation-record">AttestationRecord</a></li>
+        <li><a href="#context-guard">ContextGuard</a></li>
+        <li><a href="#rag-trust-layer">RAGTrustLayer</a></li>
+        <li><a href="#memory-guard">MemoryGuard</a></li>
+        <li><a href="#agent-hierarchy">AgentHierarchy</a></li>
+        <li><a href="#trust-interop">TrustInterop</a></li>
+        <li><a href="#claim-bundle">ClaimBundle</a></li>
+        <li><a href="#environment-variables">Environment variables</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>
